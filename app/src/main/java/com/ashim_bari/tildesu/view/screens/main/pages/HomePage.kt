@@ -1,57 +1,62 @@
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomePage(function: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        // Define button texts and alignments
-        val buttons = listOf(
-            Pair("A1 деңгейі", Alignment.Start),
-            Pair("A2 деңгейі", Alignment.End),
-            Pair("B1 деңгейі", Alignment.Start),
-            Pair("B2 деңгейі", Alignment.End),
-            Pair("C1 деңгейі", Alignment.Start),
-            Pair("C2 деңгейі", Alignment.End)
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Define button texts and their intended alignments
+            val buttons = listOf(
+                "A1 деңгейі" to Alignment.Start,
+                "A2 деңгейі" to Alignment.End,
+                "B1 деңгейі" to Alignment.Start,
+                "B2 деңгейі" to Alignment.End,
+                "C1 деңгейі" to Alignment.Start,
+                "C2 деңгейі" to Alignment.End
+            )
 
-        buttons.forEach { (text, alignment) ->
-            Box(
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
-                Button(
-                    onClick = { /* Handle button click */ },
+            buttons.forEachIndexed { index, (text, alignment) ->
+                Row(
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(50.dp),
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = if (alignment == Alignment.Start) Arrangement.Start else Arrangement.End
                 ) {
-                    Text(text = text, fontSize = MaterialTheme.typography.titleMedium.fontSize)
+                    Button(
+                        onClick = { /* Handle button click */ },
+                        modifier = Modifier.width(200.dp),
+                        colors = ButtonDefaults.buttonColors( // Optional: Customize button colors
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HomePagePreview() {
-    // Assume navController is not needed for preview
-    HomePage {}
+    MaterialTheme {
+        HomePage {}
+    }
 }

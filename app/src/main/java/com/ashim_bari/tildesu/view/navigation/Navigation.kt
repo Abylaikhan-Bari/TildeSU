@@ -6,12 +6,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
+import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
 
 
 class Navigation {
     companion object {
         const val AUTHENTICATION_ROUTE = "authentication"
         const val MAIN_ROUTE = "main"
+        const val EXERCISE_ROUTE = "exercise"
     }
 }
 
@@ -23,6 +25,9 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(Navigation.MAIN_ROUTE) {
             MainScreen(navController)
+        }
+        composable(Navigation.EXERCISE_ROUTE) {
+            ExerciseScreen(navController)
         }
     }
 }
