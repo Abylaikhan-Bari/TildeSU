@@ -16,11 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.TopAppBar
-import com.ashim_bari.tildesu.view.screens.main.pages.DashboardPage
-import com.ashim_bari.tildesu.view.screens.main.pages.HomePage
-import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
-import com.ashim_bari.tildesu.view.screens.main.pages.UsefulPage
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
@@ -64,8 +59,8 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
     when (currentScreen) {
-        MainScreens.Home -> HomePage(navController){}
-        MainScreens.Dashboard -> DashboardPage(navController){}
+        MainScreens.Home -> HomePage(){}
+        MainScreens.Dashboard -> DashboardPage(){}
         MainScreens.Useful -> UsefulPage(navController){}
         MainScreens.Profile -> ProfilePage(navController){}
     }
