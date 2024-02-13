@@ -19,7 +19,7 @@ class Navigation {
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = Navigation.MAIN_ROUTE) {
+    NavHost(navController, startDestination = Navigation.AUTHENTICATION_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             AuthenticationScreen(navController)
         }
