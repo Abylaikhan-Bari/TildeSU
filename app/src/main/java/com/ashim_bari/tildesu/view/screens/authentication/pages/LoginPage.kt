@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,9 +34,9 @@ fun LoginPage(
     onNavigate: (AuthScreens) -> Unit,
     viewModel: AuthenticationViewModel // Inject your AuthenticationViewModel
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var authMessage by remember { mutableStateOf<String?>(null) } // Holds the authentication message
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
 
 
     Column(

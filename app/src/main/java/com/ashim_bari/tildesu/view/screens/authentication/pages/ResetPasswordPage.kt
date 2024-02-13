@@ -34,7 +34,7 @@ fun ResetPasswordPage(
     viewModel: AuthenticationViewModel
 ) {
     var email by rememberSaveable { mutableStateOf("") }
-    var authMessage by remember { mutableStateOf<String?>(null) } // Holds the authentication message
+    var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
 
     Column(
         modifier = Modifier
