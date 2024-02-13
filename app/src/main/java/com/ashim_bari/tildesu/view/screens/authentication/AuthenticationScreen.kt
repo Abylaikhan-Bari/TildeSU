@@ -15,9 +15,10 @@ import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 @Composable
-fun AuthenticationScreen(navController: NavHostController) {
+fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val padding = if (isLandscape) 32.dp else 16.dp
@@ -43,15 +44,13 @@ fun AuthenticationScreen(navController: NavHostController) {
             )
 
             when (currentScreen) {
-                AuthScreens.Login -> LoginPage(navController) { currentScreen = it }
-                AuthScreens.Register -> RegisterPage(navController) { currentScreen = it }
-                AuthScreens.ResetPassword -> ResetPasswordPage(navController) { currentScreen = it }
+                AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel)
+                AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel)
+                AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel)
             }
         }
     }
 }
-
-
 
 enum class AuthScreens {
     Login,

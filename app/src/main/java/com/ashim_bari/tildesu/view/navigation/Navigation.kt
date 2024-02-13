@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 
 class Navigation {
@@ -21,7 +22,7 @@ class Navigation {
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = Navigation.AUTHENTICATION_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
-            AuthenticationScreen(navController)
+            AuthenticationScreen(navController, viewModel = AuthenticationViewModel())
         }
         composable(Navigation.MAIN_ROUTE) {
             MainScreen(navController)

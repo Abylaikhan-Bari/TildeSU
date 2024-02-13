@@ -24,13 +24,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 @Composable
-fun RegisterPage(navController: NavHostController, onNavigate: (AuthScreens) -> Unit) {
+fun RegisterPage(
+    navController: NavHostController,
+    onNavigate: (AuthScreens) -> Unit,
+    viewModel: AuthenticationViewModel
+) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var authMessage by remember { mutableStateOf<String?>(null) } // Holds the authentication message
 
     Column(
         modifier = Modifier
@@ -38,7 +45,9 @@ fun RegisterPage(navController: NavHostController, onNavigate: (AuthScreens) -> 
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        authMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+        }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Register",
@@ -61,16 +70,39 @@ fun RegisterPage(navController: NavHostController, onNavigate: (AuthScreens) -> 
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            horizontalArrangement = Arrangement.End,
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirm Password") },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
-        ) {
+        )
+        Spacer(modifier = Modifier.height(24.dp))
 
-        }
         Button(
             onClick = {
-                // TODO: Implement register logic
+                if (password == confirmPassword) {
+                    // Call register function from viewModel
+                    viewModel.register(email, password) { success ->
+                        if (success) {
+                            // Registration successful, navigate to the appropriate screen
+                            // For example, navigate to the MainScreen
+                            navController.navigate(Navigation.MAIN_ROUTE)
+                            authMessage = null
+                        } else {
+                            // Registration failed, you can show an error message to the user
+                            // For example, you can update a state variable to display an error message
+
+                            authMessage = "Registration failed. Please try again."
+                        }
+                    }
+                } else {
+                    // Passwords do not match, you can show an error message to the user
+                    // For example, you can update a state variable to display an error message
+                    // errorMessage = "Passwords do not match."
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()

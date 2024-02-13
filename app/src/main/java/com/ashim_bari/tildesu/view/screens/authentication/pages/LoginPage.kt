@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,12 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 @Composable
-fun LoginPage(navController: NavHostController, onNavigate: (AuthScreens) -> Unit) {
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+fun LoginPage(
+    navController: NavHostController,
+    onNavigate: (AuthScreens) -> Unit,
+    viewModel: AuthenticationViewModel // Inject your AuthenticationViewModel
+) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var authMessage by remember { mutableStateOf<String?>(null) } // Holds the authentication message
+
 
     Column(
         modifier = Modifier
@@ -37,7 +44,9 @@ fun LoginPage(navController: NavHostController, onNavigate: (AuthScreens) -> Uni
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        authMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+        }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Login",
@@ -45,8 +54,8 @@ fun LoginPage(navController: NavHostController, onNavigate: (AuthScreens) -> Uni
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = username,
+            onValueChange = { username = it },
             label = { Text("Email") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
@@ -71,7 +80,19 @@ fun LoginPage(navController: NavHostController, onNavigate: (AuthScreens) -> Uni
         }
         Button(
             onClick = {
-                // TODO: Implement login logic
+                // Call login function from viewModel
+                viewModel.login(username, password) { success ->
+                    if (success) {
+                        // Login successful, navigate to next screen
+                        navController.navigate(Navigation.MAIN_ROUTE) // Replace "next_screen_route" with the actual route to navigate to
+                        authMessage = null
+                    } else {
+                        // Login failed, you can show an error message to the user
+                        // For example, you can update a state variable to display an error message
+
+                        authMessage = "Login failed. Please check your credentials."
+                    }
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,6 +101,7 @@ fun LoginPage(navController: NavHostController, onNavigate: (AuthScreens) -> Uni
             Text("Login", color = Color.White)
         }
 
+        Spacer(modifier = Modifier.height(24.dp))
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()

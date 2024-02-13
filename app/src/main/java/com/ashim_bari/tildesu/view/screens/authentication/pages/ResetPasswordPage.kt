@@ -23,11 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 @Composable
-fun ResetPasswordPage(navController: NavHostController, onNavigate: (AuthScreens) -> Unit) {
+fun ResetPasswordPage(
+    navController: NavHostController,
+    onNavigate: (AuthScreens) -> Unit,
+    viewModel: AuthenticationViewModel
+) {
     var email by rememberSaveable { mutableStateOf("") }
+    var authMessage by remember { mutableStateOf<String?>(null) } // Holds the authentication message
 
     Column(
         modifier = Modifier
@@ -35,7 +42,9 @@ fun ResetPasswordPage(navController: NavHostController, onNavigate: (AuthScreens
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        authMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+        }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Reset password",
@@ -50,15 +59,23 @@ fun ResetPasswordPage(navController: NavHostController, onNavigate: (AuthScreens
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
-        ) {
 
-        }
         Button(
             onClick = {
-                // TODO: Implement register logic
+                // Call resetPassword function from viewModel
+                viewModel.resetPassword(email) { success ->
+                    if (success) {
+                        // Reset password successful, you can navigate to the appropriate screen
+                        // For example, navigate to the LoginScreen
+                        navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                        authMessage = null
+                    } else {
+                        // Reset password failed, you can show an error message to the user
+                        // For example, you can update a state variable to display an error message
+
+                        authMessage = "Failed to reset password. Please try again."
+                    }
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
