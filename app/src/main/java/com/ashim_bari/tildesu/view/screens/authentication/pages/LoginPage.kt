@@ -96,7 +96,7 @@ fun LoginPage(
         }
         Button(
             onClick = {
-                // Call login function from viewModel
+                // Call login function from viewMod
                 viewModel.login(username, password) { success ->
                     if (success) {
                         // Login successful, navigate to next screen

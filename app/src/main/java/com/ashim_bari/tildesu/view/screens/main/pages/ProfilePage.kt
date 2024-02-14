@@ -15,9 +15,10 @@ import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.view.navigation.Navigation
 
 @Composable
-fun ProfilePage(navController: NavHostController, content: () -> Unit) {
+fun ProfilePage(navController: NavHostController) {
     // Get an instance of the ViewModel
     val viewModel: AuthenticationViewModel = viewModel()
 
@@ -52,20 +53,22 @@ fun ProfilePage(navController: NavHostController, content: () -> Unit) {
 
             // Edit profile button
             OutlinedButton(
-                onClick = { /* Handle edit profile */ },
+                onClick = {
+                    // Navigate to EditProfilePage
+                    navController.navigate(Navigation.EDITPROFILE_ROUTE)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Filled.Edit, contentDescription = "Edit Profile")
+                Icon(Icons.Filled.Edit, contentDescription = "Update Password")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Edit Profile")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             // Log out button
             Button(
-                onClick = { viewModel.logout(navController)},
+                onClick = { viewModel.logout(navController) }, // Assuming logout method only logs out the user
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Log Out")

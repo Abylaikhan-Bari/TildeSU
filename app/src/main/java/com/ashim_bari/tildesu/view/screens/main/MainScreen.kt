@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -20,7 +19,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.view.screens.main.pages.EditProfilePage
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,13 +75,18 @@ fun MainScreen(navController: NavHostController) {
 // Placeholder for the screen content
 @Composable
 fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
+    // Obtain an instance of AuthenticationViewModel
+    val authViewModel: AuthenticationViewModel = viewModel()
+
     when (currentScreen) {
         MainScreens.Home -> HomePage(){}
         MainScreens.Dashboard -> DashboardPage(){}
         MainScreens.Useful -> UsefulPage(navController){}
-        MainScreens.Profile -> ProfilePage(navController){}
+        MainScreens.Profile -> ProfilePage(navController)
+        MainScreens.EditProfile -> EditProfilePage(navController, authViewModel) // Pass the ViewModel here
     }
 }
+
 
 
 
@@ -91,9 +97,12 @@ data class BottomNavItem(
     val screen: MainScreens
 )
 
+
+
 enum class MainScreens {
     Home,
     Dashboard,
     Useful,
-    Profile
+    Profile,
+    EditProfile
 }

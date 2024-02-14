@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.model.user
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 
@@ -45,5 +46,26 @@ class UserRepository {
         val currentUser = firebaseAuth.currentUser
         onComplete(currentUser?.email)
     }
+
+//    suspend fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
+//        try {
+//            firebaseAuth.currentUser?.verifyBeforeUpdateEmail(newEmail)?.await()
+//            onComplete(true)
+//        } catch (e: Exception) {
+//            Log.e("UpdateEmail", "Failed to update email", e)
+//            onComplete(false)
+//        }
+//    }
+
+
+    suspend fun updatePassword(newPassword: String): Boolean {
+        return try {
+            firebaseAuth.currentUser?.updatePassword(newPassword)?.await()
+            true // Return true for successful password update
+        } catch (e: Exception) {
+            false // Return false if password update fails
+        }
+    }
+
 
 }

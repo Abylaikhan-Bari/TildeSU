@@ -53,4 +53,18 @@ class AuthenticationViewModel : ViewModel() {
         }
     }
 
+//    fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            val success = userRepository.updateEmail(newEmail)
+//            onComplete(success)
+//        }
+//    }
+
+    fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = userRepository.updatePassword(newPassword)
+            onComplete(success)
+        }
+    }
+
 }
