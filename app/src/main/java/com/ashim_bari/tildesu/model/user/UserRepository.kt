@@ -32,6 +32,14 @@ class UserRepository {
             false // Return false if password reset fails
         }
     }
+    suspend fun logout(): Boolean {
+        return try {
+            firebaseAuth.signOut()
+            true // Return true for successful log out
+        } catch (e: Exception) {
+            false // Return false if log out fails
+        }
+    }
 
     fun getUserEmail(onComplete: (String?) -> Unit) {
         val currentUser = firebaseAuth.currentUser

@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.model.user.UserRepository
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import kotlinx.coroutines.launch
 
 class AuthenticationViewModel : ViewModel() {
@@ -41,5 +43,14 @@ class AuthenticationViewModel : ViewModel() {
         }
     }
 
+    fun logout(navController: NavHostController) {
+        viewModelScope.launch {
+            // Call the log out function from the UserRepository
+            val result = userRepository.logout()
+            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+            // Call the onComplete callback to handle further actions, if needed
+
+        }
+    }
 
 }

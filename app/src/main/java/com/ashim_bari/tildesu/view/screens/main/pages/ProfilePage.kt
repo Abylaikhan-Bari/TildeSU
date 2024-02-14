@@ -62,13 +62,15 @@ fun ProfilePage(navController: NavHostController, content: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+
             // Log out button
             Button(
-                onClick = { /* Handle log out */ },
+                onClick = { viewModel.logout(navController)},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Log Out")
             }
+
         }
     }
 }
