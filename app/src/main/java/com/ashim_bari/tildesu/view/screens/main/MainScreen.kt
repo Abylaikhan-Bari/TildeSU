@@ -1,3 +1,4 @@
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
@@ -57,6 +58,9 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
+        BackHandler {
+            // Do nothing to prevent navigation when any screen is opened
+        }
         // Scrollable screen content based on currentMainScreen
         LazyColumn(contentPadding = innerPadding) {
             item {

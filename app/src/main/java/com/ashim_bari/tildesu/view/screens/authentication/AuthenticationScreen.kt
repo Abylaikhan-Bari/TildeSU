@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
@@ -30,6 +31,9 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+        BackHandler {
+            // Do nothing to prevent navigation when any screen is opened
+        }
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
