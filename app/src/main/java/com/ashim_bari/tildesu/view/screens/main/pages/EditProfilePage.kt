@@ -14,12 +14,12 @@ import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfilePage(navController: NavHostController, viewModel: AuthenticationViewModel) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var updateResult by remember { mutableStateOf<Boolean?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var successMessage by remember { mutableStateOf<String?>(null) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var updateResult by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var successMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     Scaffold(
         topBar = {
