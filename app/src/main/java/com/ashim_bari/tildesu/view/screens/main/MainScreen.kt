@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.Modifier
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.*
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,10 +57,15 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        // Your screen content based on currentMainScreen
-        MainScreenContent(currentMainScreen, navController, Modifier.padding(innerPadding))
+        // Scrollable screen content based on currentMainScreen
+        LazyColumn(contentPadding = innerPadding) {
+            item {
+                MainScreenContent(currentMainScreen, navController)
+            }
+        }
     }
 }
+
 
 // Placeholder for the screen content
 @Composable
@@ -69,6 +77,8 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
         MainScreens.Profile -> ProfilePage(navController){}
     }
 }
+
+
 
 
 data class BottomNavItem(
