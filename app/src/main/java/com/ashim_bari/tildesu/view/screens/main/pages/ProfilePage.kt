@@ -4,14 +4,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun ProfilePage(navController: NavHostController, content: () -> Unit) {
+    // Get an instance of the ViewModel
+    val viewModel: AuthenticationViewModel = viewModel()
+
+    // Call the function to fetch user email
+    LaunchedEffect(Unit) {
+        viewModel.getUserEmail()
+    }
+
+    // Observe the user's email
+    val userEmail by viewModel.userEmail.observeAsState()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -27,8 +44,9 @@ fun ProfilePage(navController: NavHostController, content: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Profile attributes
-
-            ProfileAttribute("john.doe@example.com")
+            userEmail?.let { email ->
+                ProfileAttribute(email)
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -74,7 +92,7 @@ fun ProfileAttribute(value: String) {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = value,
+            text = value ?: "Loading...", // Show "Loading..." while email is being fetched
             style = MaterialTheme.typography.bodyLarge
         )
     }

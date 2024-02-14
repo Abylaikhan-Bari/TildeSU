@@ -1,5 +1,7 @@
 package com.ashim_bari.tildesu.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.user.UserRepository
@@ -8,6 +10,16 @@ import kotlinx.coroutines.launch
 class AuthenticationViewModel : ViewModel() {
     private val userRepository = UserRepository()
 
+    private val _userEmail = MutableLiveData<String?>()
+    val userEmail: LiveData<String?> get() = _userEmail
+
+    fun getUserEmail() {
+        viewModelScope.launch {
+            userRepository.getUserEmail { email ->
+                _userEmail.postValue(email)
+            }
+        }
+    }
     fun register(email: String, password: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = userRepository.registerUser(email, password)
@@ -28,4 +40,6 @@ class AuthenticationViewModel : ViewModel() {
             onComplete(result)
         }
     }
+
+
 }

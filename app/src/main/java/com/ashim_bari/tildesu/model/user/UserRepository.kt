@@ -9,27 +9,33 @@ class UserRepository {
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            true
+            true // Return true for successful registration
         } catch (e: Exception) {
-            false
+            false // Return false if registration fails
         }
     }
 
     suspend fun loginUser(email: String, password: String): Boolean {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            true
+            true // Return true for successful login
         } catch (e: Exception) {
-            false
+            false // Return false if login fails
         }
     }
 
     suspend fun resetPassword(email: String): Boolean {
         return try {
             firebaseAuth.sendPasswordResetEmail(email).await()
-            true
+            true // Return true for successful password reset
         } catch (e: Exception) {
-            false
+            false // Return false if password reset fails
         }
     }
+
+    fun getUserEmail(onComplete: (String?) -> Unit) {
+        val currentUser = firebaseAuth.currentUser
+        onComplete(currentUser?.email)
+    }
+
 }
