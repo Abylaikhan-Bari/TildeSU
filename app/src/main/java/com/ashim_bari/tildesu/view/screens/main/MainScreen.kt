@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ashim_bari.tildesu.view.screens.main.pages.EditProfilePage
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 
@@ -83,8 +81,7 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
         MainScreens.Home -> HomePage(){}
         MainScreens.Dashboard -> DashboardPage(){}
         MainScreens.Useful -> UsefulPage(navController){}
-        MainScreens.Profile -> ProfilePage(navController)
-        MainScreens.EditProfile -> EditProfilePage(navController, mainViewModel) // Pass the ViewModel here
+        MainScreens.Profile -> ProfilePage(navController)// Pass the ViewModel here
     }
 }
 
@@ -104,6 +101,5 @@ enum class MainScreens {
     Home,
     Dashboard,
     Useful,
-    Profile,
-    EditProfile
+    Profile
 }

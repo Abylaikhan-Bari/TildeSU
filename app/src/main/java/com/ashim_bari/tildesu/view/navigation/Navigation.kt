@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
-import com.ashim_bari.tildesu.view.screens.main.pages.EditProfilePage
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.viewmodel.MainViewModel
@@ -18,8 +17,7 @@ class Navigation {
         const val AUTHENTICATION_ROUTE = "authentication"
         const val MAIN_ROUTE = "main"
         const val EXERCISE_ROUTE = "exercise"
-        const val EDITPROFILE_ROUTE = "editProfile"
-        //const val PROFILE_ROUTE = "profile"
+
     }
 }
 
@@ -37,13 +35,5 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Navigation.EXERCISE_ROUTE) {
             ExerciseScreen(navController = navController)
         }
-        composable(Navigation.EDITPROFILE_ROUTE) {
-            // If EditProfilePage requires AuthenticationViewModel, obtain it here
-            val mainViewModel: MainViewModel = viewModel()
-            EditProfilePage(navController = navController, viewModel = mainViewModel)
-        }
-//        composable(Navigation.PROFILE_ROUTE) {
-//            ProfilePage(navController = navController)
-//        }
     }
 }
