@@ -25,6 +25,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -225,25 +226,39 @@ fun UpdatePasswordDialog(
 }
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
-    // Display the profile image from URL or a placeholder
     Card(
         modifier = Modifier
             .size(120.dp)
-            .clip(CircleShape)
+            .clip(CircleShape) // Ensure the card itself is circular
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        if (imageUrl != null) {
-            Image(
-                painter = rememberAsyncImagePainter(imageUrl),
-                contentDescription = "Profile Picture",
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Text("Tap to select image", modifier = Modifier.padding(16.dp))
+        Box(modifier = Modifier.clip(CircleShape)) { // Clip the content of the card to a circular shape
+            if (imageUrl != null) {
+                // Load image from URL
+                Image(
+                    painter = rememberAsyncImagePainter(model = imageUrl),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape), // Clip the image to be circular
+                    contentScale = ContentScale.Crop // Crop the image to fill the bounds
+                )
+            } else {
+                // Display default placeholder if no image URL
+                Image(
+                    painter = painterResource(id = R.drawable.default_profile_image),
+                    contentDescription = "Default Profile Picture",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape), // Ensure the placeholder is also circular
+                    contentScale = ContentScale.Crop // Crop the placeholder to fill the bounds
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun ProfileAttribute(value: String) {
