@@ -1,3 +1,6 @@
+import android.graphics.ColorFilter
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -13,7 +16,10 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.MainViewModel
 import kotlinx.coroutines.delay
 
@@ -21,8 +27,8 @@ import kotlinx.coroutines.delay
 fun ProfilePage(navController: NavHostController) {
     // Get an instance of the ViewModel
     val viewModel: MainViewModel = viewModel()
-    var showUpdatePasswordDialog by remember { mutableStateOf(false) }
-    var successMessage by remember { mutableStateOf<String?>(null) }
+    var showUpdatePasswordDialog by rememberSaveable { mutableStateOf(false) }
+    var successMessage by rememberSaveable { mutableStateOf<String?>(null) }
     // Observe the user's email
     val userEmail by viewModel.userEmail.observeAsState()
     // State for showing logout confirmation dialog
@@ -183,14 +189,28 @@ fun UpdatePasswordDialog(
     )
 }
 @Composable
-fun ProfilePicture() {
+fun ProfilePicture(
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .size(120.dp)
-            .clip(CircleShape),
+            .clip(CircleShape)
+            .clickable(onClick = onClick), // Make the profile picture clickable if needed
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        // Placeholder for profile picture
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            // Displaying the default profile image
+            Image(
+                painter = painterResource(id = R.drawable.default_profile_image), // Use your default image resource
+                contentDescription = "Profile Picture",
+                modifier = Modifier.fillMaxSize()
+            )
+
+        }
     }
 }
 

@@ -1,12 +1,16 @@
 package com.ashim_bari.tildesu.model.user
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
 
 class UserRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+    private val storageRef: StorageReference = storage.reference
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
@@ -67,5 +71,26 @@ class UserRepository {
         }
     }
 
+    suspend fun uploadUserImage(uri: Uri): String? {
+        return try {
+            val currentUser = firebaseAuth.currentUser ?: return null
+            val uid = currentUser.uid
+            val imageRef = storageRef.child("images/$uid/profile.jpg")
+            imageRef.putFile(uri).await()
+            imageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            null
+        }
+    }
 
+    suspend fun getUserImage(): String? {
+        return try {
+            val currentUser = firebaseAuth.currentUser ?: return null
+            val uid = currentUser.uid
+            val imageRef = storageRef.child("images/$uid/profile.jpg")
+            imageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

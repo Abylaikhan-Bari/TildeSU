@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +41,20 @@ class MainViewModel:ViewModel() {
 //        }
 //    }
 
+    fun uploadProfileImage(uri: Uri, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val imageUrl = userRepository.uploadUserImage(uri)
+            onComplete(imageUrl != null)
+        }
+    }
+
+    // Function to get user image
+    fun getUserImage(onComplete: (String?) -> Unit) {
+        viewModelScope.launch {
+            val imageUrl = userRepository.getUserImage()
+            onComplete(imageUrl)
+        }
+    }
     fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val success = userRepository.updatePassword(newPassword)
