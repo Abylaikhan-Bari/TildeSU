@@ -16,6 +16,8 @@ class MainViewModel:ViewModel() {
 
     private val _userEmail = MutableLiveData<String?>()
     val userEmail: LiveData<String?> get() = _userEmail
+    private val _profileImageUrl = MutableLiveData<String?>()
+    val profileImageUrl: LiveData<String?> = _profileImageUrl
 
     fun getUserEmail() {
         viewModelScope.launch {
@@ -40,19 +42,30 @@ class MainViewModel:ViewModel() {
 //            onComplete(success)
 //        }
 //    }
+// Fetch profile image URL from ViewModel
 
-    fun uploadProfileImage(uri: Uri, onComplete: (Boolean) -> Unit) {
+
+    init {
+        fetchProfileImageUrl()
+    }
+
+    // Function to upload a profile image and update the LiveData
+    fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {
             val imageUrl = userRepository.uploadUserImage(uri)
-            onComplete(imageUrl != null)
+            _profileImageUrl.value = imageUrl
+            val success = userRepository.uploadUserImage(uri)
+            if (success != null) {
+                fetchProfileImageUrl()
+            }
         }
     }
 
-    // Function to get user image
-    fun getUserImage(onComplete: (String?) -> Unit) {
+    // Function to fetch and display the profile image URL
+    fun fetchProfileImageUrl() {
         viewModelScope.launch {
             val imageUrl = userRepository.getUserImage()
-            onComplete(imageUrl)
+            _profileImageUrl.value = imageUrl
         }
     }
     fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
