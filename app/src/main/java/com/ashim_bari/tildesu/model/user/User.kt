@@ -1,4 +1,6 @@
 package com.ashim_bari.tildesu.model.user
 
-class User {
-}
+data class User(
+    val uid: String,
+    val email: String?
+)
