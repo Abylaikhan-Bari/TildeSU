@@ -10,10 +10,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfilePage(navController: NavHostController, viewModel: AuthenticationViewModel) {
+fun EditProfilePage(navController: NavHostController, viewModel: MainViewModel) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -67,16 +68,6 @@ fun EditProfilePage(navController: NavHostController, viewModel: AuthenticationV
                                 if (pwdSuccess) {
                                     errorMessage = null
                                     successMessage = "Password updated successfully."
-                                    // Navigate back to the profile page on success
-                                    navController.navigate("profile") {
-                                        // Remove all the non-top-level destinations from the back stack to prevent back navigation to this page
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        // Optionally, you can restore state when coming back to the start destination
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
                                 } else {
                                     errorMessage = "Failed to update password."
                                 }
@@ -91,9 +82,19 @@ fun EditProfilePage(navController: NavHostController, viewModel: AuthenticationV
                 }
             }
 
-            if (!errorMessage.isNullOrEmpty()) {
+            // Display success message if available
+            successMessage?.let {
                 Text(
-                    text = errorMessage!!,
+                    text = it,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            // Display error message if available
+            errorMessage?.let {
+                Text(
+                    text = it,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 8.dp)
                 )

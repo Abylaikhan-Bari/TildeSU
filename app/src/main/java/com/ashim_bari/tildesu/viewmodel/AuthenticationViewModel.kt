@@ -15,13 +15,7 @@ class AuthenticationViewModel : ViewModel() {
     private val _userEmail = MutableLiveData<String?>()
     val userEmail: LiveData<String?> get() = _userEmail
 
-    fun getUserEmail() {
-        viewModelScope.launch {
-            userRepository.getUserEmail { email ->
-                _userEmail.postValue(email)
-            }
-        }
-    }
+
     fun register(email: String, password: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val result = userRepository.registerUser(email, password)
@@ -43,28 +37,6 @@ class AuthenticationViewModel : ViewModel() {
         }
     }
 
-    fun logout(navController: NavHostController) {
-        viewModelScope.launch {
-            // Call the log out function from the UserRepository
-            val result = userRepository.logout()
-            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-            // Call the onComplete callback to handle further actions, if needed
 
-        }
-    }
-
-//    fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
-//        viewModelScope.launch {
-//            val success = userRepository.updateEmail(newEmail)
-//            onComplete(success)
-//        }
-//    }
-
-    fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val success = userRepository.updatePassword(newPassword)
-            onComplete(success)
-        }
-    }
 
 }

@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.view.navigation
 
 import MainScreen
+import ProfilePage
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,6 +11,7 @@ import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
 import com.ashim_bari.tildesu.view.screens.main.pages.EditProfilePage
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 class Navigation {
     companion object {
@@ -17,6 +19,7 @@ class Navigation {
         const val MAIN_ROUTE = "main"
         const val EXERCISE_ROUTE = "exercise"
         const val EDITPROFILE_ROUTE = "editProfile"
+        //const val PROFILE_ROUTE = "profile"
     }
 }
 
@@ -36,8 +39,11 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(Navigation.EDITPROFILE_ROUTE) {
             // If EditProfilePage requires AuthenticationViewModel, obtain it here
-            val authViewModel: AuthenticationViewModel = viewModel()
-            EditProfilePage(navController = navController, viewModel = authViewModel)
+            val mainViewModel: MainViewModel = viewModel()
+            EditProfilePage(navController = navController, viewModel = mainViewModel)
         }
+//        composable(Navigation.PROFILE_ROUTE) {
+//            ProfilePage(navController = navController)
+//        }
     }
 }

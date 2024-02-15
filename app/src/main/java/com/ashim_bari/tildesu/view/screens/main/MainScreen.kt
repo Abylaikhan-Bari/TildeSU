@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.view.screens.main.pages.EditProfilePage
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,14 +77,14 @@ fun MainScreen(navController: NavHostController) {
 @Composable
 fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
     // Obtain an instance of AuthenticationViewModel
-    val authViewModel: AuthenticationViewModel = viewModel()
+    val mainViewModel: MainViewModel = viewModel()
 
     when (currentScreen) {
         MainScreens.Home -> HomePage(){}
         MainScreens.Dashboard -> DashboardPage(){}
         MainScreens.Useful -> UsefulPage(navController){}
         MainScreens.Profile -> ProfilePage(navController)
-        MainScreens.EditProfile -> EditProfilePage(navController, authViewModel) // Pass the ViewModel here
+        MainScreens.EditProfile -> EditProfilePage(navController, mainViewModel) // Pass the ViewModel here
     }
 }
 

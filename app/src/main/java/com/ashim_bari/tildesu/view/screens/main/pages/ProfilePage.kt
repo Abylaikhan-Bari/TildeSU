@@ -10,17 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.view.navigation.Navigation
+import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 @Composable
 fun ProfilePage(navController: NavHostController) {
     // Get an instance of the ViewModel
-    val viewModel: AuthenticationViewModel = viewModel()
+    val viewModel: MainViewModel = viewModel()
 
     // Call the function to fetch user email
     LaunchedEffect(Unit) {
@@ -61,7 +61,7 @@ fun ProfilePage(navController: NavHostController) {
             ) {
                 Icon(Icons.Filled.Edit, contentDescription = "Update Password")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Edit Profile")
+                Text("Update Password")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
