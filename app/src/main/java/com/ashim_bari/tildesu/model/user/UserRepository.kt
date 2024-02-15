@@ -76,16 +76,34 @@ class UserRepository {
     private val storageReference = Firebase.storage.reference
 
     suspend fun uploadUserImage(uri: Uri): String? {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return null
-        val imageRef = storageReference.child("profileImages/$userId.jpg")
+        val userId = firebaseAuth.currentUser?.uid ?: return null
+        // Adjusted the file path to include the user ID for unique storage per user
+        val imageRef = storageReference.child("profileImages/$userId/profilePic.jpg")
 
-        val uploadTask = imageRef.putFile(uri).await()
-        return uploadTask.storage.downloadUrl.await().toString()
+        try {
+            // Upload the file and wait for it to complete
+            imageRef.putFile(uri).await()
+
+            // After upload, retrieve and return the download URL
+            return imageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            // Log the error or handle it as needed
+            e.printStackTrace()
+            return null
+        }
     }
 
     suspend fun getUserImage(): String? {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return null
-        val imageRef = storageReference.child("profileImages/$userId.jpg")
-        return imageRef.downloadUrl.await().toString()
+        val userId = firebaseAuth.currentUser?.uid ?: return null
+        val imageRef = storageReference.child("profileImages/$userId/profilePic.jpg")
+
+        return try {
+            // Directly return the download URL
+            imageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            // If there's an error (e.g., file not found), handle accordingly
+            e.printStackTrace()
+            null
+        }
     }
 }

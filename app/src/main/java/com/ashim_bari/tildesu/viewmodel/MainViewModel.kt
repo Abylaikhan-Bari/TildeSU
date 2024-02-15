@@ -16,6 +16,8 @@ class MainViewModel:ViewModel() {
 
     private val _userEmail = MutableLiveData<String?>()
     val userEmail: LiveData<String?> get() = _userEmail
+    private val _profileImageUrl = MutableLiveData<String?>()
+    val profileImageUrl: LiveData<String?> = _profileImageUrl
 
     fun getUserEmail() {
         viewModelScope.launch {
@@ -42,8 +44,7 @@ class MainViewModel:ViewModel() {
 //    }
 // Fetch profile image URL from ViewModel
 
-    private val _profileImageUrl = MutableLiveData<String?>()
-    val profileImageUrl: LiveData<String?> = _profileImageUrl
+
     init {
         fetchProfileImageUrl()
     }
