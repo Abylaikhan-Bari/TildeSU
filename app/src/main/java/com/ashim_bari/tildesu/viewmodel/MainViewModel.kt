@@ -44,12 +44,19 @@ class MainViewModel:ViewModel() {
 
     private val _profileImageUrl = MutableLiveData<String?>()
     val profileImageUrl: LiveData<String?> = _profileImageUrl
+    init {
+        fetchProfileImageUrl()
+    }
 
     // Function to upload a profile image and update the LiveData
     fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {
             val imageUrl = userRepository.uploadUserImage(uri)
             _profileImageUrl.value = imageUrl
+            val success = userRepository.uploadUserImage(uri)
+            if (success != null) {
+                fetchProfileImageUrl()
+            }
         }
     }
 
