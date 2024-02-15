@@ -2,9 +2,11 @@ package com.ashim_bari.tildesu.model.user
 
 import android.net.Uri
 import android.util.Log
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 
 class UserRepository {
@@ -71,26 +73,19 @@ class UserRepository {
         }
     }
 
+    private val storageReference = Firebase.storage.reference
+
     suspend fun uploadUserImage(uri: Uri): String? {
-        return try {
-            val currentUser = firebaseAuth.currentUser ?: return null
-            val uid = currentUser.uid
-            val imageRef = storageRef.child("images/$uid/profile.jpg")
-            imageRef.putFile(uri).await()
-            imageRef.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            null
-        }
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return null
+        val imageRef = storageReference.child("profileImages/$userId.jpg")
+
+        val uploadTask = imageRef.putFile(uri).await()
+        return uploadTask.storage.downloadUrl.await().toString()
     }
 
     suspend fun getUserImage(): String? {
-        return try {
-            val currentUser = firebaseAuth.currentUser ?: return null
-            val uid = currentUser.uid
-            val imageRef = storageRef.child("images/$uid/profile.jpg")
-            imageRef.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            null
-        }
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return null
+        val imageRef = storageReference.child("profileImages/$userId.jpg")
+        return imageRef.downloadUrl.await().toString()
     }
 }

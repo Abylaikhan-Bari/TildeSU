@@ -1,4 +1,11 @@
+import android.graphics.Bitmap
 import android.graphics.ColorFilter
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,8 +24,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.MainViewModel
 import kotlinx.coroutines.delay
@@ -33,7 +44,28 @@ fun ProfilePage(navController: NavHostController) {
     val userEmail by viewModel.userEmail.observeAsState()
     // State for showing logout confirmation dialog
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+    val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { viewModel.uploadProfileImage(it) }
+    }
 
+    // Fetch profile image URL from ViewModel
+    val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
+
+    // Other code remains the same
+
+    LaunchedEffect(imageUri) {
+        imageUri?.let {
+            if (Build.VERSION.SDK_INT < 28) {
+                bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+            } else {
+                val source = ImageDecoder.createSource(context.contentResolver, it)
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+            }
+        }
+    }
     // Call the function to fetch user email and possibly other user info like profile image URL
     LaunchedEffect(Unit) {
         viewModel.getUserEmail()
@@ -54,7 +86,10 @@ fun ProfilePage(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            ProfilePicture() // Placeholder for profile picture, can be expanded to show actual user profile image
+
+            ProfilePicture(profileImageUrl) {
+                launcher.launch("image/*")
+            }// Placeholder for profile picture, can be expanded to show actual user profile image
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -189,27 +224,23 @@ fun UpdatePasswordDialog(
     )
 }
 @Composable
-fun ProfilePicture(
-    onClick: () -> Unit = {}
-) {
+fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
+    // Display the profile image from URL or a placeholder
     Card(
         modifier = Modifier
             .size(120.dp)
             .clip(CircleShape)
-            .clickable(onClick = onClick), // Make the profile picture clickable if needed
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            // Displaying the default profile image
+        if (imageUrl != null) {
             Image(
-                painter = painterResource(id = R.drawable.default_profile_image), // Use your default image resource
+                painter = rememberAsyncImagePainter(imageUrl),
                 contentDescription = "Profile Picture",
                 modifier = Modifier.fillMaxSize()
             )
-
+        } else {
+            Text("Tap to select image", modifier = Modifier.padding(16.dp))
         }
     }
 }
