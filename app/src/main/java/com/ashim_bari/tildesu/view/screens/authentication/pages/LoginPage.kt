@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -33,18 +35,30 @@ import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginPage(
     navController: NavHostController,
     onNavigate: (AuthScreens) -> Unit,
-    viewModel: AuthenticationViewModel // Inject your AuthenticationViewModel
-) {
+    viewModel: AuthenticationViewModel,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
+)  {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
     var passwordVisibility by rememberSaveable { mutableStateOf(false) }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val passwordFocusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -66,7 +80,10 @@ fun LoginPage(
             onValueChange = { username = it },
             label = { Text("Email") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+            modifier = Modifier
+                .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -75,15 +92,26 @@ fun LoginPage(
             label = { Text("Password") },
             singleLine = true,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+//                    viewModel.login(username, password) { success ->
+//                        // Handle login success or failure
+//                    }
+                }
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(passwordFocusRequester), // Apply focusRequester modifier
             trailingIcon = {
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                     Icon(
                         imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                        contentDescription = "Toggle Password Visibility"
                     )
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
+            }
         )
 
         Row(
@@ -96,26 +124,22 @@ fun LoginPage(
         }
         Button(
             onClick = {
-                // Call login function from viewMod
-                viewModel.login(username, password) { success ->
+                coroutineScope.launch {
+                    val success = viewModel.login(username, password)
                     if (success) {
-                        // Login successful, navigate to next screen
-                        navController.navigate(Navigation.MAIN_ROUTE) // Replace "next_screen_route" with the actual route to navigate to
-                        authMessage = null
+                        snackbarHostState.showSnackbar("Login successful")
+                        navController.navigate(Navigation.MAIN_ROUTE)
                     } else {
-                        // Login failed, you can show an error message to the user
-                        // For example, you can update a state variable to display an error message
-
-                        authMessage = "Login failed. Please check your credentials."
+                        snackbarHostState.showSnackbar("Login failed. Please check your credentials.")
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+            modifier = Modifier.fillMaxWidth().height(50.dp)
         ) {
             Text("Login", color = Color.White)
         }
+
+
 
         Spacer(modifier = Modifier.height(24.dp))
         Row(

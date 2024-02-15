@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,12 +27,16 @@ import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ResetPasswordPage(
     navController: NavHostController,
     onNavigate: (AuthScreens) -> Unit,
-    viewModel: AuthenticationViewModel
+    viewModel: AuthenticationViewModel,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
@@ -62,27 +67,21 @@ fun ResetPasswordPage(
 
         Button(
             onClick = {
-                // Call resetPassword function from viewModel
-                viewModel.resetPassword(email) { success ->
+                coroutineScope.launch {
+                    val success = viewModel.resetPassword(email)
                     if (success) {
-                        // Reset password successful, you can navigate to the appropriate screen
-                        // For example, navigate to the LoginScreen
+                        snackbarHostState.showSnackbar("Reset password email sent successfully")
                         navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                        authMessage = null
                     } else {
-                        // Reset password failed, you can show an error message to the user
-                        // For example, you can update a state variable to display an error message
-
-                        authMessage = "Failed to reset password. Please try again."
+                        snackbarHostState.showSnackbar("Failed to reset password. Please try again.")
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+            modifier = Modifier.fillMaxWidth().height(50.dp)
         ) {
             Text("Confirm", color = Color.White)
         }
+
 
         Row(
             horizontalArrangement = Arrangement.Center,
