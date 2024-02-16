@@ -176,7 +176,12 @@ fun UpdatePasswordDialog(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
+            errorMessage = null // Reset the success message to hide it
+        }
+    }
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text("Update Password") },
