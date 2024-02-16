@@ -40,7 +40,6 @@ fun UsefulPage(navController: NavHostController, function: () -> Unit) {
             "Use the present simple tense to talk about permanent states or regular actions.",
             "Use the present simple tense to talk about permanent states or regular actions.",
             "Use the present simple tense to talk about permanent states or regular actions.",
-            "Use the present simple tense to talk about permanent states or regular actions.",
             "Use the present continuous tense to talk about actions happening now or around the current time.",
             "Use the present continuous tense to talk about actions happening now or around the current time.",
             "Use the present continuous tense to talk about actions happening now or around the current time.",
