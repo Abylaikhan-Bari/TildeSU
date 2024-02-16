@@ -95,7 +95,7 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
     val mainViewModel: MainViewModel = viewModel()
 
     when (currentScreen) {
-        MainScreens.Home -> HomePage(){}
+        MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage(){}
         MainScreens.Useful -> UsefulPage(navController){}
         MainScreens.Profile -> ProfilePage(navController)// Pass the ViewModel here
