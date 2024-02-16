@@ -44,7 +44,7 @@ fun ProfilePage(navController: NavHostController) {
     // Observe the user's email
     val userEmail by viewModel.userEmail.observeAsState()
     // State for showing logout confirmation dialog
-    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }

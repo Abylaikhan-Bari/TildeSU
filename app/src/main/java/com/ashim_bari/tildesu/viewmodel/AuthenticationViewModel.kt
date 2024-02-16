@@ -12,30 +12,21 @@ import kotlinx.coroutines.launch
 class AuthenticationViewModel : ViewModel() {
     private val userRepository = UserRepository()
 
-    private val _userEmail = MutableLiveData<String?>()
-    val userEmail: LiveData<String?> get() = _userEmail
 
 
-    fun register(email: String, password: String, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val result = userRepository.registerUser(email, password)
-            onComplete(result)
-        }
+
+
+    suspend fun login(email: String, password: String): Boolean {
+        return userRepository.loginUser(email, password)
+    }
+    suspend fun register(email: String, password: String): Boolean {
+        return userRepository.registerUser(email, password)
+    }
+    suspend fun resetPassword(email: String): Boolean {
+        return userRepository.resetPassword(email)
     }
 
-    fun login(email: String, password: String, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val result = userRepository.loginUser(email, password)
-            onComplete(result)
-        }
-    }
 
-    fun resetPassword(email: String, onComplete: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val result = userRepository.resetPassword(email)
-            onComplete(result)
-        }
-    }
 
 
 

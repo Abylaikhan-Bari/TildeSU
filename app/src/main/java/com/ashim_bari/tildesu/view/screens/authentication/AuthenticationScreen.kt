@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.authentication
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,7 +18,9 @@ import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPag
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
-
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.material3.Scaffold
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
     val configuration = LocalConfiguration.current
@@ -26,31 +29,36 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val scrollState = rememberScrollState()
 
     var currentScreen by rememberSaveable { mutableStateOf(AuthScreens.Login) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.fillMaxSize()
     ) {
-        BackHandler {
-            // Do nothing to prevent navigation when any screen is opened
-        }
-        Column(
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(padding)
+        Surface(
+            color = MaterialTheme.colorScheme.background
         ) {
-            Text(
-                text = "TildeSU",
-                style = MaterialTheme.typography.headlineMedium,
+            BackHandler {
+                // Handle back action, if necessary
+            }
+            Column(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = padding, bottom = 40.dp)
-            )
+                    .verticalScroll(scrollState)
+                    .padding(padding)
+            ) {
+                Text(
+                    "TildeSU",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = padding, bottom = 40.dp)
+                )
 
-            when (currentScreen) {
-                AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel)
-                AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel)
-                AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel)
+                when (currentScreen) {
+                    AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                    AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                    AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                }
             }
         }
     }
