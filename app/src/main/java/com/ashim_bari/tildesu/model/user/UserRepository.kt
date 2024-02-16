@@ -13,6 +13,10 @@ class UserRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
     private val storageRef: StorageReference = storage.reference
+
+    fun isLoggedIn(): Boolean {
+        return firebaseAuth.currentUser != null
+    }
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()

@@ -23,7 +23,7 @@ class Navigation {
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Navigation.AUTHENTICATION_ROUTE) {
+    NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             // Obtain ViewModel scoped to the NavHostController
             val authViewModel: AuthenticationViewModel = viewModel()

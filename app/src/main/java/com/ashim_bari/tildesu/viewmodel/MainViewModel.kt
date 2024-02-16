@@ -18,7 +18,16 @@ class MainViewModel:ViewModel() {
     val userEmail: LiveData<String?> get() = _userEmail
     private val _profileImageUrl = MutableLiveData<String?>()
     val profileImageUrl: LiveData<String?> = _profileImageUrl
+    private val _isLoggedIn = MutableLiveData<Boolean>()
+    val isLoggedIn: LiveData<Boolean> = _isLoggedIn
 
+    init {
+        checkUserLoggedIn()
+    }
+
+    private fun checkUserLoggedIn() {
+        _isLoggedIn.value = userRepository.isLoggedIn()
+    }
     fun getUserEmail() {
         viewModelScope.launch {
             userRepository.getUserEmail { email ->
