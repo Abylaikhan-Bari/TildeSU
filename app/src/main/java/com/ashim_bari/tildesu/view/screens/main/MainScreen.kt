@@ -19,7 +19,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.MainViewModel
 
 
@@ -27,7 +30,21 @@ import com.ashim_bari.tildesu.viewmodel.MainViewModel
 @Composable
 fun MainScreen(navController: NavHostController) {
     var currentMainScreen by rememberSaveable { mutableStateOf(MainScreens.Home) }
+    val mainViewModel: MainViewModel = viewModel()
+    val isLoggedIn by mainViewModel.isLoggedIn.observeAsState()
 
+    // This will trigger when isLoggedIn changes its value.
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn == false) {
+            // Navigate to AuthenticationScreen if the user is not logged in
+            navController.navigate(Navigation.AUTHENTICATION_ROUTE) {
+                // Remove all entries from the back stack up to the authentication route
+                // and launch the authentication route as a single top instance
+                popUpTo("main") { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
     // Define Bottom Navigation Items
     val bottomItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, MainScreens.Home),
