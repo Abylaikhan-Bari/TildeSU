@@ -96,9 +96,6 @@ fun LoginPage(
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-//                    viewModel.login(username, password) { success ->
-//                        // Handle login success or failure
-//                    }
                 }
             ),
             modifier = Modifier
