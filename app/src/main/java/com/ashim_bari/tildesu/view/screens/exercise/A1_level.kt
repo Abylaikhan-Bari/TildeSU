@@ -4,42 +4,35 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.viewmodel.ExerciseViewModel
+import com.ashim_bari.tildesu.viewmodel.ExerciseViewModelFactory
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun A1_Level(navController: NavHostController) {
-    // This should be the actual quiz state management logic.
-    // For demonstration, using a simple counter.
-    var currentQuestion by rememberSaveable { mutableStateOf(1) }
-    val totalQuestions = 15
-    val isLastQuestion = currentQuestion == totalQuestions
+fun A1_Level(navController: NavHostController, exerciseViewModelFactory: ExerciseViewModelFactory) {
+    // Obtain the ExerciseViewModel from the factory
+    val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
+
+    // Call loadExercises once when the composable enters the composition
+    LaunchedEffect(key1 = "loadExercises") {
+        exerciseViewModel.loadExercisesForLevel("A1")
+    }
+
+    // Observe the exercises LiveData from the ViewModel
+    val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Course (Quiz ${currentQuestion})", fontSize = 18.sp)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                navigationIcon = {
-                    IconButton(onClick = { /* Handle back action */ }) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Close,
-//                            contentDescription = "Close"
-//                        )
-                    }
-                },
-                actions = {
-                    // Place actions if needed
-                }
-            )
+            // TopAppBar code
+            // ...
         }
     ) { innerPadding ->
         Column(
@@ -49,59 +42,27 @@ fun A1_Level(navController: NavHostController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Quiz content goes here
-            Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            // Dynamic question/answer UI based on the current question
-            // For demonstration, placeholders are used here
-            BasicText(text = "Question content...")
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Options
-            Column {
-                ('A'..'D').forEach { option ->
+            // Iterate over each exercise and display its content
+            exercises.value.forEach { exercise ->
+                Text(
+                    text = exercise.question,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                exercise.options.forEachIndexed { index, option ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     ) {
-                        RadioButton(
-                            selected = false,
-                            onClick = { /* Handle option select */ }
+
+                        Text(
+                            text = "Option ${index + 1}: $option",
+                            modifier = Modifier.padding(start = 8.dp)
                         )
-                        Text(text = "$option. Lorem Ipsum", modifier = Modifier.padding(start = 8.dp))
                     }
                 }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Progress indicator
-            Text(
-                text = "$currentQuestion of $totalQuestions",
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Continue/Finish button
-            Button(
-                onClick = {
-                    if (!isLastQuestion) {
-                        currentQuestion++
-                    } else {
-                        // Handle finish action
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            ) {
-                Text(text = if (!isLastQuestion) "Continue" else "Finish")
+                Divider(Modifier.padding(vertical = 8.dp))
             }
         }
     }

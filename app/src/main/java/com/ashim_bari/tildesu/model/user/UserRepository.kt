@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
@@ -12,19 +13,33 @@ import kotlinx.coroutines.tasks.await
 class UserRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val storage: FirebaseStorage = FirebaseStorage.getInstance()
-    private val storageRef: StorageReference = storage.reference
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun isLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
-            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            true // Return true for successful registration
+            val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            val userId = authResult.user?.uid ?: throw IllegalStateException("User ID cannot be null")
+            createUserProfile(userId, email)
+            true
         } catch (e: Exception) {
-            false // Return false if registration fails
+            Log.e("RegisterUser", "Registration failed", e)
+            false
         }
     }
+
+    private suspend fun createUserProfile(userId: String, email: String) {
+        val user = mapOf(
+            "email" to email,
+            "completedExercises" to listOf<String>()
+            // Add other profile information as needed
+        )
+        firestore.collection("users").document(userId).set(user).await()
+    }
+
+
 
     suspend fun loginUser(email: String, password: String): Boolean {
         return try {
@@ -57,15 +72,7 @@ class UserRepository {
         onComplete(currentUser?.email)
     }
 
-//    suspend fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
-//        try {
-//            firebaseAuth.currentUser?.verifyBeforeUpdateEmail(newEmail)?.await()
-//            onComplete(true)
-//        } catch (e: Exception) {
-//            Log.e("UpdateEmail", "Failed to update email", e)
-//            onComplete(false)
-//        }
-//    }
+
 
 
     suspend fun updatePassword(newPassword: String): Boolean {

@@ -144,7 +144,7 @@ fun RegisterPage(
                         val success = viewModel.register(email, password)
                         if (success) {
                             snackbarHostState.showSnackbar("Registration successful")
-                            navController.navigate(Navigation.MAIN_ROUTE)
+                            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
                         } else {
                             snackbarHostState.showSnackbar("Registration failed. Please try again.")
                         }
