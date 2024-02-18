@@ -9,63 +9,52 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
-    private val _exercises = MutableLiveData<List<Exercise>?>()
-    val exercises: MutableLiveData<List<Exercise>?> = _exercises
+    private val _exercises = MutableLiveData<List<Exercise>?>(emptyList())
+    val exercises: LiveData<List<Exercise>?> = _exercises
 
     private val _currentQuestionIndex = MutableLiveData(0)
     val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
 
     private val _score = MutableLiveData(0)
     val score: LiveData<Int> = _score
+
     private val _quizCompleted = MutableLiveData<Boolean>(false)
     val quizCompleted: LiveData<Boolean> = _quizCompleted
 
     private val _totalCorrectAnswers = MutableLiveData<Int>(0)
     val totalCorrectAnswers: LiveData<Int> = _totalCorrectAnswers
-    init {
-        loadExercisesForLevel("A1")
-//        loadExercisesForLevel("A2")
-//        loadExercisesForLevel("B1")
-//        loadExercisesForLevel("B2")
-//        loadExercisesForLevel("C1")
-//        loadExercisesForLevel("C2")
-    }
 
     fun loadExercisesForLevel(level: String) {
         viewModelScope.launch {
-            _exercises.value = repository.getExercisesByLevel(level)
+            // You might want to handle any potential exceptions here
+            val exercisesList = repository.getExercisesByLevel(level)
+            _exercises.value = exercisesList
+            _currentQuestionIndex.value = 0 // Reset the index whenever loading new exercises
+            _score.value = 0 // Reset the score
+            _quizCompleted.value = false // Reset quiz completion status
+            _totalCorrectAnswers.value = 0 // Reset total correct answers
         }
     }
 
     fun submitAnswer(selectedOption: Int) {
-        val currentQuestion = _exercises.value?.get(_currentQuestionIndex.value ?: 0) ?: return
+        val currentQuestion = exercises.value?.getOrNull(currentQuestionIndex.value ?: 0) ?: return
         if (selectedOption == currentQuestion.correctOption) {
-            _score.value = _score.value?.plus(1)
+            _score.value = (_score.value ?: 0) + 1
+            _totalCorrectAnswers.value = (_totalCorrectAnswers.value ?: 0) + 1
         }
-        // Update the current question with the user's selected option for UI feedback
-        val updatedExercises = _exercises.value?.toMutableList()
-        updatedExercises?.set(_currentQuestionIndex.value ?: 0, currentQuestion.copy(userSelectedOption = selectedOption))
-        _exercises.value = updatedExercises
+        moveToNextQuestion()
     }
 
     fun moveToNextQuestion() {
         val nextIndex = (_currentQuestionIndex.value ?: 0) + 1
-        if (nextIndex < (_exercises.value?.size ?: 0)) {
+        if (nextIndex < (exercises.value?.size ?: 0)) {
             _currentQuestionIndex.value = nextIndex
         } else {
             _quizCompleted.value = true // Quiz is completed
         }
     }
-
-//    fun submitAnswer(selectedOption: Int) {
-//        val currentQuestion = _exercises.value?.get(_currentQuestionIndex.value ?: 0) ?: return
-//        if (selectedOption == currentQuestion.correctOption) {
-//            _score.value = _score.value?.plus(1)
-//            _totalCorrectAnswers.value = _totalCorrectAnswers.value?.plus(1)
-//        }
-//        // Proceed with updating the current question's userSelectedOption as before
-//    }
 }
+
 
 
 
