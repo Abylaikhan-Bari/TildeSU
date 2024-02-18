@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.view.screens.exercise
+package com.ashim_bari.tildesu.view.screens.exercise.pages
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

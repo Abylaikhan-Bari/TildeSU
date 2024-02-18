@@ -31,7 +31,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 //        loadExercisesForLevel("C2")
     }
 
-    private fun loadExercisesForLevel(level: String) {
+    fun loadExercisesForLevel(level: String) {
         viewModelScope.launch {
             _exercises.value = repository.getExercisesByLevel(level)
         }

@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.view.screens.exercise
+package com.ashim_bari.tildesu.view.screens.exercise.pages
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,7 +16,7 @@ import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun C1_Level(navController: NavHostController, exerciseViewModelFactory: ExerciseViewModelFactory) {
+fun B1_Level(navController: NavHostController, exerciseViewModelFactory: ExerciseViewModelFactory) {
     // Obtain the ExerciseViewModel from the factory
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
@@ -31,7 +31,7 @@ fun C1_Level(navController: NavHostController, exerciseViewModelFactory: Exercis
         topBar = {
             // Here, the TopAppBar is implemented to display "A1 Level"
             TopAppBar(
-                title = { Text("C1 деңгейі") }
+                title = { Text("B1 деңгейі") }
             )
         }
     ) { innerPadding ->

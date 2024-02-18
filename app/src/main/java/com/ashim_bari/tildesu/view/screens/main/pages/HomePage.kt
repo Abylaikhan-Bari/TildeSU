@@ -19,41 +19,33 @@ fun HomePage(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            // Define button texts and their intended alignments
             val buttons = listOf(
-                "A1 деңгейі" to "a1_level",
-                "A2 деңгейі" to "a2_level",
-                "B1 деңгейі" to "b1_level",
-                "B2 деңгейі" to "b2_level",
-                "C1 деңгейі" to "c1_level",
-                "C2 деңгейі" to "c2_level"
+                "A1 Level" to "exercise/A1",
+                "A2 Level" to "exercise/A2",
+                "B1 Level" to "exercise/B1",
+                "B2 Level" to "exercise/B2",
+                "C1 Level" to "exercise/C1",
+                "C2 Level" to "exercise/C2"
             )
 
-            buttons.forEachIndexed { index, (text, route) ->
-                Row(
+            buttons.forEach { (text, route) ->
+                Button(
+                    onClick = { navController.navigate(route) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = if (index % 2 == 0) Arrangement.Start else Arrangement.End
+                        .padding(vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
-                    Button(
-                        onClick = { navController.navigate(route) },
-                        modifier = Modifier.width(200.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+                    Text(text, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
     }
 }
+
 
 
 
