@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.view.navigation
 
 import MainScreen
+import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,7 +12,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
-import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 class Navigation {
