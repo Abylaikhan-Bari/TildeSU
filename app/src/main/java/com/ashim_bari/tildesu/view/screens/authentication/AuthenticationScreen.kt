@@ -17,8 +17,7 @@ import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
-import androidx.compose.runtime.livedata.observeAsState
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material3.Scaffold
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

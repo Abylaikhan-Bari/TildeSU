@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.viewmodel
+package com.ashim_bari.tildesu.viewmodel.exercise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

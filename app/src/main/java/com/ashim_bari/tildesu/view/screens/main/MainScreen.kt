@@ -23,7 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.view.navigation.Navigation
-import com.ashim_bari.tildesu.viewmodel.MainViewModel
+import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.viewmodel
+package com.ashim_bari.tildesu.viewmodel.authentication
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

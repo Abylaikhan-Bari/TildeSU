@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.viewmodel
+package com.ashim_bari.tildesu.viewmodel.main
 
 import android.net.Uri
 import androidx.lifecycle.LiveData

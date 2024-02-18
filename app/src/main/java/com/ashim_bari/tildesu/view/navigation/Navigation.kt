@@ -12,12 +12,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
-import com.ashim_bari.tildesu.viewmodel.ExerciseViewModel
-import com.ashim_bari.tildesu.viewmodel.ExerciseViewModelFactory
-import com.ashim_bari.tildesu.viewmodel.MainViewModel
+import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 class Navigation {
     companion object {
@@ -38,6 +36,7 @@ class Navigation {
 fun NavigationGraph(navController: NavHostController) {
     val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
     val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
+
     NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             // Obtain ViewModel scoped to the NavHostController
