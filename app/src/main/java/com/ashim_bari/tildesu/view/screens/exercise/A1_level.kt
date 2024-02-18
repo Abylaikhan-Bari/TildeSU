@@ -20,81 +20,91 @@ fun A1_Level(navController: NavHostController, exerciseViewModelFactory: Exercis
     // Obtain the ExerciseViewModel from the factory
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
-    // Observe the current question index from the ViewModel
+    // Observe the necessary LiveData from the ViewModel
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState()
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val selectedOption = remember { mutableStateOf(-1) }
+    val quizCompleted = exerciseViewModel.quizCompleted.observeAsState(false)
+    val totalCorrectAnswers = exerciseViewModel.totalCorrectAnswers.observeAsState(0)
 
     Scaffold(
         topBar = {
             // Here, the TopAppBar is implemented to display "A1 Level"
             TopAppBar(
-                title = { Text("A1 Level") }
+                title = { Text("A1 деңгейі") }
             )
         }
     ) { innerPadding ->
-        exercises.value?.let { exerciseList ->
-            if (exerciseList.isNotEmpty() && currentQuestionIndex.value != null && currentQuestionIndex.value!! < exerciseList.size) {
-                val exercise = exerciseList[currentQuestionIndex.value!!]
+        if (quizCompleted.value) {
+            // Show quiz completion screen with results
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Жаттығу аяқталды!", fontWeight = FontWeight.Bold)
+                Text("Сіздің нәтижеңіз: ${totalCorrectAnswers.value} / ${exercises.value?.size}", fontWeight = FontWeight.Bold)
+                Button(onClick = { /* Handle navigation or quiz reset */ }) {
+                    Text("Back to Home")
+                }
+            }
+        } else {
+            exercises.value?.let { exerciseList ->
+                if (exerciseList.isNotEmpty() && currentQuestionIndex.value != null) {
+                    val exercise = exerciseList[currentQuestionIndex.value!!]
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = exercise.question,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = exercise.question,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
 
-                    // Radio buttons for options
-                    exercise.options.forEachIndexed { index, option ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .clickable { selectedOption.value = index },
-                            verticalAlignment = Alignment.CenterVertically
+                        // Radio buttons for options
+                        exercise.options.forEachIndexed { index, option ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clickable { selectedOption.value = index },
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = selectedOption.value == index,
+                                    onClick = { selectedOption.value = index }
+                                )
+                                Text(
+                                    text = option,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = {
+                                exerciseViewModel.submitAnswer(selectedOption.value)
+                                exerciseViewModel.moveToNextQuestion()
+                                selectedOption.value = -1 // Reset selection for the next question
+                            },
+                            enabled = selectedOption.value != -1, // Enable the button only if an option is selected
+                            modifier = Modifier.padding(top = 16.dp)
                         ) {
-                            RadioButton(
-                                selected = selectedOption.value == index,
-                                onClick = { selectedOption.value = index }
-                            )
-                            Text(
-                                text = option,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
+                            Text("Next")
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = {
-                            exerciseViewModel.submitAnswer(selectedOption.value)
-                            exerciseViewModel.moveToNextQuestion()
-                            selectedOption.value = -1 // Reset selection for the next question
-                        },
-                        enabled = selectedOption.value != -1, // Enable the button only if an option is selected
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        Text("Next")
-                    }
-                }
-            } else {
-                // Show quiz completion or a loading state
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Quiz Completed!", fontWeight = FontWeight.Bold)
-                    // Optionally, navigate to a results screen or back to the main menu
+                } else {
+                    // This else block might not be necessary if quiz completion logic is handled above
                 }
             }
         }

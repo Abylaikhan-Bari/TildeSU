@@ -48,22 +48,22 @@ fun NavigationGraph(navController: NavHostController) {
         }
 
         composable(Navigation.A1_LEVEL) {
-            A1_Level(navController = navController, exerciseViewModelFactory = exerciseViewModelFactory)
+            A1_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
         composable(Navigation.A2_LEVEL) {
-            A2_Level(navController)
+            A2_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
         composable(Navigation.B1_LEVEL) {
-            B1_Level(navController)
+            B1_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
         composable(Navigation.B2_LEVEL) {
-            B2_Level(navController)
+            B2_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
         composable(Navigation.C1_LEVEL) {
-            C1_Level(navController)
+            C1_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
         composable(Navigation.C2_LEVEL) {
-            C2_Level(navController)
+            C2_Level(navController, exerciseViewModelFactory = exerciseViewModelFactory)
         }
     }
 }

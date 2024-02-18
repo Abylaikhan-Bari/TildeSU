@@ -17,12 +17,21 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
     private val _score = MutableLiveData(0)
     val score: LiveData<Int> = _score
+    private val _quizCompleted = MutableLiveData<Boolean>(false)
+    val quizCompleted: LiveData<Boolean> = _quizCompleted
 
+    private val _totalCorrectAnswers = MutableLiveData<Int>(0)
+    val totalCorrectAnswers: LiveData<Int> = _totalCorrectAnswers
     init {
         loadExercisesForLevel("A1")
+//        loadExercisesForLevel("A2")
+//        loadExercisesForLevel("B1")
+//        loadExercisesForLevel("B2")
+//        loadExercisesForLevel("C1")
+//        loadExercisesForLevel("C2")
     }
 
-    fun loadExercisesForLevel(level: String) {
+    private fun loadExercisesForLevel(level: String) {
         viewModelScope.launch {
             _exercises.value = repository.getExercisesByLevel(level)
         }
@@ -44,9 +53,18 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         if (nextIndex < (_exercises.value?.size ?: 0)) {
             _currentQuestionIndex.value = nextIndex
         } else {
-            // Handle quiz completion
+            _quizCompleted.value = true // Quiz is completed
         }
     }
+
+//    fun submitAnswer(selectedOption: Int) {
+//        val currentQuestion = _exercises.value?.get(_currentQuestionIndex.value ?: 0) ?: return
+//        if (selectedOption == currentQuestion.correctOption) {
+//            _score.value = _score.value?.plus(1)
+//            _totalCorrectAnswers.value = _totalCorrectAnswers.value?.plus(1)
+//        }
+//        // Proceed with updating the current question's userSelectedOption as before
+//    }
 }
 
 
