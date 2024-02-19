@@ -15,11 +15,12 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:enableOnBackInvokedCallback="true"
-        android:screenOrientation="portrait"
+
         android:theme="@style/Theme.TildeSU"
         tools:targetApi="tiramisu">
         <activity
             android:name=".view.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Theme.TildeSU">
             <intent-filter>
