@@ -96,7 +96,7 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
 
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
-        MainScreens.Dashboard -> DashboardPage(){}
+        MainScreens.Dashboard -> DashboardPage(mainViewModel)
         MainScreens.Useful -> UsefulPage(navController){}
         MainScreens.Profile -> ProfilePage(navController)// Pass the ViewModel here
     }

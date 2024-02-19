@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.viewmodel.main
 
 import android.net.Uri
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,7 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.model.user.UserRepository
 import com.ashim_bari.tildesu.view.navigation.Navigation
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainViewModel:ViewModel() {
 
@@ -20,6 +24,11 @@ class MainViewModel:ViewModel() {
     val profileImageUrl: LiveData<String?> = _profileImageUrl
     private val _isLoggedIn = MutableLiveData<Boolean>()
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
+    // Inside MainViewModel
+    private val _progressData = MutableLiveData<Map<String, Float>>()
+    val progressData: LiveData<Map<String, Float>> = _progressData
+
+
 
     init {
         checkUserLoggedIn()
@@ -45,15 +54,17 @@ class MainViewModel:ViewModel() {
         }
     }
 
-//    fun updateEmail(newEmail: String, onComplete: (Boolean) -> Unit) {
-//        viewModelScope.launch {
-//            val success = userRepository.updateEmail(newEmail)
-//            onComplete(success)
-//        }
-//    }
-// Fetch profile image URL from ViewModel
 
-
+    fun loadUserProgress() {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                // Fetch progress data from repository and update LiveData
+                val userProgress = userRepository.getUserProgress(userId)
+                _progressData.value = userProgress
+            }
+        }
+    }
     init {
         fetchProfileImageUrl()
     }
@@ -71,7 +82,7 @@ class MainViewModel:ViewModel() {
     }
 
     // Function to fetch and display the profile image URL
-    fun fetchProfileImageUrl() {
+    private fun fetchProfileImageUrl() {
         viewModelScope.launch {
             val imageUrl = userRepository.getUserImage()
             _profileImageUrl.value = imageUrl
