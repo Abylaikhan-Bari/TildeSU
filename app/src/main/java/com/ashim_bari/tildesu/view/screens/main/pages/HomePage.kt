@@ -1,3 +1,5 @@
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -7,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun HomePage(navController: NavHostController) {
@@ -49,8 +52,11 @@ fun HomePage(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CardComponent(level: String, route: String, navController: NavHostController) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
     Card(
         onClick = { navController.navigate(route) },
         modifier = Modifier
@@ -62,12 +68,14 @@ fun CardComponent(level: String, route: String, navController: NavHostController
             contentAlignment = Alignment.Center,
             modifier = Modifier.padding(16.dp) // Add padding inside the card for the text
         ) {
-            // Updated Text style for emphasis
-            Text(
-                text = level,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            // Use AnimatedContent to animate text changes
+            AnimatedContent(targetState = level, label = "") { targetLevel ->
+                Text(
+                    text = targetLevel,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }

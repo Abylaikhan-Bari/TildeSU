@@ -1,8 +1,11 @@
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,6 +34,9 @@ fun ExerciseScreen(
     // Remember the level when the screen is created
     val currentLevel by rememberSaveable { mutableStateOf(level) }
 
+    // State variable to track if the confirmation dialog is shown
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevel(level)
     }
@@ -41,12 +47,31 @@ fun ExerciseScreen(
     var selectedOption by rememberSaveable { mutableStateOf(-1) } // Use rememberSaveable for the selected option
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
 
+    // Function to show the confirmation dialog
+    fun showConfirmationDialog() {
+        showDialog = true
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Level $currentLevel") }, // Use the currentLevel here
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary))
+            TopAppBar(
+                title = { Text("Exercise - Level $currentLevel") }, // Display level information in the app bar title
+                navigationIcon = {
+                    if (!quizCompleted) {
+                        IconButton(
+                            onClick = { showConfirmationDialog() } // Show confirmation dialog when back button is clicked
+                        ) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back") // Icon for going back
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+            )
         }
     ) { paddingValues ->
+        BackHandler {
+            // Do nothing to prevent navigation when any screen is opened
+        }
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -61,9 +86,13 @@ fun ExerciseScreen(
             ) {
                 if (quizCompleted) {
                     Text("Quiz Completed!", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
-                    Button(onClick = { navController.navigate("main") },
-                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally),) {
-                        Text("Go to Home Page")
+                    Card(
+                        onClick = { navController.navigate("main") },
+                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("Go to Home Page", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
                     }
                     Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
                         Alignment.CenterHorizontally))
@@ -102,5 +131,31 @@ fun ExerciseScreen(
                 }
             }
         }
+    }
+
+    // Confirmation Dialog
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmation") },
+            text = { Text("Are you sure you want to go back to the main screen?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                        navController.navigate("main")
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("No")
+                }
+            }
+        )
     }
 }
