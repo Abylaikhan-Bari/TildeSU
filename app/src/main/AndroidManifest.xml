@@ -19,6 +19,7 @@
         <activity
             android:name=".view.MainActivity"
             android:screenOrientation="portrait"
+            android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:theme="@style/Theme.TildeSU">
             <intent-filter>

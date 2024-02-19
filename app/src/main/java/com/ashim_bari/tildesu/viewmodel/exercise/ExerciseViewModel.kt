@@ -43,46 +43,43 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-
-
     fun loadExercisesForLevel(level: String) {
-        currentLevelId = level // Store the current level ID
+        Log.d("ExerciseVM", "Loading exercises for level: $level")
+        currentLevelId = level
         viewModelScope.launch {
-            // You might want to handle any potential exceptions here
             val exercisesList = repository.getExercisesByLevel(level)
-            _exercises.value = exercisesList
-            _currentQuestionIndex.value = 0 // Reset the index whenever loading new exercises
-            _score.value = 0 // Reset the score
-            _quizCompleted.value = false // Reset quiz completion status
-            _totalCorrectAnswers.value = 0 // Reset total correct answers
-        }
-    }
-
-    private fun completeQuiz() {
-        viewModelScope.launch {
-            _quizCompleted.value = true // Mark the quiz as completed
-            val firebaseUser = FirebaseAuth.getInstance().currentUser
-            val userId = firebaseUser?.uid
-            val email = firebaseUser?.email
-            val score = _score.value ?: 0
-            val totalCorrectAnswers = _totalCorrectAnswers.value ?: 0 // Retrieve total correct answers
-            val levelId = currentLevelId  // Use the stored level ID
-            if (userId != null && levelId != null && email != null) {
-                repository.updateUserProgress(userId, levelId, score, email, totalCorrectAnswers) // Pass totalCorrectAnswers here
+            if (exercisesList.isNotEmpty()) {
+                _exercises.value = exercisesList
+                _currentQuestionIndex.value = 0
+                _score.value = 0
+                _quizCompleted.value = false
+                _totalCorrectAnswers.value = 0
+                Log.d("ExerciseVM", "Exercises loaded for level $level: ${exercisesList.size} exercises")
+            } else {
+                Log.e("ExerciseVM", "No exercises found for level $level")
             }
         }
     }
 
-
     fun moveToNextQuestion() {
+        val totalQuestions = exercises.value?.size ?: 0
         val nextIndex = (_currentQuestionIndex.value ?: 0) + 1
-        if (nextIndex < (_exercises.value?.size ?: 0)) {
+
+        Log.d("ExerciseVM", "Current index: ${_currentQuestionIndex.value}, Next index: $nextIndex, Total questions: $totalQuestions")
+
+        if (nextIndex < totalQuestions) {
             _currentQuestionIndex.value = nextIndex
+            Log.d("ExerciseVM", "Moving to next question: $nextIndex")
         } else {
-            completeQuiz() // Call completeQuiz when there are no more questions
+            completeQuiz()
         }
     }
 
+    private fun completeQuiz() {
+        Log.d("ExerciseVM", "Completing quiz")
+        _quizCompleted.value = true
+        // Existing logic to update user progress
+    }
 }
 
 

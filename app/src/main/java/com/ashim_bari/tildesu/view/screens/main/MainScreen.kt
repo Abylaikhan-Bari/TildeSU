@@ -1,3 +1,8 @@
+package com.ashim_bari.tildesu.view.screens.main
+import DashboardPage
+import HomePage
+import ProfilePage
+import UsefulPage
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
@@ -135,7 +140,7 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage(mainViewModel)
-        MainScreens.Useful -> UsefulPage(navController){}
+        MainScreens.Useful -> UsefulPage(navController) {}
         MainScreens.Profile -> ProfilePage(navController)// Pass the ViewModel here
     }
 }

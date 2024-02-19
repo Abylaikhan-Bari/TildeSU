@@ -1,11 +1,12 @@
+package com.ashim_bari.tildesu.view.screens.exercise
+
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -14,8 +15,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -29,41 +28,39 @@ fun ExerciseScreen(
     navController: NavController,
     exerciseViewModelFactory: ExerciseViewModelFactory,
     level: String,
-    navBackStackEntry: NavBackStackEntry? = null // Pass NavBackStackEntry as a parameter
+    navBackStackEntry: NavBackStackEntry? = null
 ) {
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
-    // Remember the level when the screen is created
     val currentLevel by rememberSaveable { mutableStateOf(level) }
-
-    // State variable to track if the confirmation dialog is shown
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(key1 = level) {
+        Log.d("ExerciseScreen", "LaunchedEffect triggered for level: $level")
         exerciseViewModel.loadExercisesForLevel(level)
     }
 
-    // Use rememberSaveable for state variables
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
-    var selectedOption by rememberSaveable { mutableStateOf(-1) } // Use rememberSaveable for the selected option
+    var selectedOption by rememberSaveable { mutableStateOf(-1) }
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
 
-    // Function to show the confirmation dialog
     fun showConfirmationDialog() {
         showDialog = true
     }
 
+    Log.d("ExerciseScreen", "Composing ExerciseScreen, Current Level: $currentLevel, Current Question Index: $currentQuestionIndex, Quiz Completed: $quizCompleted")
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Exercise - Level $currentLevel") }, // Display level information in the app bar title
+                title = { Text("Exercise - Level $currentLevel") },
                 navigationIcon = {
                     if (!quizCompleted) {
                         IconButton(
-                            onClick = { showConfirmationDialog() } // Show confirmation dialog when back button is clicked
+                            onClick = { showConfirmationDialog() }
                         ) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back") // Icon for going back
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Go Back")
                         }
                     }
                 },
@@ -72,13 +69,13 @@ fun ExerciseScreen(
         }
     ) { paddingValues ->
         BackHandler {
-            // Do nothing to prevent navigation when any screen is opened
+            Log.d("ExerciseScreen", "BackHandler triggered")
         }
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                //.verticalScroll(rememberScrollState()) // Add vertical scroll modifier here
+            //.verticalScroll(rememberScrollState()) // Add vertical scroll modifier here
         ) {
             Column(
                 modifier = Modifier
@@ -86,7 +83,13 @@ fun ExerciseScreen(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center // Center the content vertically
             ) {
+                // Log action: Checking quiz completion
+                Log.d("ExerciseScreen", "Checking quiz completion")
+
                 if (quizCompleted) {
+                    // Log action: Quiz completed
+                    Log.d("ExerciseScreen", "Quiz completed")
+
                     Text("Quiz Completed!", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
@@ -103,7 +106,7 @@ fun ExerciseScreen(
                     }
                     Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
                         Alignment.CenterHorizontally))
-                } else if (exercises != null && exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
+                } else if (!exercises.isNullOrEmpty() && currentQuestionIndex < exercises.size) {
                     val currentExercise = exercises[currentQuestionIndex]
                     Text(text = currentExercise.question, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp))
 
@@ -127,7 +130,7 @@ fun ExerciseScreen(
                     }
 
 
-                Button(
+                    Button(
                         onClick = {
                             exerciseViewModel.submitAnswer(selectedOption)
                             exerciseViewModel.moveToNextQuestion()
@@ -171,6 +174,7 @@ fun ExerciseScreen(
         )
     }
 }
+
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifier, onSelect: () -> Unit) {
     Card(
