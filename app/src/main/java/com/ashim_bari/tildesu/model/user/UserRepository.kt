@@ -38,22 +38,22 @@ class UserRepository {
         firestore.collection("users").document(userId).set(user).await()
     }
 
-    suspend fun updateUserProgress(exerciseId: String, score: Int): Boolean {
-        val userId = firebaseAuth.currentUser?.uid ?: return false
-        return try {
-            val userProgress = mapOf(
-                "score" to score,
-                "completedOn" to System.currentTimeMillis() // Timestamp of completion
-            )
-            // Assuming a subcollection "progress" under each user document for detailed tracking
-            firestore.collection("users").document(userId)
-                .collection("progress").document(exerciseId).set(userProgress).await()
-            true
-        } catch (e: Exception) {
-            Log.e("updateUserProgress", "Failed to update progress", e)
-            false
-        }
-    }
+//    suspend fun updateUserProgress(exerciseId: String, score: Int): Boolean {
+//        val userId = firebaseAuth.currentUser?.uid ?: return false
+//        return try {
+//            val userProgress = mapOf(
+//                "score" to score,
+//                "completedOn" to System.currentTimeMillis() // Timestamp of completion
+//            )
+//            // Assuming a subcollection "progress" under each user document for detailed tracking
+//            firestore.collection("users").document(userId)
+//                .collection("progress").document(exerciseId).set(userProgress).await()
+//            true
+//        } catch (e: Exception) {
+//            Log.e("updateUserProgress", "Failed to update progress", e)
+//            false
+//        }
+//    }
 
 
     suspend fun loginUser(email: String, password: String): Boolean {

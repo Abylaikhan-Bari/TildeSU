@@ -5,6 +5,7 @@ data class Exercise(
     val level: String = "",
     val question: String = "",
     val options: List<String> = listOf(),
-    val correctOption: Int = -1,
-    var userSelectedOption: Int = -1 // New property to track user's selection
+    val correctOptionIndex: Int = -1, // Ensure this matches Firestore field
+    var userSelectedOption: Int = -1 // To track user's selection
 )
+

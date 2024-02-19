@@ -14,16 +14,18 @@ class ExerciseRepository {
             .toObjects(Exercise::class.java)
     }
 
-    suspend fun updateUserProgress(userId: String, level: String, score: Int, email: String) {
+    suspend fun updateUserProgress(userId: String, level: String, score: Int, email: String, totalCorrectAnswers: Int) {
         val userProgress = mapOf(
             "score" to score,
-            "email" to email,  // Include the user's email
-            "completedOn" to FieldValue.serverTimestamp() // Use Firestore server timestamp
+            "email" to email,
+            "totalCorrectAnswers" to totalCorrectAnswers,
+            "completedOn" to FieldValue.serverTimestamp()
         )
         db.collection("users").document(userId).collection("progress").document(level)
             .set(userProgress)
             .await()
     }
+
 }
 
 

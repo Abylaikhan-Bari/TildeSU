@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.viewmodel.exercise
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,13 +29,21 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private var currentLevelId: String? = null
 
     fun submitAnswer(selectedOption: Int) {
-        val currentQuestion = exercises.value?.getOrNull(currentQuestionIndex.value ?: 0) ?: return
-        if (selectedOption == currentQuestion.correctOption) {
-            _score.value = (_score.value ?: 0) + 1
-            _totalCorrectAnswers.value = (_totalCorrectAnswers.value ?: 0) + 1
+        val currentQuestion = exercises.value?.getOrNull(currentQuestionIndex.value ?: 0)
+        Log.d("ExerciseVM", "Selected Option: $selectedOption, Correct Option: ${currentQuestion?.correctOptionIndex}")
+        if (currentQuestion != null) {
+            if (selectedOption == currentQuestion.correctOptionIndex) {
+                Log.d("ExerciseVM", "Answer is correct")
+                _score.value = (_score.value ?: 0) + 1
+                _totalCorrectAnswers.value = (_totalCorrectAnswers.value ?: 0) + 1
+            } else {
+                Log.d("ExerciseVM", "Answer is incorrect")
+            }
+            moveToNextQuestion()
         }
-        moveToNextQuestion()
     }
+
+
 
     fun loadExercisesForLevel(level: String) {
         currentLevelId = level // Store the current level ID
@@ -56,12 +65,14 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             val userId = firebaseUser?.uid
             val email = firebaseUser?.email
             val score = _score.value ?: 0
+            val totalCorrectAnswers = _totalCorrectAnswers.value ?: 0 // Retrieve total correct answers
             val levelId = currentLevelId  // Use the stored level ID
             if (userId != null && levelId != null && email != null) {
-                repository.updateUserProgress(userId, levelId, score, email)
+                repository.updateUserProgress(userId, levelId, score, email, totalCorrectAnswers) // Pass totalCorrectAnswers here
             }
         }
     }
+
 
     fun moveToNextQuestion() {
         val nextIndex = (_currentQuestionIndex.value ?: 0) + 1
