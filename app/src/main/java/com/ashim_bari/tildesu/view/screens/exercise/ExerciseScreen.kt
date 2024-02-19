@@ -1,6 +1,8 @@
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -76,7 +78,7 @@ fun ExerciseScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()) // Add vertical scroll modifier here
+                //.verticalScroll(rememberScrollState()) // Add vertical scroll modifier here
         ) {
             Column(
                 modifier = Modifier
@@ -99,23 +101,28 @@ fun ExerciseScreen(
                 } else if (exercises != null && exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                     val currentExercise = exercises[currentQuestionIndex]
                     Text(text = currentExercise.question, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp))
-                    exercises[currentQuestionIndex].options.forEachIndexed { index, option ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clickable { selectedOption = index }, // Update selectedOption directly
-                            shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (selectedOption == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Row(modifier = Modifier.padding(16.dp)) {
-                                Text(text = option, style = MaterialTheme.typography.bodyLarge)
+
+                    // Use a LazyVerticalGrid to create a grid layout for the option cards
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2), // We want 2 columns
+                        contentPadding = PaddingValues(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(currentExercise.options.size) { index ->
+                            OptionCard(
+                                option = currentExercise.options[index],
+                                isSelected = selectedOption == index,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                selectedOption = index
                             }
                         }
                     }
-                    Button(
+
+
+                Button(
                         onClick = {
                             exerciseViewModel.submitAnswer(selectedOption)
                             exerciseViewModel.moveToNextQuestion()
@@ -156,6 +163,25 @@ fun ExerciseScreen(
                     Text("No")
                 }
             }
+        )
+    }
+}
+@Composable
+fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifier, onSelect: () -> Unit) {
+    Card(
+        modifier = modifier
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onSelect)
+            .aspectRatio(1f), // Optional: Makes the card square-shaped
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Text(
+            text = option,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
         )
     }
 }
