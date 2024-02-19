@@ -13,27 +13,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseScreen(navController: NavHostController, exerciseViewModelFactory: ExerciseViewModelFactory, level: String) {
+fun ExerciseScreen(
+    navController: NavController,
+    exerciseViewModelFactory: ExerciseViewModelFactory,
+    level: String,
+    navBackStackEntry: NavBackStackEntry? = null // Pass NavBackStackEntry as a parameter
+) {
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
+
+    // Remember the level when the screen is created
+    val currentLevel by rememberSaveable { mutableStateOf(level) }
 
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevel(level)
     }
 
+    // Use rememberSaveable for state variables
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
-    var selectedOption by rememberSaveable { mutableIntStateOf(-1) } // Use rememberSaveable for the selected option
+    var selectedOption by rememberSaveable { mutableStateOf(-1) } // Use rememberSaveable for the selected option
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Level $level") },
+            TopAppBar(title = { Text("Level $currentLevel") }, // Use the currentLevel here
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary))
         }
     ) { paddingValues ->
@@ -88,7 +98,7 @@ fun ExerciseScreen(navController: NavHostController, exerciseViewModelFactory: E
                         Text("Next")
                     }
                 } else {
-                    Text("No exercises found for $level", style = MaterialTheme.typography.bodyMedium)
+                    Text("No exercises found for $currentLevel", style = MaterialTheme.typography.bodyMedium) // Use currentLevel here
                 }
             }
         }
