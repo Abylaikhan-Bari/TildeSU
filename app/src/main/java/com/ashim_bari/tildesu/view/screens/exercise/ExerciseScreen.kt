@@ -90,11 +90,16 @@ fun ExerciseScreen(
                     Text("Quiz Completed!", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
-                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally),
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                            .height(100.dp), // Set the height to a specific value
+                        shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text("Go to Home Page", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp))
+                        Text("Go to Home Page", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
                     }
                     Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
                         Alignment.CenterHorizontally))
