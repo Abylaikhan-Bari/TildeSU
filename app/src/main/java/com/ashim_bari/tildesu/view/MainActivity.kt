@@ -10,22 +10,37 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
 import com.ashim_bari.tildesu.view.ui.theme.TildeSUTheme
+import com.google.firebase.BuildConfig
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.initialize
+
+//import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
 
-        val appCheck = FirebaseAppCheck.getInstance()
-        appCheck.installAppCheckProviderFactory(
-            PlayIntegrityAppCheckProviderFactory.getInstance()
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance(),
         )
+        // Initialize Firebase
+//        FirebaseApp.initializeApp(this)
+//
+//        val appCheck = FirebaseAppCheck.getInstance()
+//        // Conditional App Check provider installation based on build type
+//        if (BuildConfig.DEBUG) {
+//            appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
+//        } else {
+//            appCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
+//        }
+
         setContent {
             TildeSUTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -36,6 +51,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-
 }
+
+
+
