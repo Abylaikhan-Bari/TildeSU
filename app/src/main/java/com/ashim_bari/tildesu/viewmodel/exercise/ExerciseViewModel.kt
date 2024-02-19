@@ -25,7 +25,19 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _totalCorrectAnswers = MutableLiveData<Int>(0)
     val totalCorrectAnswers: LiveData<Int> = _totalCorrectAnswers
 
+    private var currentLevelId: String? = null
+
+    fun submitAnswer(selectedOption: Int) {
+        val currentQuestion = exercises.value?.getOrNull(currentQuestionIndex.value ?: 0) ?: return
+        if (selectedOption == currentQuestion.correctOption) {
+            _score.value = (_score.value ?: 0) + 1
+            _totalCorrectAnswers.value = (_totalCorrectAnswers.value ?: 0) + 1
+        }
+        moveToNextQuestion()
+    }
+
     fun loadExercisesForLevel(level: String) {
+        currentLevelId = level // Store the current level ID
         viewModelScope.launch {
             // You might want to handle any potential exceptions here
             val exercisesList = repository.getExercisesByLevel(level)
@@ -37,24 +49,16 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun submitAnswer(selectedOption: Int) {
-        val currentQuestion = exercises.value?.getOrNull(currentQuestionIndex.value ?: 0) ?: return
-        if (selectedOption == currentQuestion.correctOption) {
-            _score.value = (_score.value ?: 0) + 1
-            _totalCorrectAnswers.value = (_totalCorrectAnswers.value ?: 0) + 1
-        }
-        moveToNextQuestion()
-    }
-
-
-
     private fun completeQuiz() {
         viewModelScope.launch {
             _quizCompleted.value = true // Mark the quiz as completed
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val userId = firebaseUser?.uid
+            val email = firebaseUser?.email
             val score = _score.value ?: 0
-            if (userId != null) {
-                repository.updateUserProgress(userId, "Level ID Here", score)
+            val levelId = currentLevelId  // Use the stored level ID
+            if (userId != null && levelId != null && email != null) {
+                repository.updateUserProgress(userId, levelId, score, email)
             }
         }
     }

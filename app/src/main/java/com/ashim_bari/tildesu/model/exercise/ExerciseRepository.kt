@@ -1,7 +1,7 @@
 package com.ashim_bari.tildesu.model.exercise
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
 
 class ExerciseRepository {
@@ -14,10 +14,11 @@ class ExerciseRepository {
             .toObjects(Exercise::class.java)
     }
 
-    suspend fun updateUserProgress(userId: String, level: String, score: Int) {
+    suspend fun updateUserProgress(userId: String, level: String, score: Int, email: String) {
         val userProgress = mapOf(
             "score" to score,
-            "completedOn" to System.currentTimeMillis()
+            "email" to email,  // Include the user's email
+            "completedOn" to FieldValue.serverTimestamp() // Use Firestore server timestamp
         )
         db.collection("users").document(userId).collection("progress").document(level)
             .set(userProgress)
