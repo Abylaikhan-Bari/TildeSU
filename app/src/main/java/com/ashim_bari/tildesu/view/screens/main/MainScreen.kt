@@ -1,3 +1,4 @@
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,8 +20,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
@@ -32,7 +36,8 @@ fun MainScreen(navController: NavHostController) {
     var currentMainScreen by rememberSaveable { mutableStateOf(MainScreens.Home) }
     val mainViewModel: MainViewModel = viewModel()
     val isLoggedIn by mainViewModel.isLoggedIn.observeAsState()
-
+    var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
+    val activity = LocalContext.current as? ComponentActivity
     // This will trigger when isLoggedIn changes its value.
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn == false) {
@@ -75,8 +80,41 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
+
+
         BackHandler {
-            // Do nothing to prevent navigation when any screen is opened
+            showExitConfirmation = true
+        }
+
+        if (showExitConfirmation) {
+            AlertDialog(
+                onDismissRequest = {
+                    // If the dialog is dismissed, don't exit the app
+                    showExitConfirmation = false
+                },
+                title = { Text("Exit App") },
+                text = { Text("Are you sure you want to exit the app?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            // Handle the logic to exit the app
+                            activity?.finish()
+                        }
+                    ) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            // Dismiss the dialog and don't exit the app
+                            showExitConfirmation = false
+                        }
+                    ) {
+                        Text("No")
+                    }
+                }
+            )
         }
         // Scrollable screen content based on currentMainScreen
         LazyColumn(contentPadding = innerPadding) {
