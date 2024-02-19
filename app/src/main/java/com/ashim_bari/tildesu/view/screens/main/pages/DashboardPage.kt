@@ -23,10 +23,18 @@ fun DashboardPage(mainViewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Use the progressData to display the progress bars
-            progressData.forEach { (level, progress) ->
-                LanguageLevelProgressBar(level, progress)
-                Spacer(modifier = Modifier.height(16.dp))
+            // Check if there's progress data to display
+            if (progressData.isNotEmpty()) {
+                // Use the progressData to display the progress bars
+                progressData.forEach { (level, progress) ->
+                    LanguageLevelProgressBar(level, progress)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            } else {
+                // Display a message acknowledging the user about the lack of progress data
+                Text("No progress data available. Start learning to see your progress!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp))
             }
         }
     }
@@ -36,6 +44,7 @@ fun DashboardPage(mainViewModel: MainViewModel) {
         mainViewModel.loadUserProgress()
     }
 }
+
 
 
 
@@ -51,15 +60,18 @@ fun LanguageLevelProgressBar(level: String, progress: Float) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
         LinearProgressIndicator(
-            progress = progress,
+            progress = {
+                progress // Direct assignment here
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(8.dp),
             color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
+            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
         )
     }
 }
+
 
 
 

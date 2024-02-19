@@ -53,7 +53,9 @@ class MainViewModel:ViewModel() {
 
         }
     }
-
+    init {
+        loadUserProgress()
+    }
 
     fun loadUserProgress() {
         viewModelScope.launch {
