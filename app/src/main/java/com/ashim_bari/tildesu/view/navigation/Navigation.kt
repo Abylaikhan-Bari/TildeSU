@@ -1,7 +1,7 @@
 package com.ashim_bari.tildesu.view.navigation
 
 import MainScreen
-import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
+import ExerciseScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
