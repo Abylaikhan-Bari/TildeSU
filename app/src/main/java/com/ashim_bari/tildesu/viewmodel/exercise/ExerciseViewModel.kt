@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
@@ -45,14 +46,28 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         moveToNextQuestion()
     }
 
-    fun moveToNextQuestion() {
-        val nextIndex = (_currentQuestionIndex.value ?: 0) + 1
-        if (nextIndex < (exercises.value?.size ?: 0)) {
-            _currentQuestionIndex.value = nextIndex
-        } else {
-            _quizCompleted.value = true // Quiz is completed
+
+
+    private fun completeQuiz() {
+        viewModelScope.launch {
+            _quizCompleted.value = true // Mark the quiz as completed
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            val score = _score.value ?: 0
+            if (userId != null) {
+                repository.updateUserProgress(userId, "Level ID Here", score)
+            }
         }
     }
+
+    fun moveToNextQuestion() {
+        val nextIndex = (_currentQuestionIndex.value ?: 0) + 1
+        if (nextIndex < (_exercises.value?.size ?: 0)) {
+            _currentQuestionIndex.value = nextIndex
+        } else {
+            completeQuiz() // Call completeQuiz when there are no more questions
+        }
+    }
+
 }
 
 

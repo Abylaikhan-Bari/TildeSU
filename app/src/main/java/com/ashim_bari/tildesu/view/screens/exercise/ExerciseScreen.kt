@@ -38,9 +38,10 @@ fun ExerciseScreen(navController: NavHostController, exerciseViewModelFactory: E
         ) {
             if (quizCompleted) {
                 Text("Quiz Completed!", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp))
-                Button(onClick = { navController.navigate("main") }) {
+                Button(onClick = { navController.navigate("main") }) { // Change "home" to your home route
                     Text("Go to Home Page")
                 }
+                Text("Your score: ${exerciseViewModel.score.observeAsState().value}")
             } else if (exercises != null) {
                 if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                     val currentExercise = exercises[currentQuestionIndex]

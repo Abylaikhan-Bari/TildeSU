@@ -13,6 +13,16 @@ class ExerciseRepository {
             .await()
             .toObjects(Exercise::class.java)
     }
+
+    suspend fun updateUserProgress(userId: String, level: String, score: Int) {
+        val userProgress = mapOf(
+            "score" to score,
+            "completedOn" to System.currentTimeMillis()
+        )
+        db.collection("users").document(userId).collection("progress").document(level)
+            .set(userProgress)
+            .await()
+    }
 }
 
 
