@@ -75,6 +75,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2")
     implementation("com.google.firebase:firebase-firestore:24.10.2")
     implementation("androidx.media3:media3-common:1.2.1")
     testImplementation("junit:junit:4.13.2")
