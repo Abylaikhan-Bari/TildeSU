@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
@@ -22,6 +23,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _quizCompleted = MutableLiveData<Boolean>(false)
     val quizCompleted: LiveData<Boolean> = _quizCompleted
 
+    private var currentLevelId: String? = null
+
+
     init {
         // Optionally, load initial data here or trigger from the UI
     }
@@ -35,6 +39,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                     _currentQuestionIndex.value = 0
                     _score.value = 0
                     _quizCompleted.value = false
+                    currentLevelId = level
                     Log.d("ExerciseVM", "Exercises loaded, total: ${exercisesList.size}, Level: $level")
                 } else {
                     Log.w("ExerciseVM", "No exercises found for level $level")
@@ -76,12 +81,45 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
 
+//    private fun completeQuiz() {
+//        Log.d("ExerciseVM", "Completing quiz")
+//        _quizCompleted.value = true
+//        // Update user progress and other cleanup as necessary
+//    }
+
     private fun completeQuiz() {
         Log.d("ExerciseVM", "Completing quiz")
         _quizCompleted.value = true
-        // Update user progress and other cleanup as necessary
+        // Call updateProgress here to trigger the update in Firestore
+        updateProgress()
     }
 
+    private fun updateProgress() {
+        // Obtain the current user's ID and email from FirebaseAuth
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: run {
+            Log.e("ExerciseVM", "User not logged in.")
+            return
+        }
+        val email = currentUser.email ?: run {
+            Log.e("ExerciseVM", "User email not available.")
+            return
+        }
+
+        val score = _score.value ?: 0
+        val totalCorrectAnswers = score // Assuming score represents the total correct answers
+
+        currentLevelId?.let { levelId ->
+            viewModelScope.launch {
+                try {
+                    repository.updateUserProgress(userId, levelId, score, email, totalCorrectAnswers)
+                    Log.d("ExerciseVM", "User progress updated for level $levelId")
+                } catch (e: Exception) {
+                    Log.e("ExerciseVM", "Error updating user progress for level $levelId", e)
+                }
+            }
+        }
+    }
 
 
 }
