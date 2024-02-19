@@ -82,6 +82,7 @@ fun ExerciseScreen(
         ) {
             Column(
                 modifier = Modifier
+
                     .padding(16.dp)
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center // Center the content vertically
