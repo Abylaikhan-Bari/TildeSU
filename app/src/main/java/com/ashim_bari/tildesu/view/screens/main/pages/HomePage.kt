@@ -1,13 +1,18 @@
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun HomePage(function: () -> Unit) {
+fun HomePage(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -17,35 +22,29 @@ fun HomePage(function: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            // Define button texts and their intended alignments
-            val buttons = listOf(
-                "A1 деңгейі" to Alignment.Start,
-                "A2 деңгейі" to Alignment.End,
-                "B1 деңгейі" to Alignment.Start,
-                "B2 деңгейі" to Alignment.End,
-                "C1 деңгейі" to Alignment.Start,
-                "C2 деңгейі" to Alignment.End
-            )
+            val levels = listOf("A1 Level", "A2 Level", "B1 Level", "B2 Level", "C1 Level", "C2 Level")
+            val routes = listOf("exercise/A1", "exercise/A2", "exercise/B1", "exercise/B2", "exercise/C1", "exercise/C2")
 
-            buttons.forEachIndexed { index, (text, alignment) ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = if (alignment == Alignment.Start) Arrangement.Start else Arrangement.End
-                ) {
-                    Button(
-                        onClick = { /* Handle button click */ },
-                        modifier = Modifier.width(200.dp),
-                        colors = ButtonDefaults.buttonColors( // Optional: Customize button colors
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
+            levels.zip(routes).forEachIndexed { index, (level, route) ->
+                if (index % 2 == 0) {
+                    // Align to start
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                        CardComponent(level, route, navController)
+                    }
+                } else {
+                    // Align to end
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        CardComponent(level, route, navController)
                     }
                 }
             }
@@ -53,10 +52,31 @@ fun HomePage(function: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun HomePagePreview() {
-    MaterialTheme {
-        HomePage {}
+fun CardComponent(level: String, route: String, navController: NavHostController) {
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+    Card(
+        onClick = { navController.navigate(route) },
+        modifier = Modifier
+            // Decrease the size of the card
+            .size(width = 160.dp, height = 100.dp), // Set both width and height to 120.dp or any other desired value
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(16.dp) // Add padding inside the card for the text
+        ) {
+            // Use AnimatedContent to animate text changes
+            AnimatedContent(targetState = level, label = "") { targetLevel ->
+                Text(
+                    text = targetLevel,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
     }
 }

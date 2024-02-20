@@ -14,10 +14,13 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
+
         android:theme="@style/Theme.TildeSU"
-        tools:targetApi="31">
+        tools:targetApi="tiramisu">
         <activity
             android:name=".view.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
             android:theme="@style/Theme.TildeSU">
             <intent-filter>

@@ -1,28 +1,32 @@
 package com.ashim_bari.tildesu.view.navigation
 
-import MainScreen
-import ProfilePage
+import com.ashim_bari.tildesu.view.screens.main.MainScreen
+import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
-import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ashim_bari.tildesu.viewmodel.MainViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
+import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 class Navigation {
     companion object {
         const val AUTHENTICATION_ROUTE = "authentication"
         const val MAIN_ROUTE = "main"
-        const val EXERCISE_ROUTE = "exercise"
-
+        const val EXERCISE_ROUTE = "exercise/{level}"
     }
 }
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {
+    val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
+    val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
+
     NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             // Obtain ViewModel scoped to the NavHostController
@@ -32,8 +36,14 @@ fun NavigationGraph(navController: NavHostController) {
         composable(Navigation.MAIN_ROUTE) {
             MainScreen(navController = navController)
         }
-        composable(Navigation.EXERCISE_ROUTE) {
-            ExerciseScreen(navController = navController)
+
+        composable(
+            route = Navigation.EXERCISE_ROUTE,
+            arguments = listOf(navArgument("level") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level") ?: "A1"
+            ExerciseScreen(navController, exerciseViewModelFactory, level)
         }
+
     }
 }
