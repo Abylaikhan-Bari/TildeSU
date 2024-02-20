@@ -42,7 +42,7 @@ fun ExerciseScreen(
 
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
-    var selectedOption by rememberSaveable { mutableStateOf(-1) }
+    var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
 
     fun showConfirmationDialog() {
@@ -69,6 +69,7 @@ fun ExerciseScreen(
         }
     ) { paddingValues ->
         BackHandler {
+            showConfirmationDialog()
             Log.d("ExerciseScreen", "BackHandler triggered")
         }
         Surface(
@@ -142,7 +143,8 @@ fun ExerciseScreen(
                         Text("Next")
                     }
                 } else {
-                    Text("No exercises found for $currentLevel", style = MaterialTheme.typography.bodyMedium) // Use currentLevel here
+                    Text("No exercises found for $currentLevel", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.align(
+                        Alignment.CenterHorizontally)) // Use currentLevel here
                 }
             }
         }
@@ -153,7 +155,7 @@ fun ExerciseScreen(
         AlertDialog(
             onDismissRequest = { showDialog = false },
             title = { Text("Confirmation") },
-            text = { Text("Are you sure you want to go back to the main screen?") },
+            text = { Text("Are you sure you want to go back to the main screen?")},
             confirmButton = {
                 Button(
                     onClick = {
@@ -190,7 +192,7 @@ fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifie
         Text(
             text = option,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
         )
     }
 }
