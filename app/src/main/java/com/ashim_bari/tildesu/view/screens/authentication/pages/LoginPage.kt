@@ -29,11 +29,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.Visibility
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -96,9 +95,6 @@ fun LoginPage(
             keyboardActions = KeyboardActions(
                 onDone = {
                     keyboardController?.hide()
-//                    viewModel.login(username, password) { success ->
-//                        // Handle login success or failure
-//                    }
                 }
             ),
             modifier = Modifier

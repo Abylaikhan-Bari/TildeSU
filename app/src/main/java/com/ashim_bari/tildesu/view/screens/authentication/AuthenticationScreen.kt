@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import android.content.res.Configuration
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
@@ -17,9 +18,10 @@ import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.ashim_bari.tildesu.viewmodel.AuthenticationViewModel
-import androidx.compose.runtime.livedata.observeAsState
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.platform.LocalContext
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
@@ -31,8 +33,8 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     var currentScreen by rememberSaveable { mutableStateOf(AuthScreens.Login) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-
-
+    var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
+    val activity = LocalContext.current as? ComponentActivity
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
@@ -40,8 +42,41 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
+
+
             BackHandler {
-                // Handle back action, if necessary
+                showExitConfirmation = true
+            }
+
+            if (showExitConfirmation) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // If the dialog is dismissed, don't exit the app
+                        showExitConfirmation = false
+                    },
+                    title = { Text("Exit App") },
+                    text = { Text("Are you sure you want to exit the app?") },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                // Handle the logic to exit the app
+                                activity?.finish()
+                            }
+                        ) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                // Dismiss the dialog and don't exit the app
+                                showExitConfirmation = false
+                            }
+                        ) {
+                            Text("No")
+                        }
+                    }
+                )
             }
             Column(
                 modifier = Modifier

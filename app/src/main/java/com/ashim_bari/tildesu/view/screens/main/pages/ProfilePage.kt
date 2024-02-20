@@ -1,5 +1,4 @@
 import android.graphics.Bitmap
-import android.graphics.ColorFilter
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -23,16 +22,13 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.viewmodel.MainViewModel
+import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -176,7 +172,12 @@ fun UpdatePasswordDialog(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
+            errorMessage = null // Reset the success message to hide it
+        }
+    }
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text("Update Password") },
