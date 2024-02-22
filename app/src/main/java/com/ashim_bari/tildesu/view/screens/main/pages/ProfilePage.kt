@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -39,25 +41,20 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun ProfilePage(navController: NavHostController) {
-    // Get an instance of the ViewModel
     val viewModel: MainViewModel = viewModel()
     var showUpdatePasswordDialog by rememberSaveable { mutableStateOf(false) }
-    var successMessage by rememberSaveable { mutableStateOf<String?>(null) }
-    // Observe the user's email
-    val userEmail by viewModel.userEmail.observeAsState()
-    // State for showing logout confirmation dialog
-    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
-    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
+    val imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
+    val userEmail by viewModel.userEmail.observeAsState()
+    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
+    var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
     }
-
-    // Fetch profile image URL from ViewModel
-    val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
-
-    // Other code remains the same
+    val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
 
     LaunchedEffect(imageUri) {
         imageUri?.let {
@@ -69,105 +66,103 @@ fun ProfilePage(navController: NavHostController) {
             }
         }
     }
-    // Call the function to fetch user email and possibly other user info like profile image URL
-    LaunchedEffect(Unit) {
-        viewModel.getUserEmail()
-        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
-    }
-    LaunchedEffect(successMessage) {
-        if (successMessage != null) {
-            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
-            successMessage = null // Reset the success message to hide it
-        }
-    }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                ProfilePicture(profileImageUrl) {
+                    launcher.launch("image/*")
+                }
 
-            ProfilePicture(profileImageUrl) {
-                launcher.launch("image/*")
-            }// Placeholder for profile picture, can be expanded to show actual user profile image
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            userEmail?.let { email ->
-                ProfileAttribute(email)
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (successMessage != null) {
-                Text(
-                    text = successMessage!!,
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodyLarge
-                )
                 Spacer(modifier = Modifier.height(16.dp))
-            }
 
-            OutlinedButton(
-                onClick = { showUpdatePasswordDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Filled.Edit, contentDescription = "Update Password")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Update Password")
-            }
+                userEmail?.let { email ->
+                    ProfileAttribute(email)
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Log Out")
-            }
-            if (showUpdatePasswordDialog) {
-                UpdatePasswordDialog(
-                    viewModel = viewModel,
-                    onClose = { showUpdatePasswordDialog = false },
-                    onPasswordUpdated = {
-                        successMessage = "Password updated successfully."
+                OutlinedButton(
+                    onClick = { showUpdatePasswordDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Update Password")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Update Password")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Log Out")
+                }
+
+                if (showUpdatePasswordDialog) {
+                    UpdatePasswordDialog(
+                        viewModel = viewModel,
+                        onClose = { showUpdatePasswordDialog = false },
+                        onPasswordUpdated = {
+                            // Instead of calling LaunchedEffect here, update the state
+                            passwordUpdatedSuccessfully = true
+                        }
+                    )
+                }
+                LaunchedEffect(passwordUpdatedSuccessfully) {
+                    if (passwordUpdatedSuccessfully) {
+                        snackbarHostState.showSnackbar(
+                            message = "Password updated successfully.",
+                            duration = SnackbarDuration.Short
+                        )
+                        // Reset the flag to avoid showing the snackbar again unless another update occurs
+                        passwordUpdatedSuccessfully = false
                     }
-                )
-            }
-            if (showLogoutDialog) {
-                AlertDialog(
-                    onDismissRequest = { showLogoutDialog = false },
-                    title = { Text("Confirm Logout") },
-                    text = { Text("Are you sure you want to log out?") },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                viewModel.logout(navController)
-                                showLogoutDialog = false
+                }
+                if (showLogoutDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showLogoutDialog = false },
+                        title = { Text("Confirm Logout") },
+                        text = { Text("Are you sure you want to log out?") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    viewModel.logout(navController)
+                                    showLogoutDialog = false
+                                }
+                            ) {
+                                Text("Log Out")
                             }
-                        ) {
-                            Text("Log Out")
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showLogoutDialog = false }
+                            ) {
+                                Text("Cancel")
+                            }
                         }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showLogoutDialog = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
+                    )
+                }
             }
         }
+
+        // Correct placement of SnackbarHost within Box layout using 'align'
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
-
-
-
-
 }
+
+
 
 @Composable
 fun UpdatePasswordDialog(
