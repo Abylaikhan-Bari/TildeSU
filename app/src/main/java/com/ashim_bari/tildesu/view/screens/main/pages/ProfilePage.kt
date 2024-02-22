@@ -66,6 +66,10 @@ fun ProfilePage(navController: NavHostController) {
             }
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.getUserEmail()
+        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Surface(
