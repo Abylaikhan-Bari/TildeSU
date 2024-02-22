@@ -1,4 +1,5 @@
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun DashboardPage(mainViewModel: MainViewModel) {
@@ -48,7 +50,7 @@ fun DashboardPage(mainViewModel: MainViewModel) {
 
 @Composable
 fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
-    val (progress, _) = progressPair // Extract progress value from the pair
+    val (progress, _) = progressPair
 
     Column {
         Text(
@@ -57,18 +59,27 @@ fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        LinearProgressIndicator(
-            progress = {
-                progress // Use the extracted progress value
-            },
+        // Increase the height of Box to ensure there's enough space for the rounded corners
+        Box(
             modifier = Modifier
+                .height(60.dp) // Adjust the height to ensure the progress bar's corners are not cut off
                 .fillMaxWidth()
-                .height(8.dp),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-        )
+                .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
+        ) {
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp) // Match the height of the Box to fill it completely
+                    .clip(RoundedCornerShape(12.dp)), // Apply the same rounded corners to the progress indicator
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+            )
+        }
     }
 }
+
+
 
 
 

@@ -29,6 +29,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ashim_bari.tildesu.view.navigation.Navigation
@@ -67,8 +68,12 @@ fun MainScreen(navController: NavHostController) {
         topBar = {
             // Dynamic TopAppBar using Material3
             TopAppBar(
-                title = { Text(text = bottomItems.first { it.screen == currentMainScreen }.title) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                title = { Text(text = bottomItems.first { it.screen == currentMainScreen }.title, color = Color.White) }, // Directly setting the Text color
+                // If containerColor is available and you need to set it
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                    // If contentColor isn't recognized or needed, ensure color is set directly in the Text composable
+                )
             )
         },
         bottomBar = {
