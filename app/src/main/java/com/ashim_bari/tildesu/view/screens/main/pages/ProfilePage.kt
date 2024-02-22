@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+package com.ashim_bari.tildesu.view.screens.main.pages
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -93,23 +93,21 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                OutlinedButton(
-                    onClick = { showUpdatePasswordDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Update Password")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Update Password")
-                }
+                ActionCard(
+                    text = "Update Password",
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
+                    onClick = { showUpdatePasswordDialog = true }
+                )
+
+
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = { showLogoutDialog = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Log Out")
-                }
+                ActionCard(
+                    text = "Log Out",
+                    onClick = { showLogoutDialog = true }
+                )
 
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
@@ -166,6 +164,34 @@ fun ProfilePage(navController: NavHostController) {
     }
 }
 
+@Composable
+fun ActionCard(
+    text: String,
+    icon: @Composable (() -> Unit)? = null,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp), // Add vertical padding
+        shape = MaterialTheme.shapes.medium, // Rounded corners
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            icon?.invoke()
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+}
 
 
 @Composable
@@ -282,36 +308,35 @@ fun UpdatePasswordDialog(
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(120.dp)
-            .clip(CircleShape) // Ensure the card itself is circular
+            .size(160.dp) // Increased size
+            .clip(CircleShape)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
     ) {
-        Box(modifier = Modifier.clip(CircleShape)) { // Clip the content of the card to a circular shape
+        Box(modifier = Modifier.clip(CircleShape)) {
             if (imageUrl != null) {
-                // Load image from URL
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUrl),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape), // Clip the image to be circular
-                    contentScale = ContentScale.Crop // Crop the image to fill the bounds
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             } else {
-                // Display default placeholder if no image URL
                 Image(
                     painter = painterResource(id = R.drawable.default_profile_image),
                     contentDescription = "Default Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape), // Ensure the placeholder is also circular
-                    contentScale = ContentScale.Crop // Crop the placeholder to fill the bounds
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             }
         }
     }
 }
+
 
 
 @Composable

@@ -1,7 +1,7 @@
 package com.ashim_bari.tildesu.view.screens.main
 import DashboardPage
 import HomePage
-import ProfilePage
+import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
 import UsefulPage
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
