@@ -1,13 +1,23 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -25,10 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun ResetPasswordPage(
     navController: NavHostController,
@@ -64,22 +76,45 @@ fun ResetPasswordPage(
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    val success = viewModel.resetPassword(email)
-                    if (success) {
-                        snackbarHostState.showSnackbar("Reset password email sent successfully")
-                        navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                    } else {
-                        snackbarHostState.showSnackbar("Failed to reset password. Please try again.")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .animateContentSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            var isLoading by rememberSaveable { mutableStateOf(false) }
+            var isSuccess by rememberSaveable { mutableStateOf(false) }
+
+            Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
+                when {
+                    isLoading -> CircularProgressIndicator(color = BluePrimary)
+                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
+                    else -> Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                isSuccess = false // Reset success state
+                                val success = viewModel.resetPassword(email)
+                                isLoading = false
+                                isSuccess = success
+                                if (success) {
+                                    snackbarHostState.showSnackbar("Reset password email sent successfully")
+                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                } else {
+                                    snackbarHostState.showSnackbar("Failed to reset password. Please try again.")
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
+                    ) {
+                        Text("Confirm", color = Color.White)
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text("Confirm", color = Color.White)
+            }
         }
+
 
 
         Row(

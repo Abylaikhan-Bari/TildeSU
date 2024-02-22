@@ -1,9 +1,14 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,15 +39,19 @@ import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun LoginPage(
     navController: NavHostController,
@@ -58,7 +67,8 @@ fun LoginPage(
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordFocusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
-
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    var isSuccess by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,21 +128,40 @@ fun LoginPage(
                 Text("Forgot password?")
             }
         }
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    val success = viewModel.login(username, password)
-                    if (success) {
-                        snackbarHostState.showSnackbar("Login successful")
-                        navController.navigate(Navigation.MAIN_ROUTE)
-                    } else {
-                        snackbarHostState.showSnackbar("Login failed. Please check your credentials.")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .animateContentSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(targetState = isLoading || isSuccess, label = "Login") {
+                when {
+                    isLoading -> CircularProgressIndicator(color = BluePrimary)
+                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
+                    else -> Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                isSuccess = false
+                                val success = viewModel.login(username, password)
+                                isLoading = false
+                                isSuccess = success
+                                if (success) {
+                                    snackbarHostState.showSnackbar("Login successful")
+                                    navController.navigate(Navigation.MAIN_ROUTE)
+                                } else {
+                                    snackbarHostState.showSnackbar("Login failed. Please check your credentials.")
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
+                    ) {
+                        Text("Login", color = Color.White)
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text("Login", color = Color.White)
+            }
         }
 
 

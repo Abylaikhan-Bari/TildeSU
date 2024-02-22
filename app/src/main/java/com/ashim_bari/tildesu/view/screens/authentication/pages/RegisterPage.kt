@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +43,19 @@ import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ButtonDefaults
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 
+@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun RegisterPage(
     navController: NavHostController,
@@ -51,6 +64,9 @@ fun RegisterPage(
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 ) {
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    var isSuccess by rememberSaveable { mutableStateOf(false) }
+
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -138,27 +154,44 @@ fun RegisterPage(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    if (password == confirmPassword) {
-                        val success = viewModel.register(email, password)
-                        if (success) {
-                            snackbarHostState.showSnackbar("Registration successful")
-                            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                        } else {
-                            snackbarHostState.showSnackbar("Registration failed. Please try again.")
-                        }
-                    } else {
-                        snackbarHostState.showSnackbar("Passwords do not match.")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .animateContentSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(targetState = isLoading || isSuccess, label = "Register") {
+                when {
+                    isLoading -> CircularProgressIndicator(color = BluePrimary) // Set the color to BluePrimary
+                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary) // Set the tint to BluePrimary
+                    else -> Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                isSuccess = false
+                                val success = viewModel.register(email, password)
+                                isLoading = false
+                                isSuccess = success
+                                if (success) {
+                                    snackbarHostState.showSnackbar("Registration successful")
+                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                } else {
+                                    snackbarHostState.showSnackbar("Registration failed")
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
+                    ) {
+                        Text("Register", color = Color.White) // You might adjust the text color if needed
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text("Register", color = Color.White)
+            }
         }
 
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             horizontalArrangement = Arrangement.Center,
