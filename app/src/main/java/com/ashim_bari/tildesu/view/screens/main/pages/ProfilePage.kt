@@ -9,6 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -22,9 +24,12 @@ import androidx.navigation.NavHostController
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
@@ -172,26 +177,54 @@ fun UpdatePasswordDialog(
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var currentPassword by rememberSaveable { mutableStateOf("") }
+
+    // FocusRequester instances
+    val newPasswordFocusRequester = remember { FocusRequester() }
+    val currentPasswordFocusRequester = remember { FocusRequester() }
+    val confirmPasswordFocusRequester = remember { FocusRequester() }
+
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
             delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
             errorMessage = null // Reset the success message to hide it
         }
     }
+
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text("Update Password") },
         text = {
             Column {
                 OutlinedTextField(
+                    value = currentPassword,
+                    onValueChange = { currentPassword = it },
+                    label = { Text("Current Password") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(currentPasswordFocusRequester)
+                )
+
+                OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text("New Password") }
+                    label = { Text("New Password") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
+                    modifier = Modifier.focusRequester(newPasswordFocusRequester)
                 )
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") }
+                    label = { Text("Confirm Password") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { /* Define your action here */ }),
+                    modifier = Modifier.focusRequester(confirmPasswordFocusRequester)
                 )
                 errorMessage?.let {
                     Text(text = it, color = MaterialTheme.colorScheme.error)
@@ -201,20 +234,30 @@ fun UpdatePasswordDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (newPassword == confirmPassword) {
-                        viewModel.updatePassword(newPassword) { success ->
-                            if (success) {
-                                onPasswordUpdated()
-                                onClose()
+                    // First, validate the current password (re-authenticate)
+                    viewModel.reAuthenticate(currentPassword) { reAuthSuccess ->
+                        if (reAuthSuccess) {
+                            // If re-authentication is successful, proceed with password update
+                            if (newPassword == confirmPassword) {
+                                viewModel.updatePassword(newPassword) { success ->
+                                    if (success) {
+                                        onPasswordUpdated()
+                                        onClose()
+                                    } else {
+                                        errorMessage = "Failed to update password."
+                                    }
+                                }
                             } else {
-                                errorMessage = "Failed to update password."
+                                errorMessage = "Passwords do not match."
                             }
+                        } else {
+                            // Handle re-authentication failure
+                            errorMessage = "Current password is incorrect."
                         }
-                    } else {
-                        errorMessage = "Passwords do not match."
                     }
                 }
-            ) {
+            )
+            {
                 Text("Update")
             }
         },
@@ -225,6 +268,7 @@ fun UpdatePasswordDialog(
         }
     )
 }
+
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(

@@ -9,9 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.model.user.UserRepository
 import com.ashim_bari.tildesu.view.navigation.Navigation
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class MainViewModel: ViewModel() {
@@ -114,11 +116,27 @@ class MainViewModel: ViewModel() {
             fetchProfileImageUrl()
         }
     }
+    fun reAuthenticate(currentPassword: String, onComplete: (Boolean) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val email = user?.email ?: return onComplete(false)
 
+        val credential = EmailAuthProvider.getCredential(email, currentPassword)
 
-    fun updatePassword(newPassword: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val success = userRepository.updatePassword(newPassword)
+            try {
+                user.reauthenticate(credential).await()
+                println("Re-authentication successful")
+                onComplete(true)
+            } catch (e: Exception) {
+                println("Re-authentication failed: ${e.message}")
+                onComplete(false)
+            }
+        }
+    }
+
+    fun updatePassword(newPassword: String, currentPassword: String? = null, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = userRepository.updatePassword(newPassword, currentPassword)
             onComplete(success)
             // Log password update result
             if (success) {

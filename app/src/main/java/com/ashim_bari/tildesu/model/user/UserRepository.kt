@@ -3,7 +3,9 @@ package com.ashim_bari.tildesu.model.user
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -78,16 +80,28 @@ class UserRepository {
         onComplete(currentUser?.email)
     }
 
-    suspend fun updatePassword(newPassword: String): Boolean {
+    suspend fun updatePassword(newPassword: String, currentPassword: String? = null): Boolean {
         return try {
-            firebaseAuth.currentUser?.updatePassword(newPassword)?.await()
-            Log.d("UserRepository", "Password updated successfully")
-            true // Return true for successful password update
+            firebaseAuth.currentUser?.let { user ->
+                // If currentPassword is provided, attempt re-authentication
+                if (currentPassword != null) {
+                    val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+                    user.reauthenticate(credential).await()
+                }
+                // Attempt to update the password after re-authentication
+                user.updatePassword(newPassword).await()
+                Log.d("UserRepository", "Password updated successfully")
+                true
+            } ?: false // Return false if currentUser is null
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            Log.e("UserRepository", "Re-authentication required", e)
+            false
         } catch (e: Exception) {
             Log.e("UserRepository", "Password update failed", e)
-            false // Return false if password update fails
+            false
         }
     }
+
 
     private val storageReference = Firebase.storage.reference
 
