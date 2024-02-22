@@ -107,7 +107,7 @@ fun ExerciseScreen(
                     }
                     Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
                         Alignment.CenterHorizontally))
-                } else if (!exercises.isNullOrEmpty() && currentQuestionIndex < exercises.size) {
+                } else if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                     val currentExercise = exercises[currentQuestionIndex]
                     Text(text = currentExercise.question, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp))
 

@@ -32,7 +32,7 @@ class UserRepository {
     private suspend fun createUserProfile(userId: String, email: String) {
         val user = mapOf(
             "email" to email,
-            "completedExercises" to listOf<String>()
+
             // Add other profile information as needed
         )
         firestore.collection("users").document(userId).set(user).await()
@@ -118,17 +118,20 @@ class UserRepository {
         }
     }
 
-    suspend fun getUserProgress(userId: String): Map<String, Float> {
-        val userProgressData = mutableMapOf<String, Float>()
+    // UserRepository.kt
+    suspend fun getUserProgress(userId: String): Map<String, Pair<Float, Int>> {
+        val userProgressData = mutableMapOf<String, Pair<Float, Int>>()
         val userProgressCollection = firestore.collection("users").document(userId).collection("progress")
         val querySnapshot = userProgressCollection.get().await()
         for (document in querySnapshot.documents) {
             val levelId = document.id
             val correctAnswers = (document.data?.get("totalCorrectAnswers") as? Number)?.toInt() ?: 0
-            val totalExercises = (document.data?.get("totalExercises") as? Number)?.toInt() ?: 1 // To avoid division by zero
-            val progress = if (totalExercises > 0) correctAnswers.toFloat() / totalExercises else 0f
-            userProgressData[levelId] = progress
+            val totalQuestions = (document.data?.get("totalQuestions") as? Number)?.toInt() ?: 0
+            val progress = if (totalQuestions > 0) correctAnswers.toFloat() / totalQuestions else 0f
+            userProgressData[levelId] = Pair(progress, correctAnswers)
         }
         return userProgressData
     }
+
+
 }
