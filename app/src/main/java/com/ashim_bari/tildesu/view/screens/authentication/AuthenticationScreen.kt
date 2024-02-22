@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
@@ -21,6 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.ashim_bari.tildesu.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -83,12 +86,23 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     .verticalScroll(scrollState)
                     .padding(padding)
             ) {
-                Text(
-                    "TildeSU",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = padding, bottom = 40.dp)
-                )
 
+                Image(
+                    painter = painterResource(R.drawable.satbayev), // Ensure you have a drawable named satbayev.png
+                    contentDescription = "Satbayev University Logo",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = padding)
+                        .size(120.dp) // Adjust the size as needed
+                )
+                Image(
+                    painter = painterResource(R.drawable.logoauthscreen), // Use the resource ID for your logo
+                    contentDescription = "App Logo",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = padding)
+                        .size(100.dp) // Adjust the size as needed
+                )
                 when (currentScreen) {
                     AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)

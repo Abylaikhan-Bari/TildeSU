@@ -75,6 +75,7 @@ fun RegisterPage(
         Text(
             text = "Register",
             style = MaterialTheme.typography.headlineSmall
+
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
