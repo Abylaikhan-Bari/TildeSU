@@ -76,19 +76,33 @@ fun MainScreen(navController: NavHostController) {
                 )
             )
         },
+
         bottomBar = {
-            // Bottom navigation using Material3
             NavigationBar {
                 bottomItems.forEach { item ->
+                    val isSelected = currentMainScreen == item.screen
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
-                        selected = currentMainScreen == item.screen,
+                        icon = {
+                            Icon(
+                                item.icon,
+                                contentDescription = item.title,
+                                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        label = {
+                            Text(
+                                item.title,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        selected = isSelected,
                         onClick = { currentMainScreen = item.screen }
                     )
                 }
             }
         }
+
+
     ) { innerPadding ->
 
 

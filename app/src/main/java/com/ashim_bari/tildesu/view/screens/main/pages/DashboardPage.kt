@@ -42,12 +42,6 @@ fun DashboardPage(mainViewModel: MainViewModel) {
     }
 }
 
-
-
-
-
-
-
 @Composable
 fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
     val (progress, _) = progressPair
