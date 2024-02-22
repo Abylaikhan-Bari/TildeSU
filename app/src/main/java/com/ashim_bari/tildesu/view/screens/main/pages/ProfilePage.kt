@@ -188,15 +188,14 @@ fun ActionCard(
     Card(
         onClick = onClick,
         modifier = modifier
-            .size(150.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 5.dp, vertical = 5.dp), // Adjusted padding for better space utilization.
+            .size(350.dp)
+            .fillMaxWidth(), // Adjusted padding for better space utilization.
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(
-            modifier = Modifier.padding(all = 10.dp), // Adjusted for potentially better text visibility.
+            modifier = Modifier.padding(all = 15.dp), // Adjusted for potentially better text visibility.
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
@@ -327,7 +326,7 @@ fun UpdatePasswordDialog(
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(350.dp) // Increased size
+            .size(250.dp) // Increased size
             .clip(RectangleShape)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
