@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.main.pages
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -11,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,6 +30,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -96,7 +100,11 @@ fun ProfilePage(navController: NavHostController) {
                 ActionCard(
                     text = "Update Password",
                     icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
-                    onClick = { showUpdatePasswordDialog = true }
+                    onClick = { showUpdatePasswordDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.primary
                 )
 
 
@@ -106,7 +114,12 @@ fun ProfilePage(navController: NavHostController) {
 
                 ActionCard(
                     text = "Log Out",
-                    onClick = { showLogoutDialog = true }
+                    icon = null,
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.errorContainer
                 )
 
                 if (showUpdatePasswordDialog) {
@@ -168,18 +181,22 @@ fun ProfilePage(navController: NavHostController) {
 fun ActionCard(
     text: String,
     icon: @Composable (() -> Unit)? = null,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
+            .size(150.dp)
             .fillMaxWidth()
-            .padding(vertical = 8.dp), // Add vertical padding
-        shape = MaterialTheme.shapes.medium, // Rounded corners
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(horizontal = 5.dp, vertical = 5.dp), // Adjusted padding for better space utilization.
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(all = 10.dp), // Adjusted for potentially better text visibility.
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
@@ -187,11 +204,13 @@ fun ActionCard(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f) // Ensures text tries to fill available space, pushing it to be fully visible.
             )
         }
     }
 }
+
 
 
 @Composable
@@ -308,19 +327,19 @@ fun UpdatePasswordDialog(
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(160.dp) // Increased size
-            .clip(CircleShape)
+            .size(350.dp) // Increased size
+            .clip(RectangleShape)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
     ) {
-        Box(modifier = Modifier.clip(CircleShape)) {
+        Box(modifier = Modifier.clip(RectangleShape)) {
             if (imageUrl != null) {
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUrl),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape),
+                        .clip(RectangleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
@@ -329,7 +348,7 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
                     contentDescription = "Default Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape),
+                        .clip(RectangleShape),
                     contentScale = ContentScale.Crop
                 )
             }
