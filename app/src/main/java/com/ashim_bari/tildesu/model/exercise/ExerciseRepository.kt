@@ -21,11 +21,12 @@ class ExerciseRepository {
     }
 
     @OptIn(UnstableApi::class)
-    suspend fun updateUserProgress(userId: String, level: String, score: Int, email: String, totalCorrectAnswers: Int) {
+    // ExerciseRepository.kt
+    suspend fun updateUserProgress(userId: String, level: String, score: Int, totalCorrectAnswers: Int, totalQuestions: Int) {
         val userProgress = mapOf(
             "score" to score,
-            "email" to email,
             "totalCorrectAnswers" to totalCorrectAnswers,
+            "totalQuestions" to totalQuestions, // Store total questions attempted
             "completedOn" to FieldValue.serverTimestamp()
         )
         db.collection("users").document(userId).collection("progress").document(level)
@@ -33,6 +34,9 @@ class ExerciseRepository {
             .await()
         Log.d("ExerciseRepository", "User progress updated for user $userId, level $level")
     }
+
+
+
 
 }
 

@@ -25,8 +25,8 @@ class MainViewModel:ViewModel() {
     private val _isLoggedIn = MutableLiveData<Boolean>()
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
     // Inside MainViewModel
-    private val _progressData = MutableLiveData<Map<String, Float>>()
-    val progressData: LiveData<Map<String, Float>> = _progressData
+    private val _progressData = MutableLiveData<Map<String, Pair<Float, Int>>>()
+    val progressData: LiveData<Map<String, Pair<Float, Int>>> = _progressData
 
 
 

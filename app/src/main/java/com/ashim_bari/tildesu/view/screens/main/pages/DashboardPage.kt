@@ -11,7 +11,6 @@ import androidx.compose.runtime.livedata.observeAsState
 
 @Composable
 fun DashboardPage(mainViewModel: MainViewModel) {
-    // Use the progressData state from the MainViewModel
     val progressData by mainViewModel.progressData.observeAsState(mapOf())
 
     Surface(
@@ -23,15 +22,12 @@ fun DashboardPage(mainViewModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Check if there's progress data to display
             if (progressData.isNotEmpty()) {
-                // Use the progressData to display the progress bars
                 progressData.forEach { (level, progress) ->
                     LanguageLevelProgressBar(level, progress)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
-                // Display a message acknowledging the user about the lack of progress data
                 Text("No progress data available. Start learning to see your progress!",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(16.dp))
@@ -39,7 +35,6 @@ fun DashboardPage(mainViewModel: MainViewModel) {
         }
     }
 
-    // Trigger the loading of user progress
     LaunchedEffect(key1 = Unit) {
         mainViewModel.loadUserProgress()
     }
@@ -50,8 +45,11 @@ fun DashboardPage(mainViewModel: MainViewModel) {
 
 
 
+
 @Composable
-fun LanguageLevelProgressBar(level: String, progress: Float) {
+fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
+    val (progress, _) = progressPair // Extract progress value from the pair
+
     Column {
         Text(
             text = level,
@@ -61,7 +59,7 @@ fun LanguageLevelProgressBar(level: String, progress: Float) {
         )
         LinearProgressIndicator(
             progress = {
-                progress // Direct assignment here
+                progress // Use the extracted progress value
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,6 +69,7 @@ fun LanguageLevelProgressBar(level: String, progress: Float) {
         )
     }
 }
+
 
 
 

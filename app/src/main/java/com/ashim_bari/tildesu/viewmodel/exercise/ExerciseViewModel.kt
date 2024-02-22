@@ -95,7 +95,6 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
     private fun updateProgress() {
-        // Obtain the current user's ID and email from FirebaseAuth
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid ?: run {
             Log.e("ExerciseVM", "User not logged in.")
@@ -112,7 +111,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         currentLevelId?.let { levelId ->
             viewModelScope.launch {
                 try {
-                    repository.updateUserProgress(userId, levelId, score, email, totalCorrectAnswers)
+                    // Get total questions attempted for the level
+                    val totalQuestions = exercises.value?.size ?: 0
+                    repository.updateUserProgress(userId, levelId, score, totalCorrectAnswers, totalQuestions)
                     Log.d("ExerciseVM", "User progress updated for level $levelId")
                 } catch (e: Exception) {
                     Log.e("ExerciseVM", "Error updating user progress for level $levelId", e)
