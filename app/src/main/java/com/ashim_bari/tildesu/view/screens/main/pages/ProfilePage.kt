@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -178,18 +179,24 @@ fun UpdatePasswordDialog(
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var currentPassword by rememberSaveable { mutableStateOf("") }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     // FocusRequester instances
     val newPasswordFocusRequester = remember { FocusRequester() }
     val currentPasswordFocusRequester = remember { FocusRequester() }
     val confirmPasswordFocusRequester = remember { FocusRequester() }
-
+    //var isDonePressed by remember { mutableStateOf(false) }
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
             delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
             errorMessage = null // Reset the success message to hide it
         }
     }
+//    LaunchedEffect(isDonePressed) {
+//        if (isDonePressed) {
+//            keyboardController?.hide()
+//            isDonePressed = false // Reset the flag
+//        }
+//    }
 
     AlertDialog(
         onDismissRequest = onClose,
@@ -223,7 +230,10 @@ fun UpdatePasswordDialog(
                     label = { Text("Confirm Password") },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { /* Define your action here */ }),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide() // Attempt to hide the keyboard
+                        // Explicitly clear focus here if possible
+                    }),
                     modifier = Modifier.focusRequester(confirmPasswordFocusRequester)
                 )
                 errorMessage?.let {
