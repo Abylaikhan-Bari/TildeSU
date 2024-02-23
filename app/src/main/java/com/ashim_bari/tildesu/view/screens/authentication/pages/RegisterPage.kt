@@ -98,7 +98,7 @@ fun RegisterPage(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
@@ -109,7 +109,7 @@ fun RegisterPage(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id = R.string.password)) },
             singleLine = true,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -132,7 +132,7 @@ fun RegisterPage(
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
+            label = { Text(stringResource(id = R.string.confirm_password)) },
             singleLine = true,
             visualTransformation = if (confirmpasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -163,6 +163,8 @@ fun RegisterPage(
             contentAlignment = Alignment.Center
         ) {
             Crossfade(targetState = isLoading || isSuccess, label = "Register") {
+                val registerSuccessfulMessage = stringResource(id = R.string.register_successful)
+                val registerFailedMessage = stringResource(id = R.string.register_failed)
                 when {
                     isLoading -> CircularProgressIndicator(color = BluePrimary) // Set the color to BluePrimary
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary) // Set the tint to BluePrimary
@@ -175,17 +177,17 @@ fun RegisterPage(
                                 isLoading = false
                                 isSuccess = success
                                 if (success) {
-                                    snackbarHostState.showSnackbar("Registration successful")
+                                    snackbarHostState.showSnackbar(registerSuccessfulMessage)
                                     navController.navigate(Navigation.AUTHENTICATION_ROUTE)
                                 } else {
-                                    snackbarHostState.showSnackbar("Registration failed")
+                                    snackbarHostState.showSnackbar(registerFailedMessage)
                                 }
                             }
                         },
                         modifier = Modifier.fillMaxSize(),
                         colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
                     ) {
-                        Text("Register", color = Color.White) // You might adjust the text color if needed
+                        Text(stringResource(id = R.string.register_button), color = Color.White)// You might adjust the text color if needed
                     }
                 }
             }
@@ -199,7 +201,7 @@ fun RegisterPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text("Already have an account? Login")
+                Text(stringResource(id = R.string.login_prompt))
             }
         }
     }

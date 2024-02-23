@@ -72,7 +72,7 @@ fun ResetPasswordPage(
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -89,6 +89,8 @@ fun ResetPasswordPage(
             var isSuccess by rememberSaveable { mutableStateOf(false) }
 
             Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
+                val resetSuccessfulMessage = stringResource(id = R.string.reset_successful)
+                val resetFailedMessage = stringResource(id = R.string.reset_failed)
                 when {
                     isLoading -> CircularProgressIndicator(color = BluePrimary)
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
@@ -101,17 +103,17 @@ fun ResetPasswordPage(
                                 isLoading = false
                                 isSuccess = success
                                 if (success) {
-                                    snackbarHostState.showSnackbar("Reset password email sent successfully")
+                                    snackbarHostState.showSnackbar(resetSuccessfulMessage)
                                     navController.navigate(Navigation.AUTHENTICATION_ROUTE)
                                 } else {
-                                    snackbarHostState.showSnackbar("Failed to reset password. Please try again.")
+                                    snackbarHostState.showSnackbar(resetFailedMessage)
                                 }
                             }
                         },
                         modifier = Modifier.fillMaxSize(),
                         colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
                     ) {
-                        Text("Confirm", color = Color.White)
+                        Text(stringResource(id = R.string.confirm_reset_button), color = Color.White)
                     }
                 }
             }
@@ -124,10 +126,10 @@ fun ResetPasswordPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text("Login")
+                Text(stringResource(id = R.string.login_prompt))
             }
             TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text("Register")
+                Text(stringResource(id = R.string.register_prompt))
             }
         }
     }

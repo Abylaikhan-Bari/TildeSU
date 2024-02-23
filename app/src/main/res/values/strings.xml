@@ -5,10 +5,18 @@
     <string name="reset_password">Reset password</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+    <string name="confirm_reset_button">Confirm</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="register_prompt">Don\'t have an account? Register</string>
+    <string name="login_prompt">Already have an account? Login</string>
     <string name="login_successful">Login successful</string>
+    <string name="register_successful">Registration successful</string>
+    <string name="register_failed">Registration failed</string>
+    <string name="reset_successful">Reset password email sent successfully</string>
+    <string name="reset_failed">Failed to reset password. Please try again.</string>
     <string name="login_failed">Login failed. Please check your credentials.</string>
 
 </resources>

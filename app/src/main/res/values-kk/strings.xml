@@ -5,10 +5,18 @@
     <string name="reset_password">Құпия сөзді қалпына келтіру</string>
     <string name="email">Электрондық пошта</string>
     <string name="password">Құпия сөз</string>
+    <string name="confirm_password">Құпия сөзді растау</string>
     <string name="login_button">Кіру</string>
+    <string name="register_button">Тіркелу</string>
+    <string name="confirm_reset_button">Растау</string>
     <string name="forgot_password">Құпия сөзді ұмыттыңыз ба?</string>
     <string name="register_prompt">Аккаунтыңыз жоқ па? Тіркелу</string>
+    <string name="login_prompt">Аккаунтыңыз бар ма? Кіру</string>
     <string name="login_successful">Кіру сәтті өтті</string>
-    <string name="login_failed">Кіру сәтсіз аяқталды. Өзіңіздің кіру деректеріңізді тексеріңіз.</string>
+    <string name="register_successful">Тіркелу сәтті өтті</string>
+    <string name="register_failed">Тіркелу сәтсіз аяқталды</string>
+    <string name="reset_successful">Құпия сөзді қалпына келтіру электрондық хаты сәтті жіберілді</string>
+    <string name="reset_failed">Құпия сөзді қалпына келтіру сәтсіз аяқталды. Қайталап көріңіз</string>
+    <string name="login_failed">Кіру сәтсіз аяқталды. Өзіңіздің кіру деректеріңізді тексеріңіз</string>
 
 </resources>
