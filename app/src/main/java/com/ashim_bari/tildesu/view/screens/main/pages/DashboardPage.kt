@@ -1,5 +1,9 @@
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -57,30 +61,35 @@ fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
         ), label = ""
     )
 
-    Column {
-        Text(
-            text = level,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Box(
-            modifier = Modifier
-                .height(56.dp) // Adjust the height to match your design
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
-        ) {
-            LinearProgressIndicator(
-                progress = animatedProgress, // Correctly use the animatedProgress value here
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp) // Ensure the height matches the enclosing Box
-                    .clip(RoundedCornerShape(12.dp)), // Apply rounded corners
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+    // Entry animation for the progress bar container
+    AnimatedVisibility(
+        visible = true, // You can control visibility with a state if needed
+        enter = fadeIn(animationSpec = tween(1000)) + expandVertically(animationSpec = tween(1000)),
+        exit = fadeOut(animationSpec = tween(1000)),
+    ) {
+        Column {
+            Text(
+                text = level,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-
-
+            Box(
+                modifier = Modifier
+                    .height(56.dp) // Adjust the height to match your design
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
+            ) {
+                LinearProgressIndicator(
+                    progress = animatedProgress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp) // Match the height of the Box to fill it completely
+                        .clip(RoundedCornerShape(12.dp)), // Apply the same rounded corners to the progress indicator
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+                )
+            }
         }
     }
 }

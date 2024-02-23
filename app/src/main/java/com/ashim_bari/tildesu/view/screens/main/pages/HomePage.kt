@@ -68,11 +68,11 @@ fun HomePage(navController: NavHostController) {
 fun CardComponent(level: String, route: String, navController: NavHostController, index: Int) {
     // Manage the visibility state to trigger the animation
     var visible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(key1 = true) {
-        // Add a start delay based on the card index
-        delay(100L * index)
-        visible = true
+    LaunchedEffect(key1 = "init") { // Use a descriptive key or comment to clarify intent
+        delay(100L * index) // Add delay based on index to stagger animations
+        visible = true // Trigger animation by setting visible to true
     }
+
 
     AnimatedVisibility(
         visible = visible,
