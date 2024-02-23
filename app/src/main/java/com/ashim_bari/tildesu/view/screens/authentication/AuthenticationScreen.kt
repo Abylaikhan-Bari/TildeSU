@@ -38,6 +38,9 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
+    var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
+    var currentLanguage by rememberSaveable { mutableStateOf("English") }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
@@ -93,7 +96,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 0.dp)
-                        .size(200.dp) // Adjust the size as needed
+                        .size(width = 400.dp, height = 100.dp) // Adjust the size as needed
                 )
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen), // Use the resource ID for your logo
@@ -101,14 +104,16 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 0.dp)
-                        .size(120.dp) // Adjust the size as needed
+                        .size(width = 300.dp, height = 100.dp) // Adjust the size as needed
                 )
                 when (currentScreen) {
                     AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                 }
+
             }
+
         }
     }
 }

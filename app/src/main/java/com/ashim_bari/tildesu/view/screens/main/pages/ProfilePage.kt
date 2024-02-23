@@ -379,19 +379,19 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(250.dp) // Increased size
-            .clip(RectangleShape)
+            .size(210.dp) // Increased size
+            .clip(CircleShape)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
     ) {
-        Box(modifier = Modifier.clip(RectangleShape)) {
+        Box(modifier = Modifier.clip(CircleShape)) {
             if (imageUrl != null) {
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUrl),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(RectangleShape),
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
@@ -400,7 +400,7 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
                     contentDescription = "Default Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(RectangleShape),
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
