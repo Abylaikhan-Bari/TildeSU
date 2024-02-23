@@ -53,6 +53,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.res.stringResource
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
@@ -89,9 +91,8 @@ fun RegisterPage(
         }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "Register",
+            text = stringResource(id = R.string.register),
             style = MaterialTheme.typography.headlineSmall
-
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(

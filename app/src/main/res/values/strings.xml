@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">TildeSU</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="reset_password">Reset password</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login_button">Login</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="register_prompt">Don\'t have an account? Register</string>
+    <string name="login_successful">Login successful</string>
+    <string name="login_failed">Login failed. Please check your credentials.</string>
+
 </resources>

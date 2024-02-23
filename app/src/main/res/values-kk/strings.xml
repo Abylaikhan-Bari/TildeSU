@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TildeSU</string>
+    <string name="login">Кіру</string>
+    <string name="register">Тіркелу</string>
+    <string name="reset_password">Құпия сөзді қалпына келтіру</string>
+    <string name="email">Электрондық пошта</string>
+    <string name="password">Құпия сөз</string>
+    <string name="login_button">Кіру</string>
+    <string name="forgot_password">Құпия сөзді ұмыттыңыз ба?</string>
+    <string name="register_prompt">Аккаунтыңыз жоқ па? Тіркелу</string>
+    <string name="login_successful">Кіру сәтті өтті</string>
+    <string name="login_failed">Кіру сәтсіз аяқталды. Өзіңіздің кіру деректеріңізді тексеріңіз.</string>
+
+</resources>

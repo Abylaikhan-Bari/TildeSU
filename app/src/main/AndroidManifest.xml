@@ -20,9 +20,11 @@
         tools:targetApi="tiramisu">
         <activity
             android:name=".view.MainActivity"
+            android:configChanges="locale|layoutDirection"
             android:screenOrientation="portrait"
             android:exported="true"
-            android:theme="@style/Theme.TildeSU">
+            android:theme="@style/Theme.TildeSU"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

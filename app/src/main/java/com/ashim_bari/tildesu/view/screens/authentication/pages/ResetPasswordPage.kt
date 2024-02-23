@@ -31,8 +31,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
@@ -63,7 +65,7 @@ fun ResetPasswordPage(
         }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "Reset password",
+            text = stringResource(id = R.string.reset_password),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.height(16.dp))

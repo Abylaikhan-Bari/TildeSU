@@ -32,7 +32,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val padding = if (isLandscape) 32.dp else 16.dp
     val scrollState = rememberScrollState()
-
     var currentScreen by rememberSaveable { mutableStateOf(AuthScreens.Login) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()

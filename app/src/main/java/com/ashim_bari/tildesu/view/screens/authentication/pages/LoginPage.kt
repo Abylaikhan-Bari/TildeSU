@@ -49,6 +49,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.res.stringResource
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -85,14 +87,15 @@ fun LoginPage(
         }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "Login",
+            text = stringResource(id = R.string.login),
             style = MaterialTheme.typography.headlineSmall
         )
+
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
@@ -104,7 +107,7 @@ fun LoginPage(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id = R.string.password)) },
             singleLine = true,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -131,7 +134,7 @@ fun LoginPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.ResetPassword) }) {
-                Text("Forgot password?")
+                Text(stringResource(id = R.string.forgot_password))
             }
         }
         Box(
@@ -142,11 +145,16 @@ fun LoginPage(
             contentAlignment = Alignment.Center
         ) {
             Crossfade(targetState = isLoading || isSuccess, label = "Login") {
+                val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
+                val loginFailedMessage = stringResource(id = R.string.login_failed)
+
                 when {
                     isLoading -> CircularProgressIndicator(color = BluePrimary)
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
                     else -> Button(
+
                         onClick = {
+
                             coroutineScope.launch {
                                 isLoading = true
                                 isSuccess = false
@@ -154,17 +162,17 @@ fun LoginPage(
                                 isLoading = false
                                 isSuccess = success
                                 if (success) {
-                                    snackbarHostState.showSnackbar("Login successful")
+                                    snackbarHostState.showSnackbar(loginSuccessfulMessage)
                                     navController.navigate(Navigation.MAIN_ROUTE)
                                 } else {
-                                    snackbarHostState.showSnackbar("Login failed. Please check your credentials.")
+                                    snackbarHostState.showSnackbar(loginFailedMessage)
                                 }
                             }
                         },
                         modifier = Modifier.fillMaxSize(),
                         colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
                     ) {
-                        Text("Login", color = Color.White)
+                        Text(stringResource(id = R.string.login_button), color = Color.White)
                     }
                 }
             }
@@ -178,7 +186,7 @@ fun LoginPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text("Don't have an account? Register")
+                Text(stringResource(id = R.string.register_prompt))
             }
         }
     }

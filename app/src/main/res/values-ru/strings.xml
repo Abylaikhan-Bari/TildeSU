@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TildeSU</string>
+    <string name="login">Войти</string>
+    <string name="register">Регстрация</string>
+    <string name="reset_password">Сброс пароля</string>
+    <string name="email">Электронная почта</string>
+    <string name="password">Пароль</string>
+    <string name="login_button">Войти</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="register_prompt">Нет аккаунта? Зарегистрироваться</string>
+    <string name="login_successful">Вход выполнен успешно</string>
+    <string name="login_failed">Не удалось войти. Пожалуйста, проверьте ваши учетные данные.</string>
+
+
+</resources>
