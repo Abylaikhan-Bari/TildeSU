@@ -82,7 +82,7 @@ fun CardComponent(level: String, route: String, navController: NavHostController
         Card(
             onClick = { navController.navigate(route) },
             modifier = Modifier
-                .size(width = 160.dp, height = 100.dp) // Set the size as needed
+                .size(width = 190.dp, height = 100.dp) // Set the size as needed
                 .padding(horizontal = 8.dp, vertical = 4.dp), // Adjust padding as needed
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)

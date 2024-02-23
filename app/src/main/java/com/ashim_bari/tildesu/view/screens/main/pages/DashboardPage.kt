@@ -1,3 +1,5 @@
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -44,7 +46,16 @@ fun DashboardPage(mainViewModel: MainViewModel) {
 
 @Composable
 fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
-    val (progress, _) = progressPair
+    val (targetProgress, _) = progressPair
+
+    // Animate the progress value
+    val animatedProgress by animateFloatAsState(
+        targetValue = targetProgress,
+        animationSpec = tween(
+            durationMillis = 1000, // Duration of the animation in milliseconds
+            delayMillis = 500 // Start delay in milliseconds
+        ), label = ""
+    )
 
     Column {
         Text(
@@ -53,26 +64,26 @@ fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        // Increase the height of Box to ensure there's enough space for the rounded corners
         Box(
             modifier = Modifier
-                .height(60.dp) // Adjust the height to ensure the progress bar's corners are not cut off
+                .height(56.dp) // Adjust the height to match your design
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
         ) {
             LinearProgressIndicator(
-                progress = { progress },
+                progress = animatedProgress, // Correctly use the animatedProgress value here
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp) // Match the height of the Box to fill it completely
-                    .clip(RoundedCornerShape(12.dp)), // Apply the same rounded corners to the progress indicator
+                    .height(56.dp) // Ensure the height matches the enclosing Box
+                    .clip(RoundedCornerShape(12.dp)), // Apply rounded corners
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
             )
+
+
         }
     }
 }
-
 
 
 

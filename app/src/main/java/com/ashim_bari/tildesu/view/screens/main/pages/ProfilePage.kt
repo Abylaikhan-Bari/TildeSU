@@ -17,6 +17,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +56,7 @@ fun ProfilePage(navController: NavHostController) {
     val userEmail by viewModel.userEmail.observeAsState()
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
+    var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
@@ -108,13 +111,37 @@ fun ProfilePage(navController: NavHostController) {
                 )
 
 
+                // Place this card where appropriate in your Column
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ActionCard(
+                    text = "Change Language",
+                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
+                    onClick = { showLanguageDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
+                )
+
+// Language Change Dialog
+                LanguageChangeDialog(
+                    showDialog = showLanguageDialog,
+                    onDismiss = { showLanguageDialog = false },
+                    onLanguageSelected = { language ->
+                        // Handle language selection here
+                        // For example, update the app's locale or UI elements as necessary
+                        showLanguageDialog = false
+                        // You might want to trigger some state change or call a function to apply the language change.
+                    }
+                )
 
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ActionCard(
                     text = "Log Out",
-                    icon = null,
+                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out")},
                     onClick = { showLogoutDialog = true },
                     modifier = Modifier
                         .height(56.dp)
@@ -321,6 +348,32 @@ fun UpdatePasswordDialog(
         }
     )
 }
+
+@Composable
+fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageSelected: (String) -> Unit) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Choose Language") },
+            text = {
+                Column {
+                    listOf("English", "Russian", "Kazakh").forEach { language ->
+                        TextButton(onClick = { onLanguageSelected(language) }) {
+                            Text(language)
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                Button(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
 
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
