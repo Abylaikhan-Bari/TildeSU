@@ -43,14 +43,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalAutofill
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun LoginPage(
@@ -66,9 +69,11 @@ fun LoginPage(
     var passwordVisibility by rememberSaveable { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val passwordFocusRequester = remember { FocusRequester() }
+    val autofill = LocalAutofill.current
     val coroutineScope = rememberCoroutineScope()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,6 +98,7 @@ fun LoginPage(
             keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
             modifier = Modifier
                 .fillMaxWidth()
+
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
