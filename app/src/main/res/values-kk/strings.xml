@@ -5,8 +5,12 @@
     <string name="reset_password">Құпия сөзді қалпына келтіру</string>
     <string name="email">Электрондық пошта</string>
     <string name="password">Құпия сөз</string>
+    <string name="current_password">Қазіргі кілтсөз</string>
+    <string name="new_password">Жаңа кілтсөз</string>
     <string name="confirm_password">Құпия сөзді растау</string>
     <string name="login_button">Кіру</string>
+    <string name="update_button">Жаңарту</string>
+    <string name="cancel_button">Бас тарту</string>
     <string name="register_button">Тіркелу</string>
     <string name="confirm_reset_button">Растау</string>
     <string name="forgot_password">Құпия сөзді ұмыттыңыз ба?</string>
@@ -15,8 +19,31 @@
     <string name="login_successful">Кіру сәтті өтті</string>
     <string name="register_successful">Тіркелу сәтті өтті</string>
     <string name="register_failed">Тіркелу сәтсіз аяқталды</string>
+    <string name="update_password_successful">Кілтсөз сәтті жаңартылды</string>
+    <string name="update_password_failed">Кілтсөз жаңартуы сәтсіз болды</string>
     <string name="reset_successful">Құпия сөзді қалпына келтіру электрондық хаты сәтті жіберілді</string>
     <string name="reset_failed">Құпия сөзді қалпына келтіру сәтсіз аяқталды. Қайталап көріңіз</string>
     <string name="login_failed">Кіру сәтсіз аяқталды. Өзіңіздің кіру деректеріңізді тексеріңіз</string>
-
+    <string name="exit_dialog_title">Шығу</string>
+    <string name="exit_exercise_dialog_title">Жаттығуды аяқтау</string>
+    <string name="exit_dialog_content">Бағдарламадан шығуға сенімдісіз бе?</string>
+    <string name="choose_language_title">Тілді таңдаңыз</string>
+    <string name="logout_dialog_title">Шығу</string>
+    <string name="update_password_dialog_title">Кілтсөзді жаңарту</string>
+    <string name="logout_dialog_content">Шығуға сенімдісіз бе?</string>
+    <string name="exit_exercise_dialog_content">Басты бетке оралғыңыз келетініне сенімдісіз бе?</string>
+    <string name="exit_dialog_no">Жоқ</string>
+    <string name="exit_dialog_yes">Иә</string>
+    <string name="bottom_nav_home">Басты</string>
+    <string name="bottom_nav_dashboard">Бақылау тақтасы</string>
+    <string name="bottom_nav_useful">Пайдалы</string>
+    <string name="bottom_nav_profile">Профиль</string>
+    <string name="exercise_completed">Жаттығу аяқталды!</string>
+    <string name="go_home_card">Басты бетке оралу</string>
+    <string name="next_button">Келесі</string>
+    <string name="update_password_button">Кілтсөзді өзгерту</string>
+    <string name="change_language_button">Тілду өзгерту</string>
+    <string name="log_out_language_button">Шығу</string>
+    <string name="password_not_match">Кілтсөздер сәйкес келмейді.</string>
+    <string name="incorrect_password">Қазіргі кілтсөз қате.</string>
 </resources>

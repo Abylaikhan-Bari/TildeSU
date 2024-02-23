@@ -5,8 +5,12 @@
     <string name="reset_password">Reset password</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="login_button">Login</string>
+    <string name="update_button">Update</string>
+    <string name="cancel_button">Cancel</string>
     <string name="register_button">Register</string>
     <string name="confirm_reset_button">Confirm</string>
     <string name="forgot_password">Forgot password?</string>
@@ -15,8 +19,33 @@
     <string name="login_successful">Login successful</string>
     <string name="register_successful">Registration successful</string>
     <string name="register_failed">Registration failed</string>
+    <string name="update_password_successful">Password update successful</string>
+    <string name="update_password_failed">Update password failed</string>
     <string name="reset_successful">Reset password email sent successfully</string>
     <string name="reset_failed">Failed to reset password. Please try again.</string>
     <string name="login_failed">Login failed. Please check your credentials.</string>
+    <string name="exit_dialog_title">Exit App</string>
+    <string name="exit_exercise_dialog_title">Confirmation</string>
+    <string name="exit_dialog_content">Are you sure you want to exit the app?</string>
+    <string name="choose_language_title">Choose Language</string>
+    <string name="logout_dialog_title">Confirm Logout</string>
+    <string name="update_password_dialog_title">Update Password</string>
+    <string name="logout_dialog_content">Are you sure you want to log out?</string>
+    <string name="exit_exercise_dialog_content">Are you sure you want to go back to the main screen?</string>
+    <string name="exit_dialog_no">No</string>
+    <string name="exit_dialog_yes">Yes</string>
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_dashboard">Dashboard</string>
+    <string name="bottom_nav_useful">Useful</string>
+    <string name="bottom_nav_profile">Profile</string>
+    <string name="exercise_completed">Exercise Completed!</string>
+    <string name="go_home_card">Go to Home Page</string>
+    <string name="next_button">Next</string>
+    <string name="update_password_button">Update Password</string>
+    <string name="change_language_button">Change Language</string>
+    <string name="log_out_language_button">Log Out</string>
+    <string name="password_not_match">Passwords do not match.</string>
+    <string name="incorrect_password">Current password is incorrect.</string>
+
 
 </resources>

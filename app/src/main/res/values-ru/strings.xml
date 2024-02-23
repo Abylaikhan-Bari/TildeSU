@@ -5,8 +5,12 @@
     <string name="reset_password">Сброс пароля</string>
     <string name="email">Электронная почта</string>
     <string name="password">Пароль</string>
+    <string name="current_password">Нынешний пароль</string>
+    <string name="new_password">Новый пароль</string>
     <string name="confirm_password">Подтверждение пароля</string>
     <string name="login_button">Войти</string>
+    <string name="update_button">Обновить</string>
+    <string name="cancel_button">Отмена</string>
     <string name="register_button">Регистрация</string>
     <string name="confirm_reset_button">Подтвердить</string>
     <string name="forgot_password">Забыли пароль?</string>
@@ -15,9 +19,32 @@
     <string name="login_successful">Вход выполнен успешно</string>
     <string name="register_successful">Успешная регистрация</string>
     <string name="register_failed">Не удалось зарегистрироваться</string>
+    <string name="update_password_successful">Пароль обновлен успешно</string>
+    <string name="update_password_failed">Не получилось обновить пароль</string>
     <string name="reset_successful">Электронное письмо для сброса пароля отправлено успешно</string>
     <string name="reset_failed">Не удалось сбросить пароль. Пожалуйста, попробуйте снова</string>
     <string name="login_failed">Не удалось войти. Пожалуйста, проверьте ваши учетные данные.</string>
-
+    <string name="exit_dialog_title">Закрыть приложение</string>
+    <string name="exit_exercise_dialog_title">Завершить упражнение</string>
+    <string name="exit_dialog_content">Вы хотитет закрыть приложение?</string>
+    <string name="choose_language_title">Выберите язык</string>
+    <string name="logout_dialog_title">Подтвердить выход</string>
+    <string name="update_password_dialog_title">Обновить пароль</string>
+    <string name="logout_dialog_content">Вы уверены что хотите выйти?</string>
+    <string name="exit_exercise_dialog_content">Вы уверены, что хотите вернуться к главной странице?</string>
+    <string name="exit_dialog_no">Нет</string>
+    <string name="exit_dialog_yes">Да</string>
+    <string name="bottom_nav_home">Главная</string>
+    <string name="bottom_nav_dashboard">Приборная панель</string>
+    <string name="bottom_nav_useful">Полезное</string>
+    <string name="bottom_nav_profile">Профиль</string>
+    <string name="exercise_completed">Упражнение закончено!</string>
+    <string name="go_home_card">Вернуться на главную</string>
+    <string name="next_button">Следующий</string>
+    <string name="update_password_button">Обновить пароль</string>
+    <string name="change_language_button">Сменить язык</string>
+    <string name="log_out_language_button">Выйти</string>
+    <string name="password_not_match">Пароли не совпадают.</string>
+    <string name="incorrect_password">Нынешний пароль неправильный.</string>
 
 </resources>

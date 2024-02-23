@@ -31,7 +31,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
@@ -58,10 +60,10 @@ fun MainScreen(navController: NavHostController) {
     }
     // Define Bottom Navigation Items
     val bottomItems = listOf(
-        BottomNavItem("Home", Icons.Filled.Home, MainScreens.Home),
-        BottomNavItem("Dashboard", Icons.Filled.List, MainScreens.Dashboard),
-        BottomNavItem("Useful", Icons.Filled.Star, MainScreens.Useful),
-        BottomNavItem("Profile", Icons.Filled.Person, MainScreens.Profile)
+        BottomNavItem(stringResource(id = R.string.bottom_nav_home), Icons.Filled.Home, MainScreens.Home),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_dashboard), Icons.Filled.List, MainScreens.Dashboard),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_useful), Icons.Filled.Star, MainScreens.Useful),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_profile), Icons.Filled.Person, MainScreens.Profile)
     )
 
     Scaffold(
@@ -116,8 +118,8 @@ fun MainScreen(navController: NavHostController) {
                     // If the dialog is dismissed, don't exit the app
                     showExitConfirmation = false
                 },
-                title = { Text("Exit App") },
-                text = { Text("Are you sure you want to exit the app?") },
+                title = { Text(stringResource(id = R.string.exit_dialog_title)) },
+                text = { Text(stringResource(id = R.string.exit_dialog_content)) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -125,7 +127,7 @@ fun MainScreen(navController: NavHostController) {
                             activity?.finish()
                         }
                     ) {
-                        Text("Yes")
+                        Text(stringResource(id = R.string.exit_dialog_yes))
                     }
                 },
                 dismissButton = {
@@ -135,7 +137,7 @@ fun MainScreen(navController: NavHostController) {
                             showExitConfirmation = false
                         }
                     ) {
-                        Text("No")
+                        Text(stringResource(id = R.string.exit_dialog_no))
                     }
                 }
             )

@@ -15,10 +15,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
@@ -54,7 +56,7 @@ fun ExerciseScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Exercise - Level $currentLevel") },
+                title = { Text(currentLevel) },
                 navigationIcon = {
                     if (!quizCompleted) {
                         IconButton(
@@ -91,7 +93,7 @@ fun ExerciseScreen(
                     // Log action: Quiz completed
                     Log.d("ExerciseScreen", "Quiz completed")
 
-                    Text("Quiz Completed!", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
+                    Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
                         modifier = Modifier
@@ -103,7 +105,7 @@ fun ExerciseScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text("Go to Home Page", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+                        Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
                     }
                     Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
                         Alignment.CenterHorizontally))
@@ -140,7 +142,7 @@ fun ExerciseScreen(
                         modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally), // Align the button to the center horizontally
                         enabled = selectedOption != -1
                     ) {
-                        Text("Next")
+                        Text(stringResource(id = R.string.next_button))
                     }
                 } else {
                     Text("No exercises found for $currentLevel", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.align(
@@ -154,8 +156,8 @@ fun ExerciseScreen(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Confirmation") },
-            text = { Text("Are you sure you want to go back to the main screen?")},
+            title = { Text(stringResource(id = R.string.exit_exercise_dialog_title)) },
+            text = { Text(stringResource(id = R.string.exit_exercise_dialog_content)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -163,14 +165,14 @@ fun ExerciseScreen(
                         navController.navigate("main")
                     }
                 ) {
-                    Text("Yes")
+                    Text(stringResource(id = R.string.exit_dialog_yes))
                 }
             },
             dismissButton = {
                 Button(
                     onClick = { showDialog = false }
                 ) {
-                    Text("No")
+                    Text(stringResource(id = R.string.exit_dialog_no))
                 }
             }
         )

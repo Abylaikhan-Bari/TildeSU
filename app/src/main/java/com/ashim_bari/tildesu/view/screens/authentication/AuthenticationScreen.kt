@@ -23,6 +23,7 @@ import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.ashim_bari.tildesu.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -61,8 +62,8 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                         // If the dialog is dismissed, don't exit the app
                         showExitConfirmation = false
                     },
-                    title = { Text("Exit App") },
-                    text = { Text("Are you sure you want to exit the app?") },
+                    title = { Text(stringResource(id = R.string.exit_dialog_title)) },
+                    text = { Text(stringResource(id = R.string.exit_dialog_content)) },
                     confirmButton = {
                         Button(
                             onClick = {
@@ -70,7 +71,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                                 activity?.finish()
                             }
                         ) {
-                            Text("Yes")
+                            Text(stringResource(id = R.string.exit_dialog_yes))
                         }
                     },
                     dismissButton = {
@@ -80,7 +81,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                                 showExitConfirmation = false
                             }
                         ) {
-                            Text("No")
+                            Text(stringResource(id = R.string.exit_dialog_no))
                         }
                     }
                 )

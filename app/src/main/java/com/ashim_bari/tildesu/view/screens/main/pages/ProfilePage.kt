@@ -38,6 +38,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
@@ -101,7 +102,7 @@ fun ProfilePage(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ActionCard(
-                    text = "Update Password",
+                    text = stringResource(id = R.string.update_password_button),
                     icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
                     onClick = { showUpdatePasswordDialog = true },
                     modifier = Modifier
@@ -115,7 +116,7 @@ fun ProfilePage(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ActionCard(
-                    text = "Change Language",
+                    text = stringResource(id = R.string.change_language_button),
                     icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
                     onClick = { showLanguageDialog = true },
                     modifier = Modifier
@@ -140,7 +141,7 @@ fun ProfilePage(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ActionCard(
-                    text = "Log Out",
+                    text = stringResource(id = R.string.log_out_language_button),
                     icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out")},
                     onClick = { showLogoutDialog = true },
                     modifier = Modifier
@@ -159,10 +160,12 @@ fun ProfilePage(navController: NavHostController) {
                         }
                     )
                 }
+                val updatePasswordSuccessfulMessage = stringResource(id = R.string.update_password_successful)
+
                 LaunchedEffect(passwordUpdatedSuccessfully) {
                     if (passwordUpdatedSuccessfully) {
                         snackbarHostState.showSnackbar(
-                            message = "Password updated successfully.",
+                            message = updatePasswordSuccessfulMessage,
                             duration = SnackbarDuration.Short
                         )
                         // Reset the flag to avoid showing the snackbar again unless another update occurs
@@ -172,8 +175,8 @@ fun ProfilePage(navController: NavHostController) {
                 if (showLogoutDialog) {
                     AlertDialog(
                         onDismissRequest = { showLogoutDialog = false },
-                        title = { Text("Confirm Logout") },
-                        text = { Text("Are you sure you want to log out?") },
+                        title = { Text(stringResource(id = R.string.logout_dialog_title)) },
+                        text = { Text(stringResource(id = R.string.logout_dialog_content)) },
                         confirmButton = {
                             TextButton(
                                 onClick = {
@@ -181,14 +184,14 @@ fun ProfilePage(navController: NavHostController) {
                                     showLogoutDialog = false
                                 }
                             ) {
-                                Text("Log Out")
+                                Text(stringResource(id = R.string.log_out_language_button))
                             }
                         },
                         dismissButton = {
                             TextButton(
                                 onClick = { showLogoutDialog = false }
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(id = R.string.cancel_button))
                             }
                         }
                     )
@@ -255,6 +258,9 @@ fun UpdatePasswordDialog(
     val currentPasswordFocusRequester = remember { FocusRequester() }
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     //var isDonePressed by remember { mutableStateOf(false) }
+    val updatePasswordFailedMessage = stringResource(id = R.string.update_password_failed)
+    val passwordNotMatch = stringResource(id = R.string.password_not_match)
+    val incorrectPassword = stringResource(id = R.string.incorrect_password)
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
             delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
@@ -270,13 +276,13 @@ fun UpdatePasswordDialog(
 
     AlertDialog(
         onDismissRequest = onClose,
-        title = { Text("Update Password") },
+        title = { Text(stringResource(id = R.string.update_password_dialog_title)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = currentPassword,
                     onValueChange = { currentPassword = it },
-                    label = { Text("Current Password") },
+                    label = { Text(stringResource(id = R.string.current_password))  },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
@@ -288,7 +294,7 @@ fun UpdatePasswordDialog(
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text("New Password") },
+                    label = { Text(stringResource(id = R.string.new_password))  },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
@@ -297,7 +303,7 @@ fun UpdatePasswordDialog(
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") },
+                    label = { Text(stringResource(id = R.string.confirm_password))  },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
@@ -324,26 +330,26 @@ fun UpdatePasswordDialog(
                                         onPasswordUpdated()
                                         onClose()
                                     } else {
-                                        errorMessage = "Failed to update password."
+                                        errorMessage = updatePasswordFailedMessage
                                     }
                                 }
                             } else {
-                                errorMessage = "Passwords do not match."
+                                errorMessage = passwordNotMatch
                             }
                         } else {
                             // Handle re-authentication failure
-                            errorMessage = "Current password is incorrect."
+                            errorMessage = incorrectPassword
                         }
                     }
                 }
             )
             {
-                Text("Update")
+                Text(stringResource(id = R.string.update_button))
             }
         },
         dismissButton = {
             Button(onClick = onClose) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_button))
             }
         }
     )
@@ -354,7 +360,7 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Choose Language") },
+            title = { Text(stringResource(id = R.string.choose_language_title)) },
             text = {
                 Column {
                     listOf("English", "Russian", "Kazakh").forEach { language ->
@@ -367,7 +373,7 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
             confirmButton = {},
             dismissButton = {
                 Button(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.cancel_button))
                 }
             }
         )
