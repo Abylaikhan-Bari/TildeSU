@@ -38,8 +38,10 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
     var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
-    var currentLanguage by rememberSaveable { mutableStateOf("English") }
 
+    var expanded by remember { mutableStateOf(false) }
+    var currentLanguage by remember { mutableStateOf("English") }
+    val languages = listOf("English", "Russian", "Kazakh")
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
@@ -110,7 +112,26 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                 }
-
+                Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(onClick = { expanded = true }) {
+                        Text(text = currentLanguage)
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        languages.forEach { language ->
+                            DropdownMenuItem(
+                                text = { Text(language) },
+                                onClick = {
+                                    currentLanguage = language
+                                    expanded = false
+                                    // Add your language change handling logic here
+                                }
+                            )
+                        }
+                    }
+                }
             }
 
         }
