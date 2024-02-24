@@ -1,34 +1,34 @@
 package com.ashim_bari.tildesu.view.screens.authentication
 
+import LanguageManager
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import android.content.res.Configuration
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.saveable.rememberSaveable
-import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
-import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
-import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.view.MainActivity
+import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
+import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
+import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
+import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -51,13 +51,21 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val languages = listOf("English", "Russian", "Kazakh")
     val languageCodes = listOf("en", "ru", "kk")
 
-    val currentLanguageCode by languageViewModel.language.observeAsState(initial = LanguageManager.getLanguagePreference(context))
+    val currentLanguageCode = languageViewModel.language.collectAsState().value
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
 
+//    LaunchedEffect(currentLanguageCode) {
+//        currentLanguage = getLanguageName(currentLanguageCode)
+//        // This is where you would trigger any necessary actions to refresh UI components
+//        // Note: Actual UI components should automatically update due to the state change
+//    }
     LaunchedEffect(currentLanguageCode) {
         currentLanguage = getLanguageName(currentLanguageCode)
     }
-
+    LaunchedEffect(key1 = currentLanguageCode) {
+        Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
+        // Additional actions if needed
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -152,7 +160,10 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                                     currentLanguage = language
                                     expanded = false
                                     LanguageManager.setLocale(context, code)
+
                                     languageViewModel.setLanguage(context,code)
+
+                                    (context as? MainActivity)?.restartActivity()
                                 }
                             )
                         }

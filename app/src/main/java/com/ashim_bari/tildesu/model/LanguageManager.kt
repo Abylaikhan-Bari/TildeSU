@@ -5,7 +5,7 @@ import java.util.*
 
 object LanguageManager {
     private const val LANGUAGE_KEY = "language_key"
-    private const val DEFAULT_LANGUAGE = "en"
+    const val DEFAULT_LANGUAGE = "en"
 
     fun setLocale(context: Context, languageCode: String): Context {
         persistLanguagePreference(context, languageCode)
