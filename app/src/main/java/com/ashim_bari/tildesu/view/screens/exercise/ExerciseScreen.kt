@@ -56,7 +56,11 @@ fun ExerciseScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(currentLevel) },
+                title = { Text(
+                    text = stringResource(
+                        R.string.exercise_level,
+                        currentLevel
+                    ))  },
                 navigationIcon = {
                     if (!quizCompleted) {
                         IconButton(
@@ -107,7 +111,11 @@ fun ExerciseScreen(
                     ) {
                         Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
                     }
-                    Text("Your score: ${exerciseViewModel.score.observeAsState().value}", modifier = Modifier.align(
+                    Text(
+                        text = stringResource(
+                            R.string.your_score,
+                            exerciseViewModel.score.observeAsState().value ?: 0
+                        ), modifier = Modifier.align(
                         Alignment.CenterHorizontally))
                 } else if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                     val currentExercise = exercises[currentQuestionIndex]
@@ -145,7 +153,11 @@ fun ExerciseScreen(
                         Text(stringResource(id = R.string.next_button))
                     }
                 } else {
-                    Text("No exercises found for $currentLevel", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.align(
+                    Text(
+                        text = stringResource(
+                            R.string.no_exercises_found,
+                            currentLevel
+                        ), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.align(
                         Alignment.CenterHorizontally)) // Use currentLevel here
                 }
             }

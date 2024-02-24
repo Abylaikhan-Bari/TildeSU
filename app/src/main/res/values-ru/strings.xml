@@ -46,5 +46,8 @@
     <string name="log_out_language_button">Выйти</string>
     <string name="password_not_match">Пароли не совпадают.</string>
     <string name="incorrect_password">Нынешний пароль неправильный.</string>
+    <string name="your_score">Ваш счет: %1$d</string>
+    <string name="no_exercises_found">Упражнения для %1$s не найдены</string>
+    <string name="exercise_level">Уровень упражнения: %1$s</string>
 
 </resources>
