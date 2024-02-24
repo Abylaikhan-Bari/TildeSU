@@ -5,7 +5,7 @@
     <string name="reset_password">Сброс пароля</string>
     <string name="email">Электронная почта</string>
     <string name="password">Пароль</string>
-    <string name="current_password">Нынешний пароль</string>
+    <string name="current_password">Текущий пароль</string>
     <string name="new_password">Новый пароль</string>
     <string name="confirm_password">Подтверждение пароля</string>
     <string name="login_button">Войти</string>
@@ -41,11 +41,11 @@
     <string name="exercise_completed">Упражнение закончено!</string>
     <string name="go_home_card">Вернуться на главную</string>
     <string name="next_button">Следующий</string>
-    <string name="update_password_button">Обновить пароль</string>
+    <string name="update_password_button">Изменить пароль</string>
     <string name="change_language_button">Сменить язык</string>
     <string name="log_out_language_button">Выйти</string>
     <string name="password_not_match">Пароли не совпадают.</string>
-    <string name="incorrect_password">Нынешний пароль неправильный.</string>
+    <string name="incorrect_password">Текущий пароль неправильный.</string>
     <string name="your_score">Ваш счет: %1$d</string>
     <string name="no_exercises_found">Упражнения для %1$s не найдены</string>
     <string name="exercise_level">Уровень упражнения: %1$s</string>
@@ -53,4 +53,14 @@
     <string name="language_russian">Русский</string>
     <string name="language_kazakh">Казахский</string>
     <string name="select_language">Выберите язык</string>
+    <string name="level_a1">Уровень A1</string>
+    <string name="level_a2">Уровень A2</string>
+    <string name="level_b1">Уровень B1</string>
+    <string name="level_b2">Уровень B2</string>
+    <string name="level_c1">Уровень C1</string>
+    <string name="level_c2">Уровень C2</string>
+    <string name="no_progress_data">Данные о прогрессе отсутствуют. Начните учиться, чтобы видеть свой прогресс!</string>
+    <string name="error_current_password_empty">Заполните поле текущего пароля!</string>
+    <string name="error_new_password_empty">Заполните поле нового пароля!</string>
+    <string name="error_confirm_password_empty">Заполните поле подтверждения пароля!</string>
 </resources>

@@ -40,7 +40,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun ProfilePage(navController: NavHostController) {
@@ -149,9 +148,9 @@ fun ProfilePage(navController: NavHostController) {
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
                         viewModel = viewModel,
+                        snackbarHostState = snackbarHostState, // Pass the snackbarHostState
                         onClose = { showUpdatePasswordDialog = false },
                         onPasswordUpdated = {
-                            // Instead of calling LaunchedEffect here, update the state
                             passwordUpdatedSuccessfully = true
                         }
                     )
@@ -241,6 +240,7 @@ fun ActionCard(
 @Composable
 fun UpdatePasswordDialog(
     viewModel: MainViewModel,
+    snackbarHostState: SnackbarHostState, // Accept SnackbarHostState as a parameter
     onClose: () -> Unit,
     onPasswordUpdated: () -> Unit
 ) {
@@ -254,21 +254,35 @@ fun UpdatePasswordDialog(
     val currentPasswordFocusRequester = remember { FocusRequester() }
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     //var isDonePressed by remember { mutableStateOf(false) }
+
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
     val updatePasswordFailedMessage = stringResource(id = R.string.update_password_failed)
-    val passwordNotMatch = stringResource(id = R.string.password_not_match)
-    val incorrectPassword = stringResource(id = R.string.incorrect_password)
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
-            errorMessage = null // Reset the success message to hide it
+    val passwordNotMatchMessage = stringResource(id = R.string.password_not_match)
+    val incorrectPasswordMessage = stringResource(id = R.string.incorrect_password)
+    val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
+    val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
+    val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
+
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage,
+                duration = SnackbarDuration.Short
+            )
+            showSnackbar = false // Reset for next use
         }
     }
-//    LaunchedEffect(isDonePressed) {
-//        if (isDonePressed) {
-//            keyboardController?.hide()
-//            isDonePressed = false // Reset the flag
-//        }
-//    }
+    // Inside your composable, after defining the state
+    if (showSnackbar) {
+        LaunchedEffect(snackbarHostState, snackbarMessage) {
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage,
+                duration = SnackbarDuration.Short
+            )
+            showSnackbar = false // Reset the flag after showing the snackbar
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onClose,
@@ -313,35 +327,40 @@ fun UpdatePasswordDialog(
                 }
             }
         },
+
         confirmButton = {
             Button(
                 onClick = {
-                    // First, validate the current password (re-authenticate)
-                    viewModel.reAuthenticate(currentPassword) { reAuthSuccess ->
-                        if (reAuthSuccess) {
-                            // If re-authentication is successful, proceed with password update
-                            if (newPassword == confirmPassword) {
+                    if (currentPassword.isBlank()) {
+                        errorMessage = errorCurrentPasswordEmptyMessage
+                    } else if (newPassword.isBlank()) {
+                        errorMessage = errorNewPasswordEmptyMessage
+                    } else if (confirmPassword.isBlank()) {
+                        errorMessage = errorConfirmPasswordEmptyMessage
+                    } else if (newPassword != confirmPassword) {
+                        errorMessage = passwordNotMatchMessage
+                    } else {
+                        viewModel.reAuthenticate(currentPassword) { reAuthSuccess ->
+                            if (reAuthSuccess) {
                                 viewModel.updatePassword(newPassword) { success ->
                                     if (success) {
                                         onPasswordUpdated()
                                         onClose()
                                     } else {
-                                        errorMessage = updatePasswordFailedMessage
+                                        snackbarMessage = updatePasswordFailedMessage
+                                        showSnackbar = true
                                     }
                                 }
                             } else {
-                                errorMessage = passwordNotMatch
+                                errorMessage = incorrectPasswordMessage
                             }
-                        } else {
-                            // Handle re-authentication failure
-                            errorMessage = incorrectPassword
                         }
                     }
                 }
-            )
-            {
+            ) {
                 Text(stringResource(id = R.string.update_button))
             }
+
         },
         dismissButton = {
             Button(onClick = onClose) {
@@ -381,7 +400,7 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(210.dp) // Increased size
+            .size(150.dp) // Increased size
             .clip(CircleShape)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
