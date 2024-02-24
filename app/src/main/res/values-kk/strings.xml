@@ -35,7 +35,7 @@
     <string name="exit_dialog_no">Жоқ</string>
     <string name="exit_dialog_yes">Иә</string>
     <string name="bottom_nav_home">Басты</string>
-    <string name="bottom_nav_dashboard">Бақылау тақтасы</string>
+    <string name="bottom_nav_dashboard">Бақылау</string>
     <string name="bottom_nav_useful">Пайдалы</string>
     <string name="bottom_nav_profile">Профиль</string>
     <string name="exercise_completed">Жаттығу аяқталды!</string>
@@ -49,4 +49,7 @@
     <string name="your_score">Сіздің ұпайыңыз: %1$d</string>
     <string name="no_exercises_found">%1$s үшін жаттығулар табылмады</string>
     <string name="exercise_level">Жаттығу деңгейі: %1$s</string>
+    <string name="language_english">Ағылшын</string>
+    <string name="language_russian">Орыс</string>
+    <string name="language_kazakh">Қазақ</string>
 </resources>

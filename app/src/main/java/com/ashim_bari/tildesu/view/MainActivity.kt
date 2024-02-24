@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,24 +22,9 @@ import com.google.firebase.initialize
 //import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Firebase.initialize(context = this)
-        Firebase.appCheck.installAppCheckProviderFactory(
-            DebugAppCheckProviderFactory.getInstance(),
-        )
-        // Initialize Firebase
-//        FirebaseApp.initializeApp(this)
-//
-//        val appCheck = FirebaseAppCheck.getInstance()
-//        // Conditional App Check provider installation based on build type
-//        if (BuildConfig.DEBUG) {
-//            appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
-//        } else {
-//            appCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
-//        }
-
         setContent {
             TildeSUTheme {
                 Surface(
@@ -50,8 +36,23 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        initializeFirebase()
+        applyLanguageChange()
+    }
+
+    private fun initializeFirebase() {
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
+    }
+
+    private fun applyLanguageChange() {
+        val languageCode = LanguageManager.getLanguagePreference(this)
+        LanguageManager.setLocale(this, languageCode)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LanguageManager.setLocale(newBase, LanguageManager.getLanguagePreference(newBase)))
     }
 }
-
 
 

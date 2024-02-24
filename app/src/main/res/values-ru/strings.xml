@@ -35,7 +35,7 @@
     <string name="exit_dialog_no">Нет</string>
     <string name="exit_dialog_yes">Да</string>
     <string name="bottom_nav_home">Главная</string>
-    <string name="bottom_nav_dashboard">Приборная панель</string>
+    <string name="bottom_nav_dashboard">Прогресс</string>
     <string name="bottom_nav_useful">Полезное</string>
     <string name="bottom_nav_profile">Профиль</string>
     <string name="exercise_completed">Упражнение закончено!</string>
@@ -49,5 +49,7 @@
     <string name="your_score">Ваш счет: %1$d</string>
     <string name="no_exercises_found">Упражнения для %1$s не найдены</string>
     <string name="exercise_level">Уровень упражнения: %1$s</string>
-
+    <string name="language_english">Английский</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_kazakh">Казахский</string>
 </resources>

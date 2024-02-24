@@ -49,6 +49,8 @@
     <string name="your_score">Your score: %1$d</string>
     <string name="no_exercises_found">No exercises found for %1$s</string>
     <string name="exercise_level">Exercise Level: %1$s</string>
-
+    <string name="language_english">English</string>
+    <string name="language_russian">Russian</string>
+    <string name="language_kazakh">Kazakh</string>
 
 </resources>

@@ -126,10 +126,10 @@ fun ResetPasswordPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text(stringResource(id = R.string.login_prompt))
+                Text(stringResource(id = R.string.login))
             }
             TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text(stringResource(id = R.string.register_prompt))
+                Text(stringResource(id = R.string.register))
             }
         }
     }
