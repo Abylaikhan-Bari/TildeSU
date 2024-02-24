@@ -58,6 +58,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         currentLanguage = getLanguageName(currentLanguageCode)
     }
 
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
@@ -151,6 +152,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                                     currentLanguage = language
                                     expanded = false
                                     LanguageManager.setLocale(context, code)
+                                    languageViewModel.setLanguage(context,code)
                                 }
                             )
                         }
