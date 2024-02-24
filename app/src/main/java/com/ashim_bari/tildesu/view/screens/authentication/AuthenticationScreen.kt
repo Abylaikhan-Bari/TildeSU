@@ -1,6 +1,5 @@
 package com.ashim_bari.tildesu.view.screens.authentication
 
-import LanguageManager
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.util.Log
@@ -20,21 +19,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.view.MainActivity
 import com.ashim_bari.tildesu.view.screens.authentication.pages.LoginPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
-import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
-    val context = LocalContext.current
-    val languageViewModel: LanguageViewModel = viewModel()
+
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -45,27 +40,9 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
-    var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
 
-    var expanded by remember { mutableStateOf(false) }
-    val languages = listOf("English", "Russian", "Kazakh")
-    val languageCodes = listOf("en", "ru", "kk")
 
-    val currentLanguageCode = languageViewModel.language.collectAsState().value
-    var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
 
-//    LaunchedEffect(currentLanguageCode) {
-//        currentLanguage = getLanguageName(currentLanguageCode)
-//        // This is where you would trigger any necessary actions to refresh UI components
-//        // Note: Actual UI components should automatically update due to the state change
-//    }
-    LaunchedEffect(currentLanguageCode) {
-        currentLanguage = getLanguageName(currentLanguageCode)
-    }
-    LaunchedEffect(key1 = currentLanguageCode) {
-        Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
-        // Additional actions if needed
-    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -144,44 +121,13 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                         ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     }
                 }
-                Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Button(onClick = { expanded = true }) {
-                        Text(text = currentLanguage)
-                    }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        languages.zip(languageCodes).forEach { (language, code) ->
-                            DropdownMenuItem(
-                                text = { Text(language) },
-                                onClick = {
-                                    Log.d("AuthenticationScreen", "Language changed to $language")
-                                    currentLanguage = language
-                                    expanded = false
-                                    LanguageManager.setLocale(context, code)
 
-                                    languageViewModel.setLanguage(context,code)
-
-                                    (context as? MainActivity)?.restartActivity()
-                                }
-                            )
-                        }
-                    }
-                }
             }
         }
     }
 }
 
-private fun getLanguageName(languageCode: String): String {
-    return when (languageCode) {
-        "en" -> "English"
-        "ru" -> "Russian"
-        "kk" -> "Kazakh"
-        else -> "English"
-    }
-}
+
 enum class AuthScreens {
     Login,
     Register,

@@ -1,6 +1,8 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import LanguageManager
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -15,43 +17,50 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalAutofill
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.view.MainActivity
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
-import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalAutofill
-import androidx.compose.ui.res.stringResource
-import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
+import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -65,6 +74,8 @@ fun LoginPage(
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 )  {
+    val context = LocalContext.current
+    val languageViewModel: LanguageViewModel = viewModel()
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
@@ -75,7 +86,27 @@ fun LoginPage(
     val coroutineScope = rememberCoroutineScope()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
+    var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
 
+    var expanded by remember { mutableStateOf(false) }
+    val languages = listOf("English", "Russian", "Kazakh")
+    val languageCodes = listOf("en", "ru", "kk")
+    val currentLanguageCode = languageViewModel.language.collectAsState().value
+    var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
+    var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+
+//    LaunchedEffect(currentLanguageCode) {
+//        currentLanguage = getLanguageName(currentLanguageCode)
+//        // This is where you would trigger any necessary actions to refresh UI components
+//        // Note: Actual UI components should automatically update due to the state change
+//    }
+    LaunchedEffect(currentLanguageCode) {
+        currentLanguage = getLanguageName(currentLanguageCode)
+    }
+    LaunchedEffect(key1 = currentLanguageCode) {
+        Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
+        // Additional actions if needed
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -189,5 +220,77 @@ fun LoginPage(
                 Text(stringResource(id = R.string.register_prompt))
             }
         }
+        if (showLanguageDialog) {
+            AlertDialog(
+                onDismissRequest = { showLanguageDialog = false },
+                title = { Text(text = stringResource(id = R.string.select_language)) },
+                text = {
+                    Column {
+                        languages.zip(languageCodes).forEach { (language, code) ->
+                            TextButton(
+                                onClick = {
+                                    Log.d("AuthenticationScreen", "Language changed to $language")
+                                    currentLanguage = language
+                                    showLanguageDialog = false
+                                    LanguageManager.setLocale(context, code)
+                                    languageViewModel.setLanguage(context, code)
+                                    (context as? MainActivity)?.restartActivity()
+                                }
+                            ) {
+                                Text(text = language)
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    // Optionally add a button for closing or confirming
+                    Button(
+                        onClick = { showLanguageDialog = false }
+                    ) {
+                        Text(text = stringResource(id = android.R.string.ok))
+                    }
+                }
+            )
+        }
+
+
+        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+
+            TextButton(onClick = { showLanguageDialog = true }) {
+                Text(text = stringResource(id = R.string.change_language_button))
+            }
+
+//            TextButton(onClick = { expanded = true }) {
+//                Text(stringResource(id = R.string.change_language_button))
+//            }
+//            DropdownMenu(
+//                expanded = expanded,
+//                onDismissRequest = { expanded = false },
+//            ) {
+//                languages.zip(languageCodes).forEach { (language, code) ->
+//                    DropdownMenuItem(
+//                        text = { Text(language) },
+//                        onClick = {
+//                            Log.d("AuthenticationScreen", "Language changed to $language")
+//                            currentLanguage = language
+//                            expanded = false
+//                            LanguageManager.setLocale(context, code)
+//
+//                            languageViewModel.setLanguage(context,code)
+//
+//                            (context as? MainActivity)?.restartActivity()
+//                        }
+//                    )
+//                }
+//            }
+        }
+    }
+}
+fun getLanguageName(languageCode: String): String {
+    return when (languageCode) {
+        "en" -> "English"
+        "ru" -> "Russian"
+        "kk" -> "Kazakh"
+        else -> "English"
     }
 }

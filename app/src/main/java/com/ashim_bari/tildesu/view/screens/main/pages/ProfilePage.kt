@@ -18,29 +18,25 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
@@ -113,17 +109,17 @@ fun ProfilePage(navController: NavHostController) {
 
 
                 // Place this card where appropriate in your Column
-                Spacer(modifier = Modifier.height(16.dp))
+                //Spacer(modifier = Modifier.height(16.dp))
 
-                ActionCard(
-                    text = stringResource(id = R.string.change_language_button),
-                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
-                    onClick = { showLanguageDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
-                )
+//                ActionCard(
+//                    text = stringResource(id = R.string.change_language_button),
+//                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
+//                    onClick = { showLanguageDialog = true },
+//                    modifier = Modifier
+//                        .height(56.dp)
+//                        .fillMaxWidth(),
+//                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
+//                )
 
 // Language Change Dialog
                 LanguageChangeDialog(

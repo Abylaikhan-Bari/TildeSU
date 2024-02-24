@@ -42,7 +42,7 @@
     <string name="go_home_card">Басты бетке оралу</string>
     <string name="next_button">Келесі</string>
     <string name="update_password_button">Кілтсөзді өзгерту</string>
-    <string name="change_language_button">Тілду өзгерту</string>
+    <string name="change_language_button">Тілді өзгерту</string>
     <string name="log_out_language_button">Шығу</string>
     <string name="password_not_match">Кілтсөздер сәйкес келмейді.</string>
     <string name="incorrect_password">Қазіргі кілтсөз қате.</string>
@@ -52,4 +52,5 @@
     <string name="language_english">Ағылшын</string>
     <string name="language_russian">Орыс</string>
     <string name="language_kazakh">Қазақ</string>
+    <string name="select_language">Тілді таңдаңыз</string>
 </resources>
