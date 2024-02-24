@@ -1,13 +1,25 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -21,14 +33,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun ResetPasswordPage(
     navController: NavHostController,
@@ -51,35 +67,61 @@ fun ResetPasswordPage(
         }
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "Reset password",
+            text = stringResource(id = R.string.reset_password),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    val success = viewModel.resetPassword(email)
-                    if (success) {
-                        snackbarHostState.showSnackbar("Reset password email sent successfully")
-                        navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                    } else {
-                        snackbarHostState.showSnackbar("Failed to reset password. Please try again.")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .animateContentSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            var isLoading by rememberSaveable { mutableStateOf(false) }
+            var isSuccess by rememberSaveable { mutableStateOf(false) }
+
+            Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
+                val resetSuccessfulMessage = stringResource(id = R.string.reset_successful)
+                val resetFailedMessage = stringResource(id = R.string.reset_failed)
+                when {
+                    isLoading -> CircularProgressIndicator(color = BluePrimary)
+                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
+                    else -> Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                isSuccess = false // Reset success state
+                                val success = viewModel.resetPassword(email)
+                                isLoading = false
+                                isSuccess = success
+                                if (success) {
+                                    snackbarHostState.showSnackbar(resetSuccessfulMessage)
+                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                } else {
+                                    snackbarHostState.showSnackbar(resetFailedMessage)
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize().size(100.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                        shape = RoundedCornerShape(12.dp)// Use BluePrimary for the Button color
+                    ) {
+                        Text(stringResource(id = R.string.confirm_reset_button), color = Color.White)
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text("Confirm", color = Color.White)
+            }
         }
+
 
 
         Row(
@@ -87,10 +129,10 @@ fun ResetPasswordPage(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text("Login")
+                Text(stringResource(id = R.string.login))
             }
             TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text("Register")
+                Text(stringResource(id = R.string.register))
             }
         }
     }

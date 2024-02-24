@@ -1,18 +1,27 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
+import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +30,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,17 +42,21 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun RegisterPage(
     navController: NavHostController,
@@ -51,6 +65,9 @@ fun RegisterPage(
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 ) {
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    var isSuccess by rememberSaveable { mutableStateOf(false) }
+
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -62,25 +79,53 @@ fun RegisterPage(
     // Remember FocusRequester for the confirmPassword field to request focus programmatically
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val  usernameRequiredMessage= stringResource(R.string.username_required)
+    val passwordRequiredMessage = stringResource(R.string.password_required)
+    val passwordsNotMatch = stringResource(R.string.password_mismatch)
+
+    LaunchedEffect(email, password, confirmPassword) {
+        if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank() && password == confirmPassword) {
+            authMessage = null
+        } else {
+            authMessage = if (email.isNotBlank() && password.isBlank() && confirmPassword.isBlank()) {
+                passwordRequiredMessage
+            } else if (email.isBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
+                usernameRequiredMessage
+            } else if (password != confirmPassword) {
+                // Add a message for password and confirm password mismatch
+                passwordsNotMatch
+            } else {
+                null
+            }
+        }
+    }
+
+
+// Update authMessage when the user enters valid credentials
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            authMessage = null
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        authMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
-        }
+
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = "Register",
+            text = stringResource(id = R.string.register),
             style = MaterialTheme.typography.headlineSmall
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text(stringResource(id = R.string.email)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
@@ -91,7 +136,7 @@ fun RegisterPage(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id = R.string.password)) },
             singleLine = true,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
@@ -114,7 +159,7 @@ fun RegisterPage(
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
+            label = { Text(stringResource(id = R.string.confirm_password)) },
             singleLine = true,
             visualTransformation = if (confirmpasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -134,37 +179,59 @@ fun RegisterPage(
                 .fillMaxWidth()
                 .focusRequester(confirmPasswordFocusRequester) // Ensure you have declared and initialized confirmPasswordFocusRequester
         )
-
+        authMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+        }
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    if (password == confirmPassword) {
-                        val success = viewModel.register(email, password)
-                        if (success) {
-                            snackbarHostState.showSnackbar("Registration successful")
-                            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                        } else {
-                            snackbarHostState.showSnackbar("Registration failed. Please try again.")
-                        }
-                    } else {
-                        snackbarHostState.showSnackbar("Passwords do not match.")
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .animateContentSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(targetState = isLoading || isSuccess, label = "Register") {
+                val registerSuccessfulMessage = stringResource(id = R.string.register_successful)
+                val registerFailedMessage = stringResource(id = R.string.register_failed)
+                when {
+                    isLoading -> CircularProgressIndicator(color = BluePrimary) // Set the color to BluePrimary
+                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary) // Set the tint to BluePrimary
+                    else -> Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isLoading = true
+                                isSuccess = false
+                                val success = viewModel.register(email, password)
+                                isLoading = false
+                                isSuccess = success
+                                if (success) {
+                                    snackbarHostState.showSnackbar(registerSuccessfulMessage)
+                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                } else {
+                                    snackbarHostState.showSnackbar(registerFailedMessage)
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                        shape = RoundedCornerShape(12.dp) // Use BluePrimary for the Button color
+                    ) {
+                        Text(stringResource(id = R.string.register_button), color = Color.White)// You might adjust the text color if needed
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) {
-            Text("Register", color = Color.White)
+            }
         }
 
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text("Already have an account? Login")
+                Text(stringResource(id = R.string.login_prompt))
             }
         }
     }

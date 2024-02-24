@@ -1,15 +1,37 @@
-import androidx.compose.animation.AnimatedContent
+
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ashim_bari.tildesu.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomePage(navController: NavHostController) {
@@ -22,7 +44,14 @@ fun HomePage(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            val levels = listOf("A1 Level", "A2 Level", "B1 Level", "B2 Level", "C1 Level", "C2 Level")
+            val levels = listOf(
+                stringResource(id = R.string.level_a1),
+                stringResource(id = R.string.level_a2),
+                stringResource(id = R.string.level_b1),
+                stringResource(id = R.string.level_b2),
+                stringResource(id = R.string.level_c1),
+                stringResource(id = R.string.level_c2)
+            )
             val routes = listOf("exercise/A1", "exercise/A2", "exercise/B1", "exercise/B2", "exercise/C1", "exercise/C2")
 
             levels.zip(routes).forEachIndexed { index, (level, route) ->
@@ -34,7 +63,7 @@ fun HomePage(navController: NavHostController) {
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        CardComponent(level, route, navController)
+                        CardComponent(level, route, navController, index)
                     }
                 } else {
                     // Align to end
@@ -44,7 +73,7 @@ fun HomePage(navController: NavHostController) {
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        CardComponent(level, route, navController)
+                        CardComponent(level, route, navController, index)
                     }
                 }
             }
@@ -54,25 +83,34 @@ fun HomePage(navController: NavHostController) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun CardComponent(level: String, route: String, navController: NavHostController) {
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+fun CardComponent(level: String, route: String, navController: NavHostController, index: Int) {
+    // Manage the visibility state to trigger the animation
+    var visible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(key1 = "init") { // Use a descriptive key or comment to clarify intent
+        delay(100L * index) // Add delay based on index to stagger animations
+        visible = true // Trigger animation by setting visible to true
+    }
 
-    Card(
-        onClick = { navController.navigate(route) },
-        modifier = Modifier
-            // Decrease the size of the card
-            .size(width = 160.dp, height = 100.dp), // Set both width and height to 120.dp or any other desired value
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + expandIn(expandFrom = Alignment.Center), // Define your enter animation here
+        exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center), // Define your exit animation here
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(16.dp) // Add padding inside the card for the text
+        Card(
+            onClick = { navController.navigate(route) },
+            modifier = Modifier
+                .size(width = 190.dp, height = 100.dp) // Set the size as needed
+                .padding(horizontal = 8.dp, vertical = 4.dp), // Adjust padding as needed
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            // Use AnimatedContent to animate text changes
-            AnimatedContent(targetState = level, label = "") { targetLevel ->
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(16.dp) // Add padding inside the card for the text
+            ) {
                 Text(
-                    text = targetLevel,
+                    text = level,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onPrimary
                 )

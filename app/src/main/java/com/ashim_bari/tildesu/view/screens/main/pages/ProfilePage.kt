@@ -1,3 +1,6 @@
+package com.ashim_bari.tildesu.view.screens.main.pages
+
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -9,49 +12,52 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun ProfilePage(navController: NavHostController) {
-    // Get an instance of the ViewModel
     val viewModel: MainViewModel = viewModel()
     var showUpdatePasswordDialog by rememberSaveable { mutableStateOf(false) }
-    var successMessage by rememberSaveable { mutableStateOf<String?>(null) }
-    // Observe the user's email
-    val userEmail by viewModel.userEmail.observeAsState()
-    // State for showing logout confirmation dialog
-    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
-    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
+    val imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
+    val userEmail by viewModel.userEmail.observeAsState()
+    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
+    var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
+    var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
     }
-
-    // Fetch profile image URL from ViewModel
-    val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
-
-    // Other code remains the same
+    val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
 
     LaunchedEffect(imageUri) {
         imageUri?.let {
@@ -63,202 +69,366 @@ fun ProfilePage(navController: NavHostController) {
             }
         }
     }
-    // Call the function to fetch user email and possibly other user info like profile image URL
     LaunchedEffect(Unit) {
         viewModel.getUserEmail()
         // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
     }
-    LaunchedEffect(successMessage) {
-        if (successMessage != null) {
-            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
-            successMessage = null // Reset the success message to hide it
-        }
-    }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                ProfilePicture(profileImageUrl) {
+                    launcher.launch("image/*")
+                }
 
-            ProfilePicture(profileImageUrl) {
-                launcher.launch("image/*")
-            }// Placeholder for profile picture, can be expanded to show actual user profile image
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            userEmail?.let { email ->
-                ProfileAttribute(email)
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (successMessage != null) {
-                Text(
-                    text = successMessage!!,
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodyLarge
-                )
                 Spacer(modifier = Modifier.height(16.dp))
-            }
 
-            OutlinedButton(
-                onClick = { showUpdatePasswordDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Filled.Edit, contentDescription = "Update Password")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Update Password")
-            }
+                userEmail?.let { email ->
+                    ProfileAttribute(email)
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Button(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Log Out")
-            }
-            if (showUpdatePasswordDialog) {
-                UpdatePasswordDialog(
-                    viewModel = viewModel,
-                    onClose = { showUpdatePasswordDialog = false },
-                    onPasswordUpdated = {
-                        successMessage = "Password updated successfully."
+                ActionCard(
+                    text = stringResource(id = R.string.update_password_button),
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
+                    onClick = { showUpdatePasswordDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.primary
+                )
+
+
+                // Place this card where appropriate in your Column
+                //Spacer(modifier = Modifier.height(16.dp))
+
+//                ActionCard(
+//                    text = stringResource(id = R.string.change_language_button),
+//                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
+//                    onClick = { showLanguageDialog = true },
+//                    modifier = Modifier
+//                        .height(56.dp)
+//                        .fillMaxWidth(),
+//                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
+//                )
+
+// Language Change Dialog
+                LanguageChangeDialog(
+                    showDialog = showLanguageDialog,
+                    onDismiss = { showLanguageDialog = false },
+                    onLanguageSelected = { language ->
+                        // Handle language selection here
+                        // For example, update the app's locale or UI elements as necessary
+                        showLanguageDialog = false
+                        // You might want to trigger some state change or call a function to apply the language change.
                     }
                 )
-            }
-            if (showLogoutDialog) {
-                AlertDialog(
-                    onDismissRequest = { showLogoutDialog = false },
-                    title = { Text("Confirm Logout") },
-                    text = { Text("Are you sure you want to log out?") },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                viewModel.logout(navController)
-                                showLogoutDialog = false
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ActionCard(
+                    text = stringResource(id = R.string.log_out_language_button),
+                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out")},
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.errorContainer
+                )
+
+                if (showUpdatePasswordDialog) {
+                    UpdatePasswordDialog(
+                        viewModel = viewModel,
+                        snackbarHostState = snackbarHostState, // Pass the snackbarHostState
+                        onClose = { showUpdatePasswordDialog = false },
+                        onPasswordUpdated = {
+                            passwordUpdatedSuccessfully = true
+                        }
+                    )
+                }
+                val updatePasswordSuccessfulMessage = stringResource(id = R.string.update_password_successful)
+
+                LaunchedEffect(passwordUpdatedSuccessfully) {
+                    if (passwordUpdatedSuccessfully) {
+                        snackbarHostState.showSnackbar(
+                            message = updatePasswordSuccessfulMessage,
+                            duration = SnackbarDuration.Short
+                        )
+                        // Reset the flag to avoid showing the snackbar again unless another update occurs
+                        passwordUpdatedSuccessfully = false
+                    }
+                }
+                if (showLogoutDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showLogoutDialog = false },
+                        title = { Text(stringResource(id = R.string.logout_dialog_title)) },
+                        text = { Text(stringResource(id = R.string.logout_dialog_content)) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    viewModel.logout(navController)
+                                    showLogoutDialog = false
+                                }
+                            ) {
+                                Text(stringResource(id = R.string.log_out_language_button))
                             }
-                        ) {
-                            Text("Log Out")
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showLogoutDialog = false }
+                            ) {
+                                Text(stringResource(id = R.string.cancel_button))
+                            }
                         }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showLogoutDialog = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
+                    )
+                }
             }
         }
+
+        // Correct placement of SnackbarHost within Box layout using 'align'
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
-
-
-
-
 }
+
+@Composable
+fun ActionCard(
+    text: String,
+    icon: @Composable (() -> Unit)? = null,
+    onClick: () -> Unit,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier
+            .size(350.dp)
+            .fillMaxWidth(), // Adjusted padding for better space utilization.
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    ) {
+        Row(
+            modifier = Modifier.padding(all = 15.dp), // Adjusted for potentially better text visibility.
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            icon?.invoke()
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f) // Ensures text tries to fill available space, pushing it to be fully visible.
+            )
+        }
+    }
+}
+
+
 
 @Composable
 fun UpdatePasswordDialog(
     viewModel: MainViewModel,
+    snackbarHostState: SnackbarHostState, // Accept SnackbarHostState as a parameter
     onClose: () -> Unit,
     onPasswordUpdated: () -> Unit
 ) {
     var newPassword by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            delay(3000) // Delay in milliseconds, e.g., 3000ms = 3 seconds
-            errorMessage = null // Reset the success message to hide it
+    var currentPassword by rememberSaveable { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    // FocusRequester instances
+    val newPasswordFocusRequester = remember { FocusRequester() }
+    val currentPasswordFocusRequester = remember { FocusRequester() }
+    val confirmPasswordFocusRequester = remember { FocusRequester() }
+    //var isDonePressed by remember { mutableStateOf(false) }
+
+    var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
+    val updatePasswordFailedMessage = stringResource(id = R.string.update_password_failed)
+    val passwordNotMatchMessage = stringResource(id = R.string.password_not_match)
+    val incorrectPasswordMessage = stringResource(id = R.string.incorrect_password)
+    val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
+    val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
+    val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
+
+    LaunchedEffect(showSnackbar) {
+        if (showSnackbar) {
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage,
+                duration = SnackbarDuration.Short
+            )
+            showSnackbar = false // Reset for next use
         }
     }
+    // Inside your composable, after defining the state
+    if (showSnackbar) {
+        LaunchedEffect(snackbarHostState, snackbarMessage) {
+            snackbarHostState.showSnackbar(
+                message = snackbarMessage,
+                duration = SnackbarDuration.Short
+            )
+            showSnackbar = false // Reset the flag after showing the snackbar
+        }
+    }
+
     AlertDialog(
         onDismissRequest = onClose,
-        title = { Text("Update Password") },
+        title = { Text(stringResource(id = R.string.update_password_dialog_title)) },
         text = {
             Column {
                 OutlinedTextField(
+                    value = currentPassword,
+                    onValueChange = { currentPassword = it },
+                    label = { Text(stringResource(id = R.string.current_password))  },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(currentPasswordFocusRequester)
+                )
+
+                OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text("New Password") }
+                    label = { Text(stringResource(id = R.string.new_password))  },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
+                    modifier = Modifier.focusRequester(newPasswordFocusRequester)
                 )
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text("Confirm Password") }
+                    label = { Text(stringResource(id = R.string.confirm_password))  },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide() // Attempt to hide the keyboard
+                        // Explicitly clear focus here if possible
+                    }),
+                    modifier = Modifier.focusRequester(confirmPasswordFocusRequester)
                 )
                 errorMessage?.let {
                     Text(text = it, color = MaterialTheme.colorScheme.error)
                 }
             }
         },
+
         confirmButton = {
             Button(
                 onClick = {
-                    if (newPassword == confirmPassword) {
-                        viewModel.updatePassword(newPassword) { success ->
-                            if (success) {
-                                onPasswordUpdated()
-                                onClose()
+                    if (currentPassword.isBlank()) {
+                        errorMessage = errorCurrentPasswordEmptyMessage
+                    } else if (newPassword.isBlank()) {
+                        errorMessage = errorNewPasswordEmptyMessage
+                    } else if (confirmPassword.isBlank()) {
+                        errorMessage = errorConfirmPasswordEmptyMessage
+                    } else if (newPassword != confirmPassword) {
+                        errorMessage = passwordNotMatchMessage
+                    } else {
+                        viewModel.reAuthenticate(currentPassword) { reAuthSuccess ->
+                            if (reAuthSuccess) {
+                                viewModel.updatePassword(newPassword) { success ->
+                                    if (success) {
+                                        onPasswordUpdated()
+                                        onClose()
+                                    } else {
+                                        snackbarMessage = updatePasswordFailedMessage
+                                        showSnackbar = true
+                                    }
+                                }
                             } else {
-                                errorMessage = "Failed to update password."
+                                errorMessage = incorrectPasswordMessage
                             }
                         }
-                    } else {
-                        errorMessage = "Passwords do not match."
                     }
                 }
             ) {
-                Text("Update")
+                Text(stringResource(id = R.string.update_button))
             }
+
         },
         dismissButton = {
             Button(onClick = onClose) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_button))
             }
         }
     )
 }
+
+@Composable
+fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageSelected: (String) -> Unit) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(id = R.string.choose_language_title)) },
+            text = {
+                Column {
+                    listOf("English", "Russian", "Kazakh").forEach { language ->
+                        TextButton(onClick = { onLanguageSelected(language) }) {
+                            Text(language)
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                Button(onClick = onDismiss) {
+                    Text(stringResource(id = R.string.cancel_button))
+                }
+            }
+        )
+    }
+}
+
+
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(120.dp)
-            .clip(CircleShape) // Ensure the card itself is circular
+            .size(150.dp) // Increased size
+            .clip(CircleShape)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
     ) {
-        Box(modifier = Modifier.clip(CircleShape)) { // Clip the content of the card to a circular shape
+        Box(modifier = Modifier.clip(CircleShape)) {
             if (imageUrl != null) {
-                // Load image from URL
                 Image(
                     painter = rememberAsyncImagePainter(model = imageUrl),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape), // Clip the image to be circular
-                    contentScale = ContentScale.Crop // Crop the image to fill the bounds
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             } else {
-                // Display default placeholder if no image URL
                 Image(
                     painter = painterResource(id = R.drawable.default_profile_image),
                     contentDescription = "Default Profile Picture",
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape), // Ensure the placeholder is also circular
-                    contentScale = ContentScale.Crop // Crop the placeholder to fill the bounds
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
                 )
             }
         }
     }
 }
+
 
 
 @Composable

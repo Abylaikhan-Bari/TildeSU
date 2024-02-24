@@ -1,7 +1,7 @@
 package com.ashim_bari.tildesu.view.screens.main
 import DashboardPage
 import HomePage
-import ProfilePage
+import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
 import UsefulPage
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -29,8 +29,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
@@ -57,33 +60,51 @@ fun MainScreen(navController: NavHostController) {
     }
     // Define Bottom Navigation Items
     val bottomItems = listOf(
-        BottomNavItem("Home", Icons.Filled.Home, MainScreens.Home),
-        BottomNavItem("Dashboard", Icons.Filled.List, MainScreens.Dashboard),
-        BottomNavItem("Useful", Icons.Filled.Star, MainScreens.Useful),
-        BottomNavItem("Profile", Icons.Filled.Person, MainScreens.Profile)
+        BottomNavItem(stringResource(id = R.string.bottom_nav_home), Icons.Filled.Home, MainScreens.Home),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_dashboard), Icons.Filled.List, MainScreens.Dashboard),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_useful), Icons.Filled.Star, MainScreens.Useful),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_profile), Icons.Filled.Person, MainScreens.Profile)
     )
 
     Scaffold(
         topBar = {
             // Dynamic TopAppBar using Material3
             TopAppBar(
-                title = { Text(text = bottomItems.first { it.screen == currentMainScreen }.title) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                title = { Text(text = bottomItems.first { it.screen == currentMainScreen }.title, color = Color.White) }, // Directly setting the Text color
+                // If containerColor is available and you need to set it
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                    // If contentColor isn't recognized or needed, ensure color is set directly in the Text composable
+                )
             )
         },
+
         bottomBar = {
-            // Bottom navigation using Material3
             NavigationBar {
                 bottomItems.forEach { item ->
+                    val isSelected = currentMainScreen == item.screen
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
-                        selected = currentMainScreen == item.screen,
+                        icon = {
+                            Icon(
+                                item.icon,
+                                contentDescription = item.title,
+                                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        label = {
+                            Text(
+                                item.title,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        selected = isSelected,
                         onClick = { currentMainScreen = item.screen }
                     )
                 }
             }
         }
+
+
     ) { innerPadding ->
 
 
@@ -97,8 +118,8 @@ fun MainScreen(navController: NavHostController) {
                     // If the dialog is dismissed, don't exit the app
                     showExitConfirmation = false
                 },
-                title = { Text("Exit App") },
-                text = { Text("Are you sure you want to exit the app?") },
+                title = { Text(stringResource(id = R.string.exit_dialog_title)) },
+                text = { Text(stringResource(id = R.string.exit_dialog_content)) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -106,7 +127,7 @@ fun MainScreen(navController: NavHostController) {
                             activity?.finish()
                         }
                     ) {
-                        Text("Yes")
+                        Text(stringResource(id = R.string.exit_dialog_yes))
                     }
                 },
                 dismissButton = {
@@ -116,7 +137,7 @@ fun MainScreen(navController: NavHostController) {
                             showExitConfirmation = false
                         }
                     ) {
-                        Text("No")
+                        Text(stringResource(id = R.string.exit_dialog_no))
                     }
                 }
             )
