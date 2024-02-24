@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -185,9 +185,8 @@ fun LoginPage(
                     isLoading -> CircularProgressIndicator(color = BluePrimary)
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
                     else -> Button(
-
                         onClick = {
-
+                            authMessage = null
                             coroutineScope.launch {
                                 isLoading = true
                                 isSuccess = false
@@ -202,10 +201,14 @@ fun LoginPage(
                                 }
                             }
                         },
-                        modifier = Modifier.fillMaxSize(),
-                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
+                        modifier = Modifier
+                            .fillMaxWidth() // Use the full width of the parent
+                            .height(100.dp) // Increase the height to make the button larger
+                            .padding(top = 8.dp), // Add some padding at the top
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                        shape = RoundedCornerShape(12.dp)// Use BluePrimary for the Button color
                     ) {
-                        Text(stringResource(id = R.string.login_button), color = Color.White)
+                        Text(stringResource(id = R.string.login_button), color = Color.White, style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
@@ -287,7 +290,7 @@ fun LoginPage(
 
 
 
-        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
             TextButton(onClick = { showLanguageDialog = true }) {
                 Text(text = stringResource(id = R.string.change_language_button))
@@ -296,6 +299,9 @@ fun LoginPage(
         }
     }
 }
+
+
+
 fun getLanguageName(languageCode: String): String {
     return when (languageCode) {
         "en" -> "English"

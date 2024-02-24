@@ -1,19 +1,27 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,29 +41,19 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
+import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.ui.res.stringResource
-import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
@@ -185,7 +183,8 @@ fun RegisterPage(
                             }
                         },
                         modifier = Modifier.fillMaxSize(),
-                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
+                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                        shape = RoundedCornerShape(12.dp) // Use BluePrimary for the Button color
                     ) {
                         Text(stringResource(id = R.string.register_button), color = Color.White)// You might adjust the text color if needed
                     }

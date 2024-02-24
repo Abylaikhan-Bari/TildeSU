@@ -63,4 +63,7 @@
     <string name="error_current_password_empty">Қазіргі кілтсөз алаңы бос!</string>
     <string name="error_new_password_empty">Жаңа кілтсөз алаңы бос!</string>
     <string name="error_confirm_password_empty">Кілтсөзді растау алаңы бос!</string>
+    <string name="error_username_empty">Пайдаланушы аты бос болмауы керек</string>
+    <string name="error_password_empty">Кілтсөз алаңы бос</string>
+
 </resources>

@@ -63,4 +63,7 @@
     <string name="error_current_password_empty">Заполните поле текущего пароля!</string>
     <string name="error_new_password_empty">Заполните поле нового пароля!</string>
     <string name="error_confirm_password_empty">Заполните поле подтверждения пароля!</string>
+    <string name="error_username_empty">Имя пользователя не заполнено</string>
+    <string name="error_password_empty">Поле пароля пусто</string>
+
 </resources>
