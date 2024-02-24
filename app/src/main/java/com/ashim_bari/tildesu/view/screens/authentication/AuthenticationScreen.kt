@@ -89,19 +89,15 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(R.drawable.satbayev),
-                    contentDescription = "Satbayev University Logo",
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 400.dp, maxHeight = 70.dp)
-                        .padding(bottom = padding)
-                )
+
+                val imageModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = padding, bottom = padding)
+
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
-                    modifier = Modifier
-                        .sizeIn(maxWidth = 300.dp, maxHeight = 100.dp)
-                        .padding(top = 50.dp, bottom = 20.dp)
+                    modifier = imageModifier.size( 50.dp)
                 )
 
                 when (currentScreen) {
@@ -122,14 +118,14 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                 Image(
                     painter = painterResource(R.drawable.logoauthscreenbottom),
                     contentDescription = "App Bottom Logo",
-                    modifier = Modifier
-                        .size(190.dp)
-                        .padding(bottom = padding)
+                    modifier = imageModifier.size(200.dp)
                 )
             }
         }
     }
 }
+
+
 
 
 
