@@ -63,8 +63,11 @@
     <string name="error_current_password_empty">Current password field is empty!</string>
     <string name="error_new_password_empty">New password field is empty!</string>
     <string name="error_confirm_password_empty">Confirm password field is empty!</string>
-    <string name="error_username_empty">Username cannot be empty</string>
-    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="username_required">Username cannot be empty</string>
+    <string name="password_required">Password cannot be empty</string>
+    <string name="invalid_credentials">Invalid credentials</string>
+    <string name="password_mismatch">Passwords do not match</string>
+
 
 
 </resources>
