@@ -44,7 +44,8 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         modifier = Modifier.fillMaxSize()
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.padding(padding)
         ) {
             BackHandler {
                 Log.d("AuthenticationScreen", "Back button pressed")
@@ -81,16 +82,17 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }
                 )
             }
+
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
-                    .padding(padding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(R.drawable.satbayev),
                     contentDescription = "Satbayev University Logo",
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .sizeIn(maxWidth = 400.dp, maxHeight = 70.dp)
                         .padding(bottom = padding)
                 )
@@ -98,10 +100,10 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .sizeIn(maxWidth = 300.dp, maxHeight = 80.dp)
-                        .padding(top = 50.dp)
+                        .sizeIn(maxWidth = 300.dp, maxHeight = 100.dp)
+                        .padding(top = 50.dp, bottom = 20.dp)
                 )
+
                 when (currentScreen) {
                     AuthScreens.Login -> {
                         Log.d("AuthenticationScreen", "Showing Login page")
@@ -116,11 +118,11 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                         ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     }
                 }
+
                 Image(
                     painter = painterResource(R.drawable.logoauthscreenbottom),
                     contentDescription = "App Bottom Logo",
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
                         .size(150.dp)
                         .padding(bottom = padding)
                 )
@@ -128,6 +130,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         }
     }
 }
+
 
 
 

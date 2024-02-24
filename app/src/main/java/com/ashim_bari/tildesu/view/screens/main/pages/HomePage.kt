@@ -1,6 +1,5 @@
-
+package com.ashim_bari.tildesu.view.screens.main.pages
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -81,7 +80,7 @@ fun HomePage(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+
 @Composable
 fun CardComponent(level: String, route: String, navController: NavHostController, index: Int) {
     // Manage the visibility state to trigger the animation

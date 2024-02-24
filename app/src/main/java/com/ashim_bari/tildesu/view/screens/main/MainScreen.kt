@@ -1,6 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.main
 import DashboardPage
-import HomePage
+import com.ashim_bari.tildesu.view.screens.main.pages.HomePage
 import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
 import UsefulPage
 import androidx.activity.ComponentActivity
