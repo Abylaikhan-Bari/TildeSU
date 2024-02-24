@@ -231,6 +231,12 @@ fun LoginPage(
                 title = { Text(text = stringResource(id = R.string.select_language)) },
                 text = {
                     Column {
+                        val languages = listOf(
+                            stringResource(id = R.string.language_english),
+                            stringResource(id = R.string.language_russian),
+                            stringResource(id = R.string.language_kazakh)
+                        )
+                        val languageCodes = listOf("en", "ru", "kk")
                         languages.zip(languageCodes).forEach { (language, code) ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -262,7 +268,7 @@ fun LoginPage(
                             tempSelectedLanguageCode = null // Reset temporary selection after applying
                         }
                     ) {
-                        Text(text = "Ok")
+                        Text(text = "OK")
                     }
                 },
                 dismissButton = {
@@ -287,29 +293,6 @@ fun LoginPage(
                 Text(text = stringResource(id = R.string.change_language_button))
             }
 
-//            TextButton(onClick = { expanded = true }) {
-//                Text(stringResource(id = R.string.change_language_button))
-//            }
-//            DropdownMenu(
-//                expanded = expanded,
-//                onDismissRequest = { expanded = false },
-//            ) {
-//                languages.zip(languageCodes).forEach { (language, code) ->
-//                    DropdownMenuItem(
-//                        text = { Text(language) },
-//                        onClick = {
-//                            Log.d("AuthenticationScreen", "Language changed to $language")
-//                            currentLanguage = language
-//                            expanded = false
-//                            LanguageManager.setLocale(context, code)
-//
-//                            languageViewModel.setLanguage(context,code)
-//
-//                            (context as? MainActivity)?.restartActivity()
-//                        }
-//                    )
-//                }
-//            }
         }
     }
 }
