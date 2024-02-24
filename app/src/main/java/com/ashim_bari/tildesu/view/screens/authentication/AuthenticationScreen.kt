@@ -29,8 +29,6 @@ import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
-
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val padding = if (isLandscape) 32.dp else 16.dp
@@ -40,9 +38,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
-
-
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -96,16 +91,16 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     contentDescription = "Satbayev University Logo",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
+                        .sizeIn(maxWidth = 400.dp, maxHeight = 70.dp)
                         .padding(bottom = padding)
-                        .size(width = 400.dp, height = 70.dp)
                 )
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
+                        .sizeIn(maxWidth = 300.dp, maxHeight = 80.dp)
                         .padding(top = 50.dp)
-                        .size(width = 300.dp, height = 80.dp)
                 )
                 when (currentScreen) {
                     AuthScreens.Login -> {
@@ -121,11 +116,19 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                         ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     }
                 }
-
+                Image(
+                    painter = painterResource(R.drawable.logoauthscreenbottom),
+                    contentDescription = "App Bottom Logo",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(150.dp)
+                        .padding(bottom = padding)
+                )
             }
         }
     }
 }
+
 
 
 enum class AuthScreens {
