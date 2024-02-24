@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,6 +95,7 @@ fun LoginPage(
     val currentLanguageCode = languageViewModel.language.collectAsState().value
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    var tempSelectedLanguageCode by rememberSaveable { mutableStateOf<String?>(null) }
 
 //    LaunchedEffect(currentLanguageCode) {
 //        currentLanguage = getLanguageName(currentLanguageCode)
@@ -222,36 +224,61 @@ fun LoginPage(
         }
         if (showLanguageDialog) {
             AlertDialog(
-                onDismissRequest = { showLanguageDialog = false },
+                onDismissRequest = {
+                    showLanguageDialog = false
+                    tempSelectedLanguageCode = null // Reset temporary selection when dialog is dismissed
+                },
                 title = { Text(text = stringResource(id = R.string.select_language)) },
                 text = {
                     Column {
                         languages.zip(languageCodes).forEach { (language, code) ->
-                            TextButton(
-                                onClick = {
-                                    Log.d("AuthenticationScreen", "Language changed to $language")
-                                    currentLanguage = language
-                                    showLanguageDialog = false
-                                    LanguageManager.setLocale(context, code)
-                                    languageViewModel.setLanguage(context, code)
-                                    (context as? MainActivity)?.restartActivity()
-                                }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { tempSelectedLanguageCode = code }
+                                    .padding(vertical = 8.dp)
                             ) {
-                                Text(text = language)
+                                // Use text color or other visual indicators for selection
+                                Text(
+                                    text = language,
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }
                 },
                 confirmButton = {
-                    // Optionally add a button for closing or confirming
                     Button(
-                        onClick = { showLanguageDialog = false }
+                        onClick = {
+                            if (tempSelectedLanguageCode != null) {
+                                // Apply the language change only if a selection has been made
+                                LanguageManager.setLocale(context, tempSelectedLanguageCode!!)
+                                languageViewModel.setLanguage(context, tempSelectedLanguageCode!!)
+                                (context as? MainActivity)?.restartActivity()
+                            }
+                            showLanguageDialog = false
+                            tempSelectedLanguageCode = null // Reset temporary selection after applying
+                        }
                     ) {
-                        Text(text = stringResource(id = android.R.string.ok))
+                        Text(text = "Ok")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showLanguageDialog = false
+                            tempSelectedLanguageCode = null // Reset temporary selection when dialog is dismissed
+                        }
+                    ) {
+                        Text(text = stringResource(id = android.R.string.cancel))
                     }
                 }
             )
         }
+
+
 
 
         Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
