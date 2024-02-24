@@ -96,16 +96,16 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     contentDescription = "Satbayev University Logo",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = padding)
-                        .size(width = 380.dp, height = 100.dp)
+                        .padding(bottom = padding)
+                        .size(width = 400.dp, height = 70.dp)
                 )
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = padding)
-                        .size(width = 300.dp, height = 100.dp)
+                        .padding(top = 50.dp)
+                        .size(width = 300.dp, height = 80.dp)
                 )
                 when (currentScreen) {
                     AuthScreens.Login -> {

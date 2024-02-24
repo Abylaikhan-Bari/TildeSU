@@ -53,4 +53,18 @@
     <string name="language_russian">Орыс</string>
     <string name="language_kazakh">Қазақ</string>
     <string name="select_language">Тілді таңдаңыз</string>
+    <string name="level_a1">A1 деңгейі</string>
+    <string name="level_a2">A2 деңгейі</string>
+    <string name="level_b1">B1 деңгейі</string>
+    <string name="level_b2">B2 деңгейі</string>
+    <string name="level_c1">C1 деңгейі</string>
+    <string name="level_c2">C2 деңгейі</string>
+    <string name="no_progress_data">Прогресс туралы деректер жоқ. Жетістіктеріңізді көру үшін үйренуді бастаңыз!</string>
+    <string name="error_current_password_empty">Қазіргі кілтсөз алаңы бос!</string>
+    <string name="error_new_password_empty">Жаңа кілтсөз алаңы бос!</string>
+    <string name="error_confirm_password_empty">Кілтсөзді растау алаңы бос!</string>
+    <string name="username_required">Пайдаланушы аты бос болмауы керек</string>
+    <string name="password_required">Кілтсөз алаңы бос</string>
+    <string name="invalid_credentials">Кіру ақпараты қате</string>
+    <string name="password_mismatch">Кілтсөздер сәйкес емес</string>
 </resources>

@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -65,6 +65,7 @@ import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
@@ -74,7 +75,7 @@ fun LoginPage(
     viewModel: AuthenticationViewModel,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
-)  {
+) {
     val context = LocalContext.current
     val languageViewModel: LanguageViewModel = viewModel()
     var username by rememberSaveable { mutableStateOf("") }
@@ -96,28 +97,57 @@ fun LoginPage(
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var tempSelectedLanguageCode by rememberSaveable { mutableStateOf<String?>(null) }
+    val isUsernameValid by remember(username) {
+        mutableStateOf(username.isNotBlank())
+    }
 
-//    LaunchedEffect(currentLanguageCode) {
-//        currentLanguage = getLanguageName(currentLanguageCode)
-//        // This is where you would trigger any necessary actions to refresh UI components
-//        // Note: Actual UI components should automatically update due to the state change
-//    }
+    val isPasswordValid by remember(password) {
+        mutableStateOf(password.isNotBlank())
+    }
+
     LaunchedEffect(currentLanguageCode) {
         currentLanguage = getLanguageName(currentLanguageCode)
     }
+
     LaunchedEffect(key1 = currentLanguageCode) {
         Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
         // Additional actions if needed
     }
+
+    val invalidCredentialsMessage = stringResource(R.string.invalid_credentials)
+    val  usernameRequiredMessage= stringResource(R.string.username_required)
+    val passwordRequiredMessage = stringResource(R.string.password_required)
+
+    LaunchedEffect(username, password) {
+        if (username.isNotBlank() && password.isNotBlank()) {
+            authMessage = null
+        } else {
+            authMessage = if (username.isNotBlank() && password.isBlank()) {
+                passwordRequiredMessage
+            } else if (username.isBlank() && password.isNotBlank()) {
+                usernameRequiredMessage
+            } else {
+                null
+            }
+        }
+    }
+
+// Update authMessage when the user enters valid credentials
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            authMessage = null
+        }
+    }
+
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        authMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
-        }
+
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = stringResource(id = R.string.login),
@@ -161,7 +191,9 @@ fun LoginPage(
                 }
             }
         )
-
+        authMessage?.let {
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+        }
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.fillMaxWidth()
@@ -184,28 +216,35 @@ fun LoginPage(
                 when {
                     isLoading -> CircularProgressIndicator(color = BluePrimary)
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
-                    else -> Button(
-
-                        onClick = {
-
-                            coroutineScope.launch {
-                                isLoading = true
-                                isSuccess = false
-                                val success = viewModel.login(username, password)
-                                isLoading = false
-                                isSuccess = success
-                                if (success) {
-                                    snackbarHostState.showSnackbar(loginSuccessfulMessage)
-                                    navController.navigate(Navigation.MAIN_ROUTE)
-                                } else {
-                                    snackbarHostState.showSnackbar(loginFailedMessage)
+                    else -> {
+                        Button(
+                            onClick = {
+                                if (isUsernameValid && isPasswordValid) {
+                                    authMessage = null
+                                    coroutineScope.launch {
+                                        isLoading = true
+                                        isSuccess = false
+                                        val success = viewModel.login(username, password)
+                                        isLoading = false
+                                        isSuccess = success
+                                        if (success) {
+                                            snackbarHostState.showSnackbar(loginSuccessfulMessage)
+                                            navController.navigate(Navigation.MAIN_ROUTE)
+                                        } else {
+                                            snackbarHostState.showSnackbar(loginFailedMessage)
+                                        }
+                                    }
                                 }
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary) // Use BluePrimary for the Button color
-                    ) {
-                        Text(stringResource(id = R.string.login_button), color = Color.White)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .padding(top = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(stringResource(id = R.string.login_button), color = Color.White, style = MaterialTheme.typography.labelLarge)
+                        }
                     }
                 }
             }
@@ -287,7 +326,7 @@ fun LoginPage(
 
 
 
-        Column(modifier = Modifier.fillMaxWidth().padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
             TextButton(onClick = { showLanguageDialog = true }) {
                 Text(text = stringResource(id = R.string.change_language_button))
@@ -296,6 +335,7 @@ fun LoginPage(
         }
     }
 }
+
 fun getLanguageName(languageCode: String): String {
     return when (languageCode) {
         "en" -> "English"

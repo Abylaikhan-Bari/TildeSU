@@ -1,21 +1,34 @@
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
 fun DashboardPage(mainViewModel: MainViewModel) {
@@ -36,7 +49,8 @@ fun DashboardPage(mainViewModel: MainViewModel) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
-                Text("No progress data available. Start learning to see your progress!",
+                Text(stringResource(
+                    R.string.no_progress_data),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(16.dp))
             }
