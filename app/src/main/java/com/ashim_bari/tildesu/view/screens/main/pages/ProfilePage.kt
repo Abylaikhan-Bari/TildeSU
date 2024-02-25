@@ -105,22 +105,52 @@ fun ProfilePage(navController: NavHostController) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 userProfile?.let { profile ->
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        Text(
+                            text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+
+                    // Continue with the rest of the profile information...
+                }
+//                userProfile?.let { profile ->
+//                    Column(modifier = Modifier.padding(16.dp)) {
+//                        Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                        Text("Name: ${profile.name ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                        Text("Surname: ${profile.surname ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                        Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                        Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                        Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium) // Assuming gender is an Int that represents Male=1, Female=2
+//                        Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+//                    }
+//                }
+
+                // Continuing inside the Column from above
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                        Text("Name: ${profile.name ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                        Text("Surname: ${profile.surname ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                        Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                        Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                        Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium) // Assuming gender is an Int that represents Male=1, Female=2
-                        Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        userProfile?.let { profile ->
+                            Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                            Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        }
                     }
                 }
 
-//                userEmail?.let { email ->
-//                    ProfileAttribute(email)
-//                }
+// Buttons for actions (Edit Profile, Update Password, Logout, etc.)
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -142,20 +172,6 @@ fun ProfilePage(navController: NavHostController) {
                 )
 
 
-                // Place this card where appropriate in your Column
-                //Spacer(modifier = Modifier.height(16.dp))
-
-//                ActionCard(
-//                    text = stringResource(id = R.string.change_language_button),
-//                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
-//                    onClick = { showLanguageDialog = true },
-//                    modifier = Modifier
-//                        .height(56.dp)
-//                        .fillMaxWidth(),
-//                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
-//                )
-
-// Language Change Dialog
                 LanguageChangeDialog(
                     showDialog = showLanguageDialog,
                     onDismiss = { showLanguageDialog = false },
@@ -546,15 +562,15 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
 
 
 
-@Composable
-fun ProfileAttribute(value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = value ?: "Loading...", // Show "Loading..." while email is being fetched
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
+//@Composable
+//fun ProfileAttribute(value: String) {
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.Center
+//    ) {
+//        Text(
+//            text = value ?: "Loading...", // Show "Loading..." while email is being fetched
+//            style = MaterialTheme.typography.bodyLarge
+//        )
+//    }
+//}
