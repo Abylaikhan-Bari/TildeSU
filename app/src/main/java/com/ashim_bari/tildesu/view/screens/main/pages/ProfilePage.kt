@@ -241,7 +241,7 @@ fun ProfilePage(navController: NavHostController) {
                         title = { Text(stringResource(id = R.string.logout_dialog_title)) },
                         text = { Text(stringResource(id = R.string.logout_dialog_content)) },
                         confirmButton = {
-                            TextButton(
+                            Button(
                                 onClick = {
                                     viewModel.logout(navController)
                                     showLogoutDialog = false
@@ -251,7 +251,7 @@ fun ProfilePage(navController: NavHostController) {
                             }
                         },
                         dismissButton = {
-                            TextButton(
+                            Button(
                                 onClick = { showLogoutDialog = false }
                             ) {
                                 Text(stringResource(id = R.string.cancel_button))
@@ -318,6 +318,12 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
     var age by remember { mutableStateOf(profile?.age ?: "") }
     var selectedGender by remember { mutableStateOf(profile?.gender ?: 0) } // Use 0 for not set, 1 for male, 2 for female
     var specialty by remember { mutableStateOf(profile?.specialty ?: "") }
+    val nameFocusRequester = remember { FocusRequester() }
+    val surnameFocusRequester = remember { FocusRequester() }
+    val cityFocusRequester = remember { FocusRequester() }
+    val ageFocusRequester = remember { FocusRequester() }
+    val specialtyFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -327,31 +333,46 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
                 TextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(stringResource(id = R.string.name)) }
+                    label = { Text(stringResource(id = R.string.name)) },
+                    modifier = Modifier.focusRequester(nameFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { surnameFocusRequester.requestFocus() })
                 )
                 TextField(
                     value = surname,
                     onValueChange = { surname = it },
-                    label = { Text(stringResource(id = R.string.surname)) }
+                    label = { Text(stringResource(id = R.string.surname)) },
+                    modifier = Modifier.focusRequester(surnameFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { cityFocusRequester.requestFocus() })
                 )
                 TextField(
                     value = city,
                     onValueChange = { city = it },
-                    label = { Text(stringResource(id = R.string.city)) }
+                    label = { Text(stringResource(id = R.string.city)) },
+                    modifier = Modifier.focusRequester(cityFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { ageFocusRequester.requestFocus() })
                 )
                 TextField(
                     value = age,
                     onValueChange = { age = it },
                     label = { Text(stringResource(id = R.string.age)) },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                    modifier = Modifier.focusRequester(ageFocusRequester),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { specialtyFocusRequester.requestFocus() })
                 )
                 GenderSelection(selectedGender = selectedGender, onGenderSelected = { selectedGender = it })
                 TextField(
                     value = specialty,
                     onValueChange = { specialty = it },
-                    label = { Text(stringResource(id = R.string.specialty)) }
+                    label = { Text(stringResource(id = R.string.specialty)) },
+                    modifier = Modifier.focusRequester(specialtyFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
                 )
             }
+
 
         },
         confirmButton = {

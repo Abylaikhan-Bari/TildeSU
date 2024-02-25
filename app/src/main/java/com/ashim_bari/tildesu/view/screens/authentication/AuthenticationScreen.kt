@@ -97,7 +97,8 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
-                    modifier = imageModifier.size( 50.dp)
+                    modifier = Modifier.size( width = 200.dp, height = 80.dp).padding(top=padding)
+
                 )
 
                 when (currentScreen) {
