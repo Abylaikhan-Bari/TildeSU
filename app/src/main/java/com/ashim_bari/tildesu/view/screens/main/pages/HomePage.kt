@@ -111,7 +111,9 @@ fun CardComponent(level: String, route: String, navController: NavHostController
                 Text(
                     text = level,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.align(Alignment.Center)
+
                 )
             }
         }
