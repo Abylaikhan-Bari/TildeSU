@@ -1,6 +1,5 @@
 package com.ashim_bari.tildesu.view
 
-import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +15,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.ashim_bari.tildesu.model.language.LanguageManager
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
 import com.ashim_bari.tildesu.view.ui.theme.TildeSUTheme
 import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
@@ -31,6 +32,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize Firebase before setting the content view
+        initializeFirebase()
+
+        // Apply language change here or determine the initial screen based on some condition
+        applyLanguageChange()
+
+        val initialScreen = determineInitialScreen()
+
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
             val currentLanguageCode by languageViewModel.language.collectAsState()
@@ -42,17 +51,21 @@ class MainActivity : ComponentActivity() {
                         color = MaterialTheme.colorScheme.background
                     ) {
                         val navController = rememberNavController()
-                        NavigationGraph(navController)
+                        NavigationGraph(navController, initialScreen)
                     }
                 }
             }
         }
-
-
-        initializeFirebase()
-        applyLanguageChange()
     }
 
+
+
+private fun determineInitialScreen(): String {
+    // Implement logic to determine which screen to show first
+    // This could be based on authentication status, user preferences, etc.
+    // For example, return Navigation.AUTHENTICATION_ROUTE or Navigation.MAIN_ROUTE
+    return Navigation.AUTHENTICATION_ROUTE // or some logic to choose the screen
+}
     private fun initializeFirebase() {
         Firebase.initialize(context = this)
         Firebase.appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
