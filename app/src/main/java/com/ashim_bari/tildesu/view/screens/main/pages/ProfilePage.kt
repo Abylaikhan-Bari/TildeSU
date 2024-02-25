@@ -1,6 +1,5 @@
 package com.ashim_bari.tildesu.view.screens.main.pages
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -8,9 +7,23 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,10 +32,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.outlined.ModeEdit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -107,77 +139,54 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 userProfile?.let { profile ->
-                    Row(modifier = Modifier.padding(top = 8.dp)) {
-                        Text(
-                            text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
+                    AnimatedCard {
+                        Row(modifier = Modifier.padding(top = 8.dp)) {
+                            Text(
+                                text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
                     }
-
-                    // Continue with the rest of the profile information...
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Animate the rest of the user information
+                    AnimatedCard {
+                        UserInfoCard(profile)
+                    }
                 }
 
 
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        userProfile?.let { profile ->
-                            Text("Email: ${profile.email}", style = MaterialTheme.typography.bodyMedium)
-                            Text("${stringResource(R.string.city)}: ${profile.city ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-                            Text("${stringResource(R.string.age)}: ${profile.age ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-                            Text("${stringResource(R.string.gender)}: ${
-                                when (profile.gender) {
-                                    1 -> stringResource(R.string.gender_male)
-                                    2 -> stringResource(R.string.gender_female)
-                                    else -> stringResource(R.string.not_set)
-                                }
-                            }", style = MaterialTheme.typography.bodyMedium)
-                            Text("${stringResource(R.string.specialty)}: ${profile.specialty ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-
-
-                }
 
 // Buttons for actions (Edit Profile, Update Password, Logout, etc.)
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                ActionCard(
-                    text = stringResource(id = R.string.edit_profile_button),
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
-                    onClick = { showEditProfileDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.background
-                )
-//                Button(onClick = { showEditProfileDialog = true }) {
-//                    Text("Edit Profile")
-//                }
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.edit_profile_button),
+                        icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
+                        onClick = { showEditProfileDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.background
+                    )
+                }
 
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.update_password_button),
+                        icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
+                        onClick = { showUpdatePasswordDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.primary
+                    )
+                }
 
-                ActionCard(
-                    text = stringResource(id = R.string.update_password_button),
-                    icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
-                    onClick = { showUpdatePasswordDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primary
-                )
 
 
                 LanguageChangeDialog(
@@ -193,16 +202,16 @@ fun ProfilePage(navController: NavHostController) {
 
 
                 Spacer(modifier = Modifier.height(16.dp))
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.log_out_language_button),
+                        icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
+                        onClick = { showLogoutDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                }
 
-                ActionCard(
-                    text = stringResource(id = R.string.log_out_language_button),
-                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out")},
-                    onClick = { showLogoutDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.errorContainer
-                )
 
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
@@ -258,6 +267,47 @@ fun ProfilePage(navController: NavHostController) {
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
+    }
+}
+
+@Composable
+fun AnimatedCard(content: @Composable () -> Unit) {
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = true) {
+        isVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut()
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun UserInfoCard(profile: UserProfile) {
+    // Example card content, adapt as needed
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Email: ${profile.email}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.city)}: ${profile.city ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.age)}: ${profile.age ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.gender)}: ${
+                when (profile.gender) {
+                    1 -> stringResource(R.string.gender_male)
+                    2 -> stringResource(R.string.gender_female)
+                    else -> stringResource(R.string.not_set)
+                }
+            }", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.specialty)}: ${profile.specialty ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            // Other user info fields...
+        }
     }
 }
 @Composable
@@ -364,33 +414,45 @@ fun ActionCard(
     text: String,
     icon: @Composable (() -> Unit)? = null,
     onClick: () -> Unit,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .size(350.dp)
-            .fillMaxWidth(), // Adjusted padding for better space utilization.
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = true) {
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut()
     ) {
-        Row(
-            modifier = Modifier.padding(all = 15.dp), // Adjusted for potentially better text visibility.
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+        Card(
+            onClick = onClick,
+            modifier = modifier
+                .size(350.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor)
         ) {
-            icon?.invoke()
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f) // Ensures text tries to fill available space, pushing it to be fully visible.
-            )
+            Row(
+                modifier = Modifier.padding(all = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                icon?.invoke()
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
+
 
 
 
@@ -588,16 +650,3 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
 }
 
 
-
-//@Composable
-//fun ProfileAttribute(value: String) {
-//    Row(
-//        modifier = Modifier.fillMaxWidth(),
-//        horizontalArrangement = Arrangement.Center
-//    ) {
-//        Text(
-//            text = value ?: "Loading...", // Show "Loading..." while email is being fetched
-//            style = MaterialTheme.typography.bodyLarge
-//        )
-//    }
-//}
