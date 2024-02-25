@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.outlined.ModeEdit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -154,16 +155,25 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Button(onClick = { showEditProfileDialog = true }) {
-                    Text("Edit Profile")
-                }
+                ActionCard(
+                    text = stringResource(id = R.string.edit_profile_button),
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
+                    onClick = { showEditProfileDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.background
+                )
+//                Button(onClick = { showEditProfileDialog = true }) {
+//                    Text("Edit Profile")
+//                }
 
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ActionCard(
                     text = stringResource(id = R.string.update_password_button),
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
+                    icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
                     onClick = { showUpdatePasswordDialog = true },
                     modifier = Modifier
                         .height(56.dp)

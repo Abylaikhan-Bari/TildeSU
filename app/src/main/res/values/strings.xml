@@ -42,6 +42,7 @@
     <string name="go_home_card">Go to Home Page</string>
     <string name="next_button">Next</string>
     <string name="update_password_button">Update Password</string>
+    <string name="edit_profile_button">Edit Profile</string>
     <string name="change_language_button">Change Language</string>
     <string name="log_out_language_button">Log Out</string>
     <string name="password_not_match">Passwords do not match.</string>

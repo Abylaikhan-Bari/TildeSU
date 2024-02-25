@@ -42,6 +42,7 @@
     <string name="go_home_card">Вернуться на главную</string>
     <string name="next_button">Следующий</string>
     <string name="update_password_button">Изменить пароль</string>
+    <string name="edit_profile_button">Изменить профиль</string>
     <string name="change_language_button">Сменить язык</string>
     <string name="log_out_language_button">Выйти</string>
     <string name="password_not_match">Пароли не совпадают.</string>

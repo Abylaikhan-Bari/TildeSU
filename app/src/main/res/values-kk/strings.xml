@@ -42,6 +42,7 @@
     <string name="go_home_card">Басты бетке оралу</string>
     <string name="next_button">Келесі</string>
     <string name="update_password_button">Кілтсөзді өзгерту</string>
+    <string name="edit_profile_button">Профильді өзгерту</string>
     <string name="change_language_button">Тілді өзгерту</string>
     <string name="log_out_language_button">Шығу</string>
     <string name="password_not_match">Кілтсөздер сәйкес келмейді.</string>
