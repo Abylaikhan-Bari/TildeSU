@@ -220,6 +220,7 @@ fun LoginPage(
                     else -> {
                         Button(
                             onClick = {
+                                keyboardController?.hide()
                                 if (isUsernameValid && isPasswordValid) {
                                     authMessage = null
                                     coroutineScope.launch {
