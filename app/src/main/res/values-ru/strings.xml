@@ -3,7 +3,7 @@
     <string name="login">Войти</string>
     <string name="register">Регистрация</string>
     <string name="reset_password">Сброс пароля</string>
-    <string name="email">Электронная почта</string>
+    <string name="email">Email</string>
     <string name="password">Пароль</string>
     <string name="current_password">Текущий пароль</string>
     <string name="new_password">Новый пароль</string>
