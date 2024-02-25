@@ -208,7 +208,7 @@ fun RegisterPage(
                                 isSuccess = success
                                 if (success) {
                                     snackbarHostState.showSnackbar(registerSuccessfulMessage)
-                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                    navController.navigate(Navigation.MAIN_ROUTE)
                                 } else {
                                     snackbarHostState.showSnackbar(registerFailedMessage)
                                 }
