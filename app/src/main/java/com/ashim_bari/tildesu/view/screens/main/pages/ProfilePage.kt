@@ -647,37 +647,23 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
 }
 
 
+
+
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(150.dp) // Increased size
+            .size(120.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
+        shape = CircleShape
     ) {
-        Box(modifier = Modifier.clip(CircleShape)) {
-            if (imageUrl != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = imageUrl),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.default_profile_image),
-                    contentDescription = "Default Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
+        Image(
+            painter = if (imageUrl != null) rememberAsyncImagePainter(model = imageUrl) else painterResource(id = R.drawable.default_profile_image),
+            contentDescription = "Profile Picture",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
-
 
