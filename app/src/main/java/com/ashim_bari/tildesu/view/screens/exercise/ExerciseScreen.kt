@@ -74,22 +74,24 @@ fun ExerciseScreen(
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
     var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
-
+    val quizPassed = exerciseViewModel.quizPassed.observeAsState()
     fun showConfirmationDialog() {
         showDialog = true
     }
 
     Log.d("ExerciseScreen", "Composing ExerciseScreen, Current Level: $currentLevel, Current Question Index: $currentQuestionIndex, Quiz Completed: $quizCompleted")
     if (quizCompleted) {
-        exerciseViewModel.quizPassed.observeAsState().value?.let { quizPassed ->
-            if (quizPassed) {
+        quizPassed.value?.let { passed ->
+            if (passed) {
                 SuccessScreen(navController, exerciseViewModel.score.value ?: 0)
+                return@ExerciseScreen
             } else {
                 FailureScreen(navController) {
-                    // Reset the quiz and navigate accordingly
+                    // Implement what should happen when retrying the quiz, e.g., resetting quiz state
                     exerciseViewModel.resetQuiz()
-                    navController.navigate("restartQuizRoute") // Adjust based on your navigation setup
+                    // Navigate as needed or reset UI state
                 }
+                return@ExerciseScreen
             }
         }
     }
@@ -136,7 +138,7 @@ fun ExerciseScreen(
                 if (quizCompleted) {
                     // Log action: Quiz completed
                     Log.d("ExerciseScreen", "Quiz completed")
-                    SuccessScreen(navController = navController, score = exerciseViewModel.score.value ?: 0)
+
                     Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
