@@ -1,6 +1,6 @@
 package com.ashim_bari.tildesu.view
 
-import LanguageManager
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
 import com.ashim_bari.tildesu.view.ui.theme.TildeSUTheme
-import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.appcheck.appCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory

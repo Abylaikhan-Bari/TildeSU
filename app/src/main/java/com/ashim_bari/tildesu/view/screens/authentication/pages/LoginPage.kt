@@ -1,6 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
-import LanguageManager
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.Crossfade
@@ -61,7 +61,7 @@ import com.ashim_bari.tildesu.view.MainActivity
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
-import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
