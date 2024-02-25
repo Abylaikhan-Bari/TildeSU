@@ -1,6 +1,10 @@
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -87,19 +91,42 @@ fun GrammarTipCard(tip: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .animateContentSize() // This will animate the size change
             .clickable { expanded = !expanded },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = tip,
-                modifier = Modifier.padding(bottom = 8.dp),
-                maxLines = if (expanded) Int.MAX_VALUE else 2 // Show all lines if expanded, else show a preview
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = if (expanded) 8.dp else 0.dp),
+                maxLines = if (expanded) Int.MAX_VALUE else 3, // Show all lines if expanded, else limit to 3
+                fontWeight = if (expanded) FontWeight.Normal else FontWeight.Bold
             )
-            AnimatedVisibility(visible = expanded) {
-                // Additional content that is shown when the card is expanded
-
+            AnimatedVisibility(
+                visible = expanded,
+                enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandVertically(animationSpec = tween(durationMillis = 300)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)) + shrinkVertically(animationSpec = tween(durationMillis = 300))
+            ) {
+                Column {
+                    // Additional content for expanded state
+                    Text(
+                        text = stringResource(id = R.string.read_less),
+                        modifier = Modifier.align(Alignment.End),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            if (!expanded) {
+                Text(
+                    text = stringResource(id = R.string.read_more),
+                    modifier = Modifier.align(Alignment.End),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

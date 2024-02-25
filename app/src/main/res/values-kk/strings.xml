@@ -97,5 +97,7 @@
     <string name="oops_sorry">Жолыңыз болмады</string>
     <string name="dont_worry_try_again">Тағы қайталап көруге болады!</string>
     <string name="try_again">Қайта көру</string>
+    <string name="read_less">Қысқарту</string>
+    <string name="read_more">Бәрін көру</string>
 
 </resources>

@@ -106,5 +106,7 @@
     <string name="oops_sorry">Не получилось!</string>
     <string name="dont_worry_try_again">Не волнуйтесь, вы можете попробовать снова!</string>
     <string name="try_again">Попробавать снова</string>
+    <string name="read_less">Скрыть</string>
+    <string name="read_more">Раскрыть</string>
 
 </resources>

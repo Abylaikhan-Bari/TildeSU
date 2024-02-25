@@ -97,4 +97,6 @@
     <string name="oops_sorry">Oops! Sorry</string>
     <string name="dont_worry_try_again">Don\'t worry, you can try again!</string>
     <string name="try_again">Try Again</string>
+    <string name="read_less">Read less</string>
+    <string name="read_more">Read more</string>
 </resources>
