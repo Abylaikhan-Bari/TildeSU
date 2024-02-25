@@ -177,7 +177,7 @@ fun ProfilePage(navController: NavHostController) {
                         icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
                         onClick = { showEditProfileDialog = true },
                         modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.inverseOnSurface
+                        backgroundColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 }
 
