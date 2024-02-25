@@ -117,17 +117,7 @@ fun ProfilePage(navController: NavHostController) {
 
                     // Continue with the rest of the profile information...
                 }
-//                userProfile?.let { profile ->
-//                    Column(modifier = Modifier.padding(16.dp)) {
-//                        Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                        Text("Name: ${profile.name ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                        Text("Surname: ${profile.surname ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                        Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                        Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                        Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium) // Assuming gender is an Int that represents Male=1, Female=2
-//                        Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-//                    }
-//                }
+
 
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
@@ -268,7 +258,7 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
     var surname by remember { mutableStateOf(profile?.surname ?: "") }
     var city by remember { mutableStateOf(profile?.city ?: "") }
     var age by remember { mutableStateOf(profile?.age ?: "") }
-    var gender by remember { mutableStateOf(profile?.gender?.toString() ?: "") }
+    var selectedGender by remember { mutableStateOf(profile?.gender ?: 0) } // Use 0 for not set, 1 for male, 2 for female
     var specialty by remember { mutableStateOf(profile?.specialty ?: "") }
 
     AlertDialog(
@@ -276,69 +266,59 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
         title = { Text("Edit Profile") },
         text = {
             Column {
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") }
-                )
-                TextField(
-                    value = surname,
-                    onValueChange = { surname = it },
-                    label = { Text("Surname") }
-                )
-                TextField(
-                    value = city,
-                    onValueChange = { city = it },
-                    label = { Text("City") }
-                )
-                TextField(
-                    value = age,
-                    onValueChange = { age = it },
-                    label = { Text("Age") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
-                )
-                TextField(
-                    value = gender,
-                    onValueChange = { gender = it },
-                    label = { Text("Gender (1 for Male, 2 for Female)") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
-                )
-                TextField(
-                    value = specialty,
-                    onValueChange = { specialty = it },
-                    label = { Text("Specialty") }
-                )
+                TextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
+                TextField(value = surname, onValueChange = { surname = it }, label = { Text("Surname") })
+                TextField(value = city, onValueChange = { city = it }, label = { Text("City") })
+                TextField(value = age, onValueChange = { age = it }, label = { Text("Age") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
+                GenderSelection(selectedGender = selectedGender, onGenderSelected = { selectedGender = it })
+                TextField(value = specialty, onValueChange = { specialty = it }, label = { Text("Specialty") })
             }
         },
         confirmButton = {
             Button(onClick = {
                 onSave(
-                    profile?.copy(
+                    UserProfile(
                         name = name,
                         surname = surname,
                         city = city,
                         age = age,
-                        gender = gender.toIntOrNull(),
-                        specialty = specialty
-                    ) ?: UserProfile(
-                        name = name,
-                        surname = surname,
-                        city = city,
-                        age = age,
-                        gender = gender.toIntOrNull(),
+                        gender = selectedGender,
                         specialty = specialty
                     )
                 )
+                onDismiss()
             }) {
                 Text("Save")
             }
         },
         dismissButton = {
-            Button(onClick = { onDismiss() }) {
+            Button(onClick = onDismiss) {
                 Text("Cancel")
             }
         }
     )
+}
+
+@Composable
+fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
+    Column {
+        Text("Gender")
+        Row {
+            RadioButton(
+                selected = selectedGender == 1,
+                onClick = { onGenderSelected(1) }
+            )
+            Text("Male", modifier = Modifier.clickable(onClick = { onGenderSelected(1) }).padding(start = 4.dp))
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            RadioButton(
+                selected = selectedGender == 2,
+                onClick = { onGenderSelected(2) }
+            )
+            Text("Female", modifier = Modifier.clickable(onClick = { onGenderSelected(2) }).padding(start = 4.dp))
+        }
+    }
 }
 
 
