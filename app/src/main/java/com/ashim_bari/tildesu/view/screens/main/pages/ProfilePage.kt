@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.user.UserProfile
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
@@ -53,12 +54,13 @@ fun ProfilePage(navController: NavHostController) {
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    var showEditProfileDialog by rememberSaveable { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
     }
     val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
-
+    val userProfile by viewModel.userProfile.observeAsState()
     LaunchedEffect(imageUri) {
         imageUri?.let {
             if (Build.VERSION.SDK_INT < 28) {
@@ -70,10 +72,24 @@ fun ProfilePage(navController: NavHostController) {
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.getUserEmail()
-        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
+        viewModel.fetchUserProfile()
     }
 
+//    LaunchedEffect(Unit) {
+//        viewModel.getUserEmail()
+//        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
+//    }
+    if (showEditProfileDialog) {
+        // The userProfile from viewModel might be null initially, handle nullability
+        EditProfileDialog(
+            profile = userProfile,
+            onDismiss = { showEditProfileDialog = false },
+            onSave = { updatedProfile ->
+                viewModel.updateUserProfile(updatedProfile)
+                showEditProfileDialog = false // Dismiss the dialog after saving
+            }
+        )
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -90,9 +106,28 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                userEmail?.let { email ->
-                    ProfileAttribute(email)
+                userProfile?.let { profile ->
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        Text("Name: ${profile.name ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        Text("Surname: ${profile.surname ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                        Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium) // Assuming gender is an Int that represents Male=1, Female=2
+                        Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
+
+//                userEmail?.let { email ->
+//                    ProfileAttribute(email)
+//                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(onClick = { showEditProfileDialog = true }) {
+                    Text("Edit Profile")
+                }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -201,6 +236,85 @@ fun ProfilePage(navController: NavHostController) {
         )
     }
 }
+@Composable
+fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (UserProfile) -> Unit) {
+    var name by remember { mutableStateOf(profile?.name ?: "") }
+    var surname by remember { mutableStateOf(profile?.surname ?: "") }
+    var city by remember { mutableStateOf(profile?.city ?: "") }
+    var age by remember { mutableStateOf(profile?.age ?: "") }
+    var gender by remember { mutableStateOf(profile?.gender?.toString() ?: "") }
+    var specialty by remember { mutableStateOf(profile?.specialty ?: "") }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text("Edit Profile") },
+        text = {
+            Column {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") }
+                )
+                TextField(
+                    value = surname,
+                    onValueChange = { surname = it },
+                    label = { Text("Surname") }
+                )
+                TextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text("City") }
+                )
+                TextField(
+                    value = age,
+                    onValueChange = { age = it },
+                    label = { Text("Age") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                )
+                TextField(
+                    value = gender,
+                    onValueChange = { gender = it },
+                    label = { Text("Gender (1 for Male, 2 for Female)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                )
+                TextField(
+                    value = specialty,
+                    onValueChange = { specialty = it },
+                    label = { Text("Specialty") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                onSave(
+                    profile?.copy(
+                        name = name,
+                        surname = surname,
+                        city = city,
+                        age = age,
+                        gender = gender.toIntOrNull(),
+                        specialty = specialty
+                    ) ?: UserProfile(
+                        name = name,
+                        surname = surname,
+                        city = city,
+                        age = age,
+                        gender = gender.toIntOrNull(),
+                        specialty = specialty
+                    )
+                )
+            }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismiss() }) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 
 @Composable
 fun ActionCard(
@@ -263,6 +377,7 @@ fun UpdatePasswordDialog(
     val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
     val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
     val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
+
 
     LaunchedEffect(showSnackbar) {
         if (showSnackbar) {

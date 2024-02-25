@@ -1,20 +1,18 @@
 package com.ashim_bari.tildesu.viewmodel.main
 
 import android.net.Uri
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.model.user.UserProfile
 import com.ashim_bari.tildesu.model.user.UserRepository
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class MainViewModel: ViewModel() {
 
@@ -31,7 +29,8 @@ class MainViewModel: ViewModel() {
 
     private val _progressData = MutableLiveData<Map<String, Pair<Float, Int>>>()
     val progressData: LiveData<Map<String, Pair<Float, Int>>> = _progressData
-
+    private val _userProfile = MutableLiveData<UserProfile?>()
+    val userProfile: LiveData<UserProfile?> = _userProfile
     init {
         checkUserLoggedIn()
     }
@@ -46,15 +45,29 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun getUserEmail() {
-        viewModelScope.launch {
-            userRepository.getUserEmail { email ->
-                _userEmail.postValue(email)
-                // Log user email retrieval
-                println("User email retrieved: $email")
-            }
+
+    fun fetchUserProfile() {
+        userRepository.getUserProfile { userProfile ->
+            _userProfile.postValue(userProfile)
         }
     }
+    fun updateUserProfile(userProfile: UserProfile) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        viewModelScope.launch {
+            userRepository.updateUserProfile(userId, userProfile)
+            _userProfile.postValue(userProfile) // Update LiveData to reflect changes immediately
+        }
+    }
+
+//    fun getUserEmail() {
+//        viewModelScope.launch {
+//            userRepository.getUserEmail { email ->
+//                _userEmail.postValue(email)
+//                // Log user email retrieval
+//                println("User email retrieved: $email")
+//            }
+//        }
+//    }
 
     fun logout(navController: NavHostController) {
         viewModelScope.launch {
