@@ -81,5 +81,15 @@
     <string name="grammar_tip_10"><b>Sentence Structure:</b> Kazakh sentences often use postpositions instead of prepositions. Additionally, subordinate clauses typically precede main clauses.</string>
 
 
+    <string name="city">City</string>
+    <string name="age">Age</string>
+    <string name="gender">Gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="not_set">Not set</string>
+    <string name="specialty">Specialty</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

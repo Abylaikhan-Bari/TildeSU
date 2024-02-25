@@ -86,4 +86,19 @@
     <string name="grammar_tip_9"><b>Новые слова на ходу:</b> Учите новые слова в любое свободное время в любом месте, где это возможно — в транспорте, магазине. Даже три минуты занятий будут стимулировать мозг к запоминанию.</string>
     <string name="grammar_tip_10"><b>Комментирование своих действий:</b> Проговаривайте дома на казахском все, что делаете: открыли дверь, выпили воды, взяли книгу.</string>
 
+
+
+
+
+    <string name="city">Город</string>
+    <string name="age">Возраст</string>
+    <string name="gender">Пол</string>
+    <string name="gender_male">Мужчина</string>
+    <string name="gender_female">Женщина</string>
+    <string name="not_set">Не указано</string>
+    <string name="specialty">Специальность</string>
+    <string name="name">Имя</string>
+    <string name="surname">Фамилия</string>
+    <string name="confirm">Подтвердить</string>
+
 </resources>

@@ -131,13 +131,21 @@ fun ProfilePage(navController: NavHostController) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         userProfile?.let { profile ->
-                            Text("Email: ${profile.email ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                            Text("City: ${profile.city ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Age: ${profile.age ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Gender: ${if(profile.gender == null) "Not set" else if(profile.gender == 1) "Male" else "Female"}", style = MaterialTheme.typography.bodyMedium)
-                            Text("Specialty: ${profile.specialty ?: "Not set"}", style = MaterialTheme.typography.bodyMedium)
+                            Text("Email: ${profile.email}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${stringResource(R.string.city)}: ${profile.city ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${stringResource(R.string.age)}: ${profile.age ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${stringResource(R.string.gender)}: ${
+                                when (profile.gender) {
+                                    1 -> stringResource(R.string.gender_male)
+                                    2 -> stringResource(R.string.gender_female)
+                                    else -> stringResource(R.string.not_set)
+                                }
+                            }", style = MaterialTheme.typography.bodyMedium)
+                            Text("${stringResource(R.string.specialty)}: ${profile.specialty ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }
+
+
                 }
 
 // Buttons for actions (Edit Profile, Update Password, Logout, etc.)
@@ -263,21 +271,44 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        title = { Text("Edit Profile") },
+        title = { Text(stringResource(id = R.string.edit_profile_button)) },
         text = {
             Column {
-                TextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
-                TextField(value = surname, onValueChange = { surname = it }, label = { Text("Surname") })
-                TextField(value = city, onValueChange = { city = it }, label = { Text("City") })
-                TextField(value = age, onValueChange = { age = it }, label = { Text("Age") }, keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(id = R.string.name)) }
+                )
+                TextField(
+                    value = surname,
+                    onValueChange = { surname = it },
+                    label = { Text(stringResource(id = R.string.surname)) }
+                )
+                TextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text(stringResource(id = R.string.city)) }
+                )
+                TextField(
+                    value = age,
+                    onValueChange = { age = it },
+                    label = { Text(stringResource(id = R.string.age)) },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                )
                 GenderSelection(selectedGender = selectedGender, onGenderSelected = { selectedGender = it })
-                TextField(value = specialty, onValueChange = { specialty = it }, label = { Text("Specialty") })
+                TextField(
+                    value = specialty,
+                    onValueChange = { specialty = it },
+                    label = { Text(stringResource(id = R.string.specialty)) }
+                )
             }
+
         },
         confirmButton = {
             Button(onClick = {
                 onSave(
                     UserProfile(
+                        email = profile?.email ?: "",
                         name = name,
                         surname = surname,
                         city = city,
@@ -288,12 +319,12 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
                 )
                 onDismiss()
             }) {
-                Text("Save")
+                Text(stringResource(id = R.string.confirm))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(id = R.string.cancel_button))
             }
         }
     )
@@ -302,13 +333,16 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
 @Composable
 fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
     Column {
-        Text("Gender")
+        Text(stringResource(id = R.string.gender))
         Row {
             RadioButton(
                 selected = selectedGender == 1,
                 onClick = { onGenderSelected(1) }
             )
-            Text("Male", modifier = Modifier.clickable(onClick = { onGenderSelected(1) }).padding(start = 4.dp))
+            Text(
+                stringResource(id = R.string.gender_male), modifier = Modifier
+                    .clickable(onClick = { onGenderSelected(1) })
+                    .padding(start = 4.dp))
 
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -316,7 +350,10 @@ fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
                 selected = selectedGender == 2,
                 onClick = { onGenderSelected(2) }
             )
-            Text("Female", modifier = Modifier.clickable(onClick = { onGenderSelected(2) }).padding(start = 4.dp))
+            Text(
+                stringResource(id = R.string.gender_female), modifier = Modifier
+                    .clickable(onClick = { onGenderSelected(2) })
+                    .padding(start = 4.dp))
         }
     }
 }
