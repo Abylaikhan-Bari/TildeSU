@@ -38,8 +38,8 @@ class UserRepository {
             "name" to "",
             "surname" to "",
             "city" to "",
-            "age" to 0, // Assuming age as an integer
-            "gender" to "",
+            "age" to "",
+            "gender" to 0,
             "specialty" to ""
         )
         firestore.collection("users").document(userId).set(user).await()

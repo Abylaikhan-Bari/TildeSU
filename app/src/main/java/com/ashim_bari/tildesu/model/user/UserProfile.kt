@@ -6,6 +6,6 @@ data class UserProfile(
     val surname: String? = null,
     val city: String? = null,
     val age: String? = null, // Assuming age is stored as a String; adjust accordingly
-    val gender: Int? = null, // Use null for gender not set
+    val gender: Int? = 0, // Use null for gender not set
     val specialty: String? = null
 )
