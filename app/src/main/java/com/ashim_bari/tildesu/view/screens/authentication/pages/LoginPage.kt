@@ -92,11 +92,6 @@ fun LoginPage(
     val coroutineScope = rememberCoroutineScope()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
-    var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
-
-    var expanded by remember { mutableStateOf(false) }
-    val languages = listOf("English", "Russian", "Kazakh")
-    val languageCodes = listOf("en", "ru", "kk")
     val currentLanguageCode = languageViewModel.language.collectAsState().value
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
