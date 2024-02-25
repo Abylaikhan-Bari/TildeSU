@@ -97,9 +97,10 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
-                    modifier = Modifier.size( width = 200.dp, height = 80.dp).padding(top=padding)
-
+                    modifier = Modifier.size(250.dp) // Adjust size here
                 )
+
+                Spacer(modifier = Modifier.height(padding))
 
                 when (currentScreen) {
                     AuthScreens.Login -> {
@@ -116,15 +117,18 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }
                 }
 
-                Image(
-                    painter = painterResource(R.drawable.logoauthscreenbottom),
-                    contentDescription = "App Bottom Logo",
-                    modifier = imageModifier.size(200.dp)
-                )
+                Spacer(modifier = Modifier.height(padding))
+
+//                Image(
+//                    painter = painterResource(R.drawable.logobottom),
+//                    contentDescription = "App Bottom Logo",
+//                    modifier = imageModifier.size(100.dp) // Adjust size here
+//                )
             }
         }
     }
 }
+
 
 
 

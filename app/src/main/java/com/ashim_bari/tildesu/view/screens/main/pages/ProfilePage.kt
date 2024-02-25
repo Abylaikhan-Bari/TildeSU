@@ -177,7 +177,7 @@ fun ProfilePage(navController: NavHostController) {
                         icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
                         onClick = { showEditProfileDialog = true },
                         modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.background
+                        backgroundColor = MaterialTheme.colorScheme.inverseOnSurface
                     )
                 }
 
@@ -189,7 +189,7 @@ fun ProfilePage(navController: NavHostController) {
                         icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
                         onClick = { showUpdatePasswordDialog = true },
                         modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.primary
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
 

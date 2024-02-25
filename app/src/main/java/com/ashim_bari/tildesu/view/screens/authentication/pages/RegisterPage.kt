@@ -21,12 +21,15 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -109,130 +112,161 @@ fun RegisterPage(
         }
     }
 
-    Column(
+    Surface (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline
+        color = MaterialTheme.colorScheme.surfaceVariant, // Choose a contrasting color for the outline
+        shape = RoundedCornerShape(14.dp) // Apply rounded corners if desired
     ) {
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = stringResource(id = R.string.register),
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(id = R.string.email)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        // Password TextField with focus management and keyboard actions
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(id = R.string.password)) },
-            singleLine = true,
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    Icon(
-                        imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (passwordVisibility) "Hide password" else "Show password"
-                    )
-                }
-            },
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .focusRequester(passwordFocusRequester) // Ensure you have declared and initialized passwordFocusRequester
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-// Confirm Password TextField with focus management and keyboard actions
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text(stringResource(id = R.string.confirm_password)) },
-            singleLine = true,
-            visualTransformation = if (confirmpasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide() // Hide the keyboard when the user presses done
-                // Here, you might want to trigger the form submission logic
-            }),
-            trailingIcon = {
-                IconButton(onClick = { confirmpasswordVisibility = !confirmpasswordVisibility }) {
-                    Icon(
-                        imageVector = if (confirmpasswordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = if (confirmpasswordVisibility) "Hide confirm password" else "Show confirm password"
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(confirmPasswordFocusRequester) // Ensure you have declared and initialized confirmPasswordFocusRequester
-        )
-        authMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .animateContentSize(),
-            contentAlignment = Alignment.Center
+                .padding(2.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(8.dp), // Adjust elevation to control the shadow
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background // Choose a color that contrasts with the outline
+            ),
         ) {
-            Crossfade(targetState = isLoading || isSuccess, label = "Register") {
-                val registerSuccessfulMessage = stringResource(id = R.string.register_successful)
-                val registerFailedMessage = stringResource(id = R.string.register_failed)
-                when {
-                    isLoading -> CircularProgressIndicator(color = BluePrimary) // Set the color to BluePrimary
-                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary) // Set the tint to BluePrimary
-                    else -> Button(
-                        onClick = {
-                            keyboardController?.hide()
-                            coroutineScope.launch {
-                                isLoading = true
-                                isSuccess = false
-                                val success = viewModel.register(email, password)
-                                isLoading = false
-                                isSuccess = success
-                                if (success) {
-                                    snackbarHostState.showSnackbar(registerSuccessfulMessage)
-                                    navController.navigate(Navigation.MAIN_ROUTE)
-                                } else {
-                                    snackbarHostState.showSnackbar(registerFailedMessage)
-                                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(id = R.string.register),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text(stringResource(id = R.string.email)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text(stringResource(id = R.string.password)) },
+                    singleLine = true,
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                            Icon(
+                                imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(passwordFocusRequester) // Ensure you have declared and initialized passwordFocusRequester
+                )
+
+                // Confirm Password TextField with focus management and keyboard actions
+                OutlinedTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text(stringResource(id = R.string.confirm_password)) },
+                    singleLine = true,
+                    visualTransformation = if (confirmpasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide() // Hide the keyboard when the user presses done
+                        // Here, you might want to trigger the form submission logic
+                    }),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            confirmpasswordVisibility = !confirmpasswordVisibility
+                        }) {
+                            Icon(
+                                imageVector = if (confirmpasswordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (confirmpasswordVisibility) "Hide confirm password" else "Show confirm password"
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(confirmPasswordFocusRequester) // Ensure you have declared and initialized confirmPasswordFocusRequester
+                )
+                authMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .animateContentSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Crossfade(targetState = isLoading || isSuccess, label = "Register") {
+                        val registerSuccessfulMessage =
+                            stringResource(id = R.string.register_successful)
+                        val registerFailedMessage = stringResource(id = R.string.register_failed)
+                        when {
+                            isLoading -> CircularProgressIndicator(color = BluePrimary) // Set the color to BluePrimary
+                            isSuccess -> Icon(
+                                Icons.Filled.Check,
+                                contentDescription = "Success",
+                                tint = BluePrimary
+                            ) // Set the tint to BluePrimary
+                            else -> Button(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    coroutineScope.launch {
+                                        isLoading = true
+                                        isSuccess = false
+                                        val success = viewModel.register(email, password)
+                                        isLoading = false
+                                        isSuccess = success
+                                        if (success) {
+                                            snackbarHostState.showSnackbar(registerSuccessfulMessage)
+                                            navController.navigate(Navigation.MAIN_ROUTE)
+                                        } else {
+                                            snackbarHostState.showSnackbar(registerFailedMessage)
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                                shape = RoundedCornerShape(12.dp) // Use BluePrimary for the Button color
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.register_button),
+                                    color = Color.White
+                                )// You might adjust the text color if needed
                             }
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
-                        shape = RoundedCornerShape(12.dp) // Use BluePrimary for the Button color
-                    ) {
-                        Text(stringResource(id = R.string.register_button), color = Color.White)// You might adjust the text color if needed
+                        }
                     }
                 }
-            }
-        }
 
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text(stringResource(id = R.string.login_prompt))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
+                        Text(stringResource(id = R.string.login_prompt))
+                    }
+                }
             }
         }
     }
