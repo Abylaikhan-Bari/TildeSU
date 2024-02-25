@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -55,7 +56,7 @@ fun ResetPasswordPage(
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,6 +99,7 @@ fun ResetPasswordPage(
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
                     else -> Button(
                         onClick = {
+                            keyboardController?.hide()
                             coroutineScope.launch {
                                 isLoading = true
                                 isSuccess = false // Reset success state

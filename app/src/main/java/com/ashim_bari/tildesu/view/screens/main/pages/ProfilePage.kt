@@ -1,6 +1,5 @@
 package com.ashim_bari.tildesu.view.screens.main.pages
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -8,9 +7,23 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,10 +31,30 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.ModeEdit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +72,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.user.UserProfile
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
@@ -53,12 +87,13 @@ fun ProfilePage(navController: NavHostController) {
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    var showEditProfileDialog by rememberSaveable { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
     }
     val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
-
+    val userProfile by viewModel.userProfile.observeAsState()
     LaunchedEffect(imageUri) {
         imageUri?.let {
             if (Build.VERSION.SDK_INT < 28) {
@@ -70,10 +105,24 @@ fun ProfilePage(navController: NavHostController) {
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.getUserEmail()
-        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
+        viewModel.fetchUserProfile()
     }
 
+//    LaunchedEffect(Unit) {
+//        viewModel.getUserEmail()
+//        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
+//    }
+    if (showEditProfileDialog) {
+        // The userProfile from viewModel might be null initially, handle nullability
+        EditProfileDialog(
+            profile = userProfile,
+            onDismiss = { showEditProfileDialog = false },
+            onSave = { updatedProfile ->
+                viewModel.updateUserProfile(updatedProfile)
+                showEditProfileDialog = false // Dismiss the dialog after saving
+            }
+        )
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -84,43 +133,68 @@ fun ProfilePage(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(16.dp)
             ) {
-                ProfilePicture(profileImageUrl) {
-                    launcher.launch("image/*")
+//                ProfilePicture(profileImageUrl) {
+//                    launcher.launch("image/*")
+//                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                userProfile?.let { profile ->
+                    AnimatedCard {
+                        ProfilePicture(profileImageUrl) {
+                            launcher.launch("image/*")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    AnimatedCard {
+                        Row(modifier = Modifier.padding(top = 8.dp)) {
+                            Text(
+                                text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Animate the rest of the user information
+                    AnimatedCard {
+                        UserInfoCard(profile)
+                    }
                 }
+
+
+                // Continuing inside the Column from above
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+// Buttons for actions (Edit Profile, Update Password, Logout, etc.)
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                userEmail?.let { email ->
-                    ProfileAttribute(email)
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.edit_profile_button),
+                        icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
+                        onClick = { showEditProfileDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.background
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
 
-                ActionCard(
-                    text = stringResource(id = R.string.update_password_button),
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Update Password") },
-                    onClick = { showUpdatePasswordDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primary
-                )
+                Spacer(modifier = Modifier.height(16.dp))
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.update_password_button),
+                        icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
+                        onClick = { showUpdatePasswordDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.primary
+                    )
+                }
 
 
-                // Place this card where appropriate in your Column
-                //Spacer(modifier = Modifier.height(16.dp))
 
-//                ActionCard(
-//                    text = stringResource(id = R.string.change_language_button),
-//                    icon = { Icon(Icons.Outlined.Language, contentDescription = "Change Language") },
-//                    onClick = { showLanguageDialog = true },
-//                    modifier = Modifier
-//                        .height(56.dp)
-//                        .fillMaxWidth(),
-//                    backgroundColor = MaterialTheme.colorScheme.primaryContainer // Choose an appropriate color
-//                )
-
-// Language Change Dialog
                 LanguageChangeDialog(
                     showDialog = showLanguageDialog,
                     onDismiss = { showLanguageDialog = false },
@@ -134,16 +208,16 @@ fun ProfilePage(navController: NavHostController) {
 
 
                 Spacer(modifier = Modifier.height(16.dp))
+                AnimatedCard {
+                    ActionCard(
+                        text = stringResource(id = R.string.log_out_language_button),
+                        icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
+                        onClick = { showLogoutDialog = true },
+                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                }
 
-                ActionCard(
-                    text = stringResource(id = R.string.log_out_language_button),
-                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out")},
-                    onClick = { showLogoutDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.errorContainer
-                )
 
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
@@ -173,7 +247,7 @@ fun ProfilePage(navController: NavHostController) {
                         title = { Text(stringResource(id = R.string.logout_dialog_title)) },
                         text = { Text(stringResource(id = R.string.logout_dialog_content)) },
                         confirmButton = {
-                            TextButton(
+                            Button(
                                 onClick = {
                                     viewModel.logout(navController)
                                     showLogoutDialog = false
@@ -183,7 +257,7 @@ fun ProfilePage(navController: NavHostController) {
                             }
                         },
                         dismissButton = {
-                            TextButton(
+                            Button(
                                 onClick = { showLogoutDialog = false }
                             ) {
                                 Text(stringResource(id = R.string.cancel_button))
@@ -203,37 +277,210 @@ fun ProfilePage(navController: NavHostController) {
 }
 
 @Composable
+fun AnimatedCard(content: @Composable () -> Unit) {
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = true) {
+        isVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut()
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun UserInfoCard(profile: UserProfile) {
+    // Example card content, adapt as needed
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Email: ${profile.email}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.city)}: ${profile.city ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.age)}: ${profile.age ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.gender)}: ${
+                when (profile.gender) {
+                    1 -> stringResource(R.string.gender_male)
+                    2 -> stringResource(R.string.gender_female)
+                    else -> stringResource(R.string.not_set)
+                }
+            }", style = MaterialTheme.typography.bodyMedium)
+            Text("${stringResource(R.string.specialty)}: ${profile.specialty ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
+            // Other user info fields...
+        }
+    }
+}
+@Composable
+fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (UserProfile) -> Unit) {
+    var name by remember { mutableStateOf(profile?.name ?: "") }
+    var surname by remember { mutableStateOf(profile?.surname ?: "") }
+    var city by remember { mutableStateOf(profile?.city ?: "") }
+    var age by remember { mutableStateOf(profile?.age ?: "") }
+    var selectedGender by remember { mutableStateOf(profile?.gender ?: 0) } // Use 0 for not set, 1 for male, 2 for female
+    var specialty by remember { mutableStateOf(profile?.specialty ?: "") }
+    val nameFocusRequester = remember { FocusRequester() }
+    val surnameFocusRequester = remember { FocusRequester() }
+    val cityFocusRequester = remember { FocusRequester() }
+    val ageFocusRequester = remember { FocusRequester() }
+    val specialtyFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(stringResource(id = R.string.edit_profile_button)) },
+        text = {
+            Column {
+                TextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(id = R.string.name)) },
+                    modifier = Modifier.focusRequester(nameFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { surnameFocusRequester.requestFocus() })
+                )
+                TextField(
+                    value = surname,
+                    onValueChange = { surname = it },
+                    label = { Text(stringResource(id = R.string.surname)) },
+                    modifier = Modifier.focusRequester(surnameFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { cityFocusRequester.requestFocus() })
+                )
+                TextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text(stringResource(id = R.string.city)) },
+                    modifier = Modifier.focusRequester(cityFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { ageFocusRequester.requestFocus() })
+                )
+                TextField(
+                    value = age,
+                    onValueChange = { age = it },
+                    label = { Text(stringResource(id = R.string.age)) },
+                    modifier = Modifier.focusRequester(ageFocusRequester),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { specialtyFocusRequester.requestFocus() })
+                )
+                GenderSelection(selectedGender = selectedGender, onGenderSelected = { selectedGender = it })
+                TextField(
+                    value = specialty,
+                    onValueChange = { specialty = it },
+                    label = { Text(stringResource(id = R.string.specialty)) },
+                    modifier = Modifier.focusRequester(specialtyFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+                )
+            }
+
+
+        },
+        confirmButton = {
+            Button(onClick = {
+                keyboardController?.hide()
+                onSave(
+                    UserProfile(
+                        email = profile?.email ?: "",
+                        name = name,
+                        surname = surname,
+                        city = city,
+                        age = age,
+                        gender = selectedGender,
+                        specialty = specialty
+                    )
+                )
+                onDismiss()
+            }) {
+                Text(stringResource(id = R.string.confirm))
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(stringResource(id = R.string.cancel_button))
+            }
+        }
+    )
+}
+
+@Composable
+fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
+    Column {
+        Text(stringResource(id = R.string.gender))
+        Row {
+            RadioButton(
+                selected = selectedGender == 1,
+                onClick = { onGenderSelected(1) }
+            )
+            Text(
+                stringResource(id = R.string.gender_male), modifier = Modifier
+                    .clickable(onClick = { onGenderSelected(1) })
+                    .padding(start = 4.dp))
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            RadioButton(
+                selected = selectedGender == 2,
+                onClick = { onGenderSelected(2) }
+            )
+            Text(
+                stringResource(id = R.string.gender_female), modifier = Modifier
+                    .clickable(onClick = { onGenderSelected(2) })
+                    .padding(start = 4.dp))
+        }
+    }
+}
+
+
+@Composable
 fun ActionCard(
     text: String,
     icon: @Composable (() -> Unit)? = null,
     onClick: () -> Unit,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier
-            .size(350.dp)
-            .fillMaxWidth(), // Adjusted padding for better space utilization.
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = true) {
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + slideInVertically(),
+        exit = fadeOut()
     ) {
-        Row(
-            modifier = Modifier.padding(all = 15.dp), // Adjusted for potentially better text visibility.
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+        Card(
+            onClick = onClick,
+            modifier = modifier
+                .size(350.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor)
         ) {
-            icon?.invoke()
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f) // Ensures text tries to fill available space, pushing it to be fully visible.
-            )
+            Row(
+                modifier = Modifier.padding(all = 15.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                icon?.invoke()
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
+
 
 
 
@@ -263,6 +510,7 @@ fun UpdatePasswordDialog(
     val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
     val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
     val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
+
 
     LaunchedEffect(showSnackbar) {
         if (showSnackbar) {
@@ -331,6 +579,7 @@ fun UpdatePasswordDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     if (currentPassword.isBlank()) {
                         errorMessage = errorCurrentPasswordEmptyMessage
                     } else if (newPassword.isBlank()) {
@@ -363,6 +612,8 @@ fun UpdatePasswordDialog(
 
         },
         dismissButton = {
+            keyboardController?.hide()
+
             Button(onClick = onClose) {
                 Text(stringResource(id = R.string.cancel_button))
             }
@@ -430,16 +681,3 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
 }
 
 
-
-@Composable
-fun ProfileAttribute(value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = value ?: "Loading...", // Show "Loading..." while email is being fetched
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}

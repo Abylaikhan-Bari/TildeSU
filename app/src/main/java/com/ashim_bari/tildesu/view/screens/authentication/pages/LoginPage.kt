@@ -1,6 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
-import LanguageManager
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.Crossfade
@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalAutofill
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -60,7 +61,7 @@ import com.ashim_bari.tildesu.view.MainActivity
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
-import com.ashim_bari.tildesu.viewmodel.LanguageViewModel
+import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -219,6 +220,7 @@ fun LoginPage(
                     else -> {
                         Button(
                             onClick = {
+                                keyboardController?.hide()
                                 if (isUsernameValid && isPasswordValid) {
                                     authMessage = null
                                     coroutineScope.launch {
@@ -259,6 +261,18 @@ fun LoginPage(
         ) {
             TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
                 Text(stringResource(id = R.string.register_prompt))
+            }
+            IconButton(
+                onClick = { showLanguageDialog = true },
+                modifier = Modifier
+                    .height(48.dp)
+                    .padding(start = 8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.language_icon),
+                    contentDescription = "Change Language",
+                    tint = Color(0xFF34549C)
+                )
             }
         }
         if (showLanguageDialog) {
@@ -324,15 +338,27 @@ fun LoginPage(
         }
 
 
+//        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+//            IconButton(
+//                onClick = { showLanguageDialog = true },
+//                modifier = Modifier
+//                    .padding(end = 8.dp)
+//                    .height(48.dp)
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Language,
+//                    contentDescription = "Change Language"
+//                )
+//            }
+//        }
 
-
-        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-
-            TextButton(onClick = { showLanguageDialog = true }) {
-                Text(text = stringResource(id = R.string.change_language_button))
-            }
-
-        }
+//        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+//
+//            TextButton(onClick = { showLanguageDialog = true }) {
+//                Text(text = stringResource(id = R.string.change_language_button))
+//            }
+//
+//        }
     }
 }
 

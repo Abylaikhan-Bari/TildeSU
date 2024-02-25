@@ -29,8 +29,6 @@ import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
-
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val padding = if (isLandscape) 32.dp else 16.dp
@@ -41,15 +39,13 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
 
-
-
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = Modifier.fillMaxSize()
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier.padding(padding)
         ) {
             BackHandler {
                 Log.d("AuthenticationScreen", "Back button pressed")
@@ -86,27 +82,25 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }
                 )
             }
+
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
-                    .padding(padding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(R.drawable.satbayev),
-                    contentDescription = "Satbayev University Logo",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(bottom = padding)
-                        .size(width = 400.dp, height = 70.dp)
-                )
+
+                val imageModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = padding, bottom = padding)
+
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 50.dp)
-                        .size(width = 300.dp, height = 80.dp)
+                    modifier = Modifier.size( width = 200.dp, height = 80.dp).padding(top=padding)
+
                 )
+
                 when (currentScreen) {
                     AuthScreens.Login -> {
                         Log.d("AuthenticationScreen", "Showing Login page")
@@ -122,10 +116,19 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }
                 }
 
+                Image(
+                    painter = painterResource(R.drawable.logoauthscreenbottom),
+                    contentDescription = "App Bottom Logo",
+                    modifier = imageModifier.size(200.dp)
+                )
             }
         }
     }
 }
+
+
+
+
 
 
 enum class AuthScreens {

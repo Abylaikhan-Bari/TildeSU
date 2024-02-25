@@ -199,6 +199,7 @@ fun RegisterPage(
                     isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary) // Set the tint to BluePrimary
                     else -> Button(
                         onClick = {
+                            keyboardController?.hide()
                             coroutineScope.launch {
                                 isLoading = true
                                 isSuccess = false
@@ -207,7 +208,7 @@ fun RegisterPage(
                                 isSuccess = success
                                 if (success) {
                                     snackbarHostState.showSnackbar(registerSuccessfulMessage)
-                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                    navController.navigate(Navigation.MAIN_ROUTE)
                                 } else {
                                     snackbarHostState.showSnackbar(registerFailedMessage)
                                 }

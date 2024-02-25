@@ -1,6 +1,6 @@
-package com.ashim_bari.tildesu.viewmodel
+package com.ashim_bari.tildesu.viewmodel.language
 
-import LanguageManager
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.content.Context
 import android.content.res.Configuration
 import androidx.lifecycle.ViewModel
@@ -16,7 +16,7 @@ class LanguageViewModel : ViewModel() {
         if (_language.value != language) {
             _language.value = language
             LanguageManager.setLocale(context, language)
-            // No need to manually update Locale here as LanguageManager already handles it
+            // No need to manually update Locale here as com.ashim_bari.tildesu.model.language.LanguageManager already handles it
         }
     }
 

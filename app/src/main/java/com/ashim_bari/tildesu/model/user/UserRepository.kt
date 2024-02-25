@@ -7,8 +7,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 
@@ -35,11 +34,35 @@ class UserRepository {
 
     private suspend fun createUserProfile(userId: String, email: String) {
         val user = mapOf(
-            "email" to email
-            // Add other profile information as needed
+            "email" to email,
+            "name" to "",
+            "surname" to "",
+            "city" to "",
+            "age" to "",
+            "gender" to 0,
+            "specialty" to ""
         )
         firestore.collection("users").document(userId).set(user).await()
         Log.d("UserRepository", "User profile created successfully")
+    }
+    suspend fun updateUserProfile(userId: String, userProfile: UserProfile) {
+        firestore.collection("users").document(userId).set(userProfile, SetOptions.merge()).await()
+        Log.d("UserRepository", "User profile updated successfully")
+    }
+
+    fun getUserProfile(onComplete: (UserProfile?) -> Unit) {
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId != null) {
+            firestore.collection("users").document(userId).get().addOnSuccessListener { document ->
+                val userProfile = document.toObject(UserProfile::class.java)
+                onComplete(userProfile)
+            }.addOnFailureListener { exception ->
+                Log.e("UserRepository", "Error getting user profile", exception)
+                onComplete(null)
+            }
+        } else {
+            onComplete(null)
+        }
     }
 
     suspend fun loginUser(email: String, password: String): Boolean {
@@ -75,10 +98,7 @@ class UserRepository {
         }
     }
 
-    fun getUserEmail(onComplete: (String?) -> Unit) {
-        val currentUser = firebaseAuth.currentUser
-        onComplete(currentUser?.email)
-    }
+
 
     suspend fun updatePassword(newPassword: String, currentPassword: String? = null): Boolean {
         return try {
