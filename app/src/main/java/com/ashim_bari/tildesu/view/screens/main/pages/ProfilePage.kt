@@ -377,6 +377,7 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
         },
         confirmButton = {
             Button(onClick = {
+                keyboardController?.hide()
                 onSave(
                     UserProfile(
                         email = profile?.email ?: "",
@@ -572,6 +573,7 @@ fun UpdatePasswordDialog(
         confirmButton = {
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     if (currentPassword.isBlank()) {
                         errorMessage = errorCurrentPasswordEmptyMessage
                     } else if (newPassword.isBlank()) {
@@ -604,6 +606,7 @@ fun UpdatePasswordDialog(
 
         },
         dismissButton = {
+            keyboardController?.hide()
             Button(onClick = onClose) {
                 Text(stringResource(id = R.string.cancel_button))
             }
