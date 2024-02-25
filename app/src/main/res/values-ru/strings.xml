@@ -100,5 +100,11 @@
     <string name="name">Имя</string>
     <string name="surname">Фамилия</string>
     <string name="confirm">Подтвердить</string>
+    <string name="congratulations">Поздравляем!</string>
+    <string name="you_scored_points">Вы набрали %1$d баллов!</string>
+    <string name="back_to_home">Вернутся на главную</string>
+    <string name="oops_sorry">Не получилось!</string>
+    <string name="dont_worry_try_again">Не волнуйтесь, вы можете попробовать снова!</string>
+    <string name="try_again">Попробавать снова</string>
 
 </resources>

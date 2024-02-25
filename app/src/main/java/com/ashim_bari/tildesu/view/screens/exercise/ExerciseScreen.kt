@@ -139,7 +139,9 @@ fun ExerciseScreen(
                     // Log action: Quiz completed
                     Log.d("ExerciseScreen", "Quiz completed")
 
-                    Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
+                    Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
                         modifier = Modifier
@@ -151,7 +153,9 @@ fun ExerciseScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+                        Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.CenterHorizontally))
                     }
                     Text(
                         text = stringResource(
@@ -189,7 +193,9 @@ fun ExerciseScreen(
                             exerciseViewModel.moveToNextQuestion()
                             selectedOption = -1 // Reset for next question
                         },
-                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally), // Align the button to the center horizontally
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally), // Align the button to the center horizontally
                         enabled = selectedOption != -1
                     ) {
                         Text(stringResource(id = R.string.next_button))
@@ -240,71 +246,99 @@ fun SuccessScreen(navController: NavController, score: Int) {
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         Text(
-            text = "Congratulations!",
+            text = stringResource(id = R.string.congratulations),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
         )
         Icon(
-            imageVector = Icons.Filled.EmojiEvents, // This is a built-in trophy-like icon
+            imageVector = Icons.Filled.EmojiEvents,
             contentDescription = "Trophy",
             modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
         )
 
         Text(
-            text = "You scored $score points!",
+            text = stringResource(id = R.string.you_scored_points, score),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
-        Button(
-            onClick = { /* TODO: Implement share functionality */ },
-            modifier = Modifier.padding(bottom = 8.dp)
+
+        Card(
+            onClick = { navController.navigate("main") },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Share")
+            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
-        Button(
-            onClick = { navController.navigate("main") }
-        ) {
-            Text("Back to Home")
-        }
+
     }
 }
+
 
 @Composable
 fun FailureScreen(navController: NavController, restartQuiz: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
-            text = "Oops! Sorry",
+            text = stringResource(id = R.string.oops_sorry),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.SentimentDissatisfied,
-            contentDescription = "Sad Face",
-            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+            contentDescription = "Sad face",
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp)
         )
 
         Text(
-            text = "Don't worry, you can try again!",
+            text = stringResource(id = R.string.dont_worry_try_again),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
-        Button(
-            onClick = { restartQuiz() },
-            modifier = Modifier.padding(bottom = 8.dp)
+        Card(
+            onClick = restartQuiz,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Try Again")
+            Text(stringResource(id = R.string.try_again), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
-        Button(
-            onClick = { navController.navigate("main") }
+
+
+        Card(
+            onClick = { navController.navigate("main") },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text("Back to Home")
+            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
+
     }
 }
+
 
 
 
@@ -323,7 +357,9 @@ fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifie
         Text(
             text = option,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
         )
     }
 }

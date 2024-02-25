@@ -91,5 +91,11 @@
     <string name="name">Есімі</string>
     <string name="surname">Тегі</string>
     <string name="confirm">Растау</string>
+    <string name="congratulations">Құттықтаймыз!</string>
+    <string name="you_scored_points">Сіз %1$d ұпай жинадыңыз!</string>
+    <string name="back_to_home">Басты бетке қайту</string>
+    <string name="oops_sorry">Әттең! Жолыңыз болмады</string>
+    <string name="dont_worry_try_again">Тағы қайталап көруге болады!</string>
+    <string name="try_again">Қайта көру</string>
 
 </resources>
