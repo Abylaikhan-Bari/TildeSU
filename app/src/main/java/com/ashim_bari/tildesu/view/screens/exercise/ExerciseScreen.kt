@@ -3,16 +3,44 @@ package com.ashim_bari.tildesu.view.screens.exercise
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.SentimentDissatisfied
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -52,7 +80,19 @@ fun ExerciseScreen(
     }
 
     Log.d("ExerciseScreen", "Composing ExerciseScreen, Current Level: $currentLevel, Current Question Index: $currentQuestionIndex, Quiz Completed: $quizCompleted")
-
+    if (quizCompleted) {
+        exerciseViewModel.quizPassed.observeAsState().value?.let { quizPassed ->
+            if (quizPassed) {
+                SuccessScreen(navController, exerciseViewModel.score.value ?: 0)
+            } else {
+                FailureScreen(navController) {
+                    // Reset the quiz and navigate accordingly
+                    exerciseViewModel.resetQuiz()
+                    navController.navigate("restartQuizRoute") // Adjust based on your navigation setup
+                }
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -96,7 +136,7 @@ fun ExerciseScreen(
                 if (quizCompleted) {
                     // Log action: Quiz completed
                     Log.d("ExerciseScreen", "Quiz completed")
-
+                    SuccessScreen(navController = navController, score = exerciseViewModel.score.value ?: 0)
                     Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
@@ -190,6 +230,81 @@ fun ExerciseScreen(
         )
     }
 }
+@Composable
+fun SuccessScreen(navController: NavController, score: Int) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        Text(
+            text = "Congratulations!",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Icon(
+            imageVector = Icons.Filled.EmojiEvents, // This is a built-in trophy-like icon
+            contentDescription = "Trophy",
+            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "You scored $score points!",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        Button(
+            onClick = { /* TODO: Implement share functionality */ },
+            modifier = Modifier.padding(bottom = 8.dp)
+        ) {
+            Text("Share")
+        }
+        Button(
+            onClick = { navController.navigate("main") }
+        ) {
+            Text("Back to Home")
+        }
+    }
+}
+
+@Composable
+fun FailureScreen(navController: NavController, restartQuiz: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        Text(
+            text = "Oops! Sorry",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Icon(
+            imageVector = Icons.Filled.SentimentDissatisfied,
+            contentDescription = "Sad Face",
+            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "Don't worry, you can try again!",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        Button(
+            onClick = { restartQuiz() },
+            modifier = Modifier.padding(bottom = 8.dp)
+        ) {
+            Text("Try Again")
+        }
+        Button(
+            onClick = { navController.navigate("main") }
+        ) {
+            Text("Back to Home")
+        }
+    }
+}
+
+
 
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifier, onSelect: () -> Unit) {
