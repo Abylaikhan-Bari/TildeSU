@@ -60,7 +60,14 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
             }
 
             if (showExitConfirmation) {
-                ExitConfirmationDialog(showExitConfirmation, activity)
+                ExitConfirmationDialog(
+                    showExitConfirmation = showExitConfirmation,
+                    onDismiss = { showExitConfirmation = false }, // Pass a lambda to update the state
+                    onConfirm = {
+                        Log.d("AuthenticationScreen", "App exited")
+                        activity?.finish()
+                    }
+                )
             }
 
             Column(
@@ -99,29 +106,21 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
 }
 
 @Composable
-fun ExitConfirmationDialog(showExitConfirmation: Boolean, activity: ComponentActivity?) {
+fun ExitConfirmationDialog(showExitConfirmation: Boolean,
+                           onDismiss: () -> Unit, // Added an onDismiss lambda parameter
+                           onConfirm: () -> Unit) {
     if (showExitConfirmation) {
         AlertDialog(
             onDismissRequest = { /* Do nothing to prevent dismiss on outside click */ },
             title = { Text(stringResource(id = R.string.exit_dialog_title)) },
             text = { Text(stringResource(id = R.string.exit_dialog_content)) },
             confirmButton = {
-                Button(
-                    onClick = {
-                        Log.d("AuthenticationScreen", "App exited")
-                        activity?.finish()
-                    }
-                ) {
+                Button(onClick = onConfirm) {
                     Text(stringResource(id = R.string.exit_dialog_yes))
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        Log.d("AuthenticationScreen", "Exit dialog dismissed")
-
-                    }
-                ) {
+                TextButton(onClick = onDismiss) { // Use the onDismiss lambda here
                     Text(stringResource(id = R.string.exit_dialog_no))
                 }
             }
