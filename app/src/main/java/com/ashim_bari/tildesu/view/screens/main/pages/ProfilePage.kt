@@ -133,12 +133,18 @@ fun ProfilePage(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(16.dp)
             ) {
-                ProfilePicture(profileImageUrl) {
-                    launcher.launch("image/*")
-                }
+//                ProfilePicture(profileImageUrl) {
+//                    launcher.launch("image/*")
+//                }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 userProfile?.let { profile ->
+                    AnimatedCard {
+                        ProfilePicture(profileImageUrl) {
+                            launcher.launch("image/*")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     AnimatedCard {
                         Row(modifier = Modifier.padding(top = 8.dp)) {
                             Text(
@@ -607,6 +613,7 @@ fun UpdatePasswordDialog(
         },
         dismissButton = {
             keyboardController?.hide()
+
             Button(onClick = onClose) {
                 Text(stringResource(id = R.string.cancel_button))
             }
