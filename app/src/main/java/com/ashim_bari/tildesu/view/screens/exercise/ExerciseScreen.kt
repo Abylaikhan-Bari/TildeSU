@@ -3,16 +3,44 @@ package com.ashim_bari.tildesu.view.screens.exercise
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.SentimentDissatisfied
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,13 +74,27 @@ fun ExerciseScreen(
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
     var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
     val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
-
+    val quizPassed = exerciseViewModel.quizPassed.observeAsState()
     fun showConfirmationDialog() {
         showDialog = true
     }
 
     Log.d("ExerciseScreen", "Composing ExerciseScreen, Current Level: $currentLevel, Current Question Index: $currentQuestionIndex, Quiz Completed: $quizCompleted")
-
+    if (quizCompleted) {
+        quizPassed.value?.let { passed ->
+            if (passed) {
+                SuccessScreen(navController, exerciseViewModel.score.value ?: 0)
+                return@ExerciseScreen
+            } else {
+                FailureScreen(navController) {
+                    // Implement what should happen when retrying the quiz, e.g., resetting quiz state
+                    exerciseViewModel.resetQuiz()
+                    // Navigate as needed or reset UI state
+                }
+                return@ExerciseScreen
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,7 +139,9 @@ fun ExerciseScreen(
                     // Log action: Quiz completed
                     Log.d("ExerciseScreen", "Quiz completed")
 
-                    Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
+                    Text(stringResource(id = R.string.exercise_completed), style = MaterialTheme.typography.bodyMedium, modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .align(Alignment.CenterHorizontally))
                     Card(
                         onClick = { navController.navigate("main") },
                         modifier = Modifier
@@ -109,7 +153,9 @@ fun ExerciseScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+                        Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.CenterHorizontally))
                     }
                     Text(
                         text = stringResource(
@@ -147,7 +193,9 @@ fun ExerciseScreen(
                             exerciseViewModel.moveToNextQuestion()
                             selectedOption = -1 // Reset for next question
                         },
-                        modifier = Modifier.padding(top = 16.dp).align(Alignment.CenterHorizontally), // Align the button to the center horizontally
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.CenterHorizontally), // Align the button to the center horizontally
                         enabled = selectedOption != -1
                     ) {
                         Text(stringResource(id = R.string.next_button))
@@ -190,6 +238,109 @@ fun ExerciseScreen(
         )
     }
 }
+@Composable
+fun SuccessScreen(navController: NavController, score: Int) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.congratulations),
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+        )
+        Icon(
+            imageVector = Icons.Filled.EmojiEvents,
+            contentDescription = "Trophy",
+            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.you_scored_points, score),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+        )
+
+        Card(
+            onClick = { navController.navigate("main") },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+        }
+
+    }
+}
+
+
+@Composable
+fun FailureScreen(navController: NavController, restartQuiz: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.oops_sorry),
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+        )
+        Icon(
+            imageVector = Icons.Filled.SentimentDissatisfied,
+            contentDescription = "Sad face",
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.dont_worry_try_again),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+        )
+        Card(
+            onClick = restartQuiz,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(stringResource(id = R.string.try_again), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+        }
+
+
+        Card(
+            onClick = { navController.navigate("main") },
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally)
+                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
+                .height(100.dp), // Set the height to a specific value
+            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        ) {
+            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+        }
+
+    }
+}
+
+
+
 
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifier, onSelect: () -> Unit) {
@@ -206,7 +357,9 @@ fun OptionCard(option: String, isSelected: Boolean, modifier: Modifier = Modifie
         Text(
             text = option,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
         )
     }
 }

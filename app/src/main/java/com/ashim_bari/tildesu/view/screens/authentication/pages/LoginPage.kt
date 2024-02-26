@@ -1,6 +1,5 @@
 package com.ashim_bari.tildesu.view.screens.authentication.pages
 
-import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.Crossfade
@@ -22,12 +21,15 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -57,12 +59,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import com.ashim_bari.tildesu.view.MainActivity
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
-import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
+import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -89,11 +92,6 @@ fun LoginPage(
     val coroutineScope = rememberCoroutineScope()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
-    var showLanguageDropdown by rememberSaveable { mutableStateOf(false) }
-
-    var expanded by remember { mutableStateOf(false) }
-    val languages = listOf("English", "Russian", "Kazakh")
-    val languageCodes = listOf("en", "ru", "kk")
     val currentLanguageCode = languageViewModel.language.collectAsState().value
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
@@ -142,223 +140,247 @@ fun LoginPage(
 
 
 
-    Column(
+    Surface (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline
+        color = MaterialTheme.colorScheme.surfaceVariant, // Choose a contrasting color for the outline
+        shape = RoundedCornerShape(14.dp) // Apply rounded corners if desired
     ) {
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = stringResource(id = R.string.login),
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text(stringResource(id = R.string.email)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(id = R.string.password)) },
-            singleLine = true,
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                }
+                .padding(2.dp), // This padding will act as the outline thickness
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(8.dp), // Adjust elevation to control the shadow
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background // Choose a color that contrasts with the outline
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(passwordFocusRequester), // Apply focusRequester modifier
-            trailingIcon = {
-                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    Icon(
-                        imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        contentDescription = "Toggle Password Visibility"
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(id = R.string.login),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text(stringResource(id = R.string.email)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text(stringResource(id = R.string.password)) },
+                    singleLine = true,
+                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                        }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(passwordFocusRequester), // Apply focusRequester modifier
+                    trailingIcon = {
+                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                            Icon(
+                                imageVector = if (passwordVisibility) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = "Toggle Password Visibility"
+                            )
+                        }
+                    }
+                )
+                authMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-            }
-        )
-        authMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
-        }
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(onClick = { onNavigate(AuthScreens.ResetPassword) }) {
-                Text(stringResource(id = R.string.forgot_password))
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .animateContentSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Crossfade(targetState = isLoading || isSuccess, label = "Login") {
-                val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
-                val loginFailedMessage = stringResource(id = R.string.login_failed)
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = { onNavigate(AuthScreens.ResetPassword) }) {
+                        Text(stringResource(id = R.string.forgot_password))
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .animateContentSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Crossfade(targetState = isLoading || isSuccess, label = "Login") {
+                        val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
+                        val loginFailedMessage = stringResource(id = R.string.login_failed)
 
-                when {
-                    isLoading -> CircularProgressIndicator(color = BluePrimary)
-                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
-                    else -> {
-                        Button(
-                            onClick = {
-                                keyboardController?.hide()
-                                if (isUsernameValid && isPasswordValid) {
-                                    authMessage = null
-                                    coroutineScope.launch {
-                                        isLoading = true
-                                        isSuccess = false
-                                        val success = viewModel.login(username, password)
-                                        isLoading = false
-                                        isSuccess = success
-                                        if (success) {
-                                            snackbarHostState.showSnackbar(loginSuccessfulMessage)
-                                            navController.navigate(Navigation.MAIN_ROUTE)
-                                        } else {
-                                            snackbarHostState.showSnackbar(loginFailedMessage)
+                        when {
+                            isLoading -> CircularProgressIndicator(color = BluePrimary)
+                            isSuccess -> Icon(
+                                Icons.Filled.Check,
+                                contentDescription = "Success",
+                                tint = BluePrimary
+                            )
+
+                            else -> {
+                                Button(
+                                    onClick = {
+                                        keyboardController?.hide()
+                                        if (isUsernameValid && isPasswordValid) {
+                                            authMessage = null
+                                            coroutineScope.launch {
+                                                isLoading = true
+                                                isSuccess = false
+                                                val success = viewModel.login(username, password)
+                                                isLoading = false
+                                                isSuccess = success
+                                                if (success) {
+                                                    snackbarHostState.showSnackbar(
+                                                        loginSuccessfulMessage
+                                                    )
+                                                    navController.navigate(Navigation.MAIN_ROUTE)
+                                                } else {
+                                                    snackbarHostState.showSnackbar(
+                                                        loginFailedMessage
+                                                    )
+                                                }
+                                            }
                                         }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(100.dp)
+                                        .padding(top = 8.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        stringResource(id = R.string.login_button),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.labelLarge
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
+                        Text(stringResource(id = R.string.register_prompt))
+                    }
+                    IconButton(
+                        onClick = { showLanguageDialog = true },
+                        modifier = Modifier
+                            .height(48.dp)
+                            .padding(start = 8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.language_icon),
+                            contentDescription = "Change Language",
+                            tint = Color(0xFF34549C)
+                        )
+                    }
+                }
+                if (showLanguageDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showLanguageDialog = false
+                            tempSelectedLanguageCode =
+                                null // Reset temporary selection when dialog is dismissed
+                        },
+                        title = { Text(text = stringResource(id = R.string.select_language)) },
+                        text = {
+                            Column {
+                                val languages = listOf(
+                                    stringResource(id = R.string.language_english),
+                                    stringResource(id = R.string.language_russian),
+                                    stringResource(id = R.string.language_kazakh)
+                                )
+                                val languageCodes = listOf("en", "ru", "kk")
+                                languages.zip(languageCodes).forEach { (language, code) ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { tempSelectedLanguageCode = code }
+                                            .padding(vertical = 8.dp)
+                                    ) {
+                                        // Use text color or other visual indicators for selection
+                                        Text(
+                                            text = language,
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
                                 }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp)
-                                .padding(top = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(stringResource(id = R.string.login_button), color = Color.White, style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
-                }
-            }
-        }
-
-
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text(stringResource(id = R.string.register_prompt))
-            }
-            IconButton(
-                onClick = { showLanguageDialog = true },
-                modifier = Modifier
-                    .height(48.dp)
-                    .padding(start = 8.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.language_icon),
-                    contentDescription = "Change Language",
-                    tint = Color(0xFF34549C)
-                )
-            }
-        }
-        if (showLanguageDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    showLanguageDialog = false
-                    tempSelectedLanguageCode = null // Reset temporary selection when dialog is dismissed
-                },
-                title = { Text(text = stringResource(id = R.string.select_language)) },
-                text = {
-                    Column {
-                        val languages = listOf(
-                            stringResource(id = R.string.language_english),
-                            stringResource(id = R.string.language_russian),
-                            stringResource(id = R.string.language_kazakh)
-                        )
-                        val languageCodes = listOf("en", "ru", "kk")
-                        languages.zip(languageCodes).forEach { (language, code) ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { tempSelectedLanguageCode = code }
-                                    .padding(vertical = 8.dp)
+                            }
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    if (tempSelectedLanguageCode != null) {
+                                        // Apply the language change only if a selection has been made
+                                        LanguageManager.setLocale(
+                                            context,
+                                            tempSelectedLanguageCode!!
+                                        )
+                                        languageViewModel.setLanguage(
+                                            context,
+                                            tempSelectedLanguageCode!!
+                                        )
+                                        (context as? MainActivity)?.restartActivity()
+                                    }
+                                    showLanguageDialog = false
+                                    tempSelectedLanguageCode =
+                                        null // Reset temporary selection after applying
+                                }
                             ) {
-                                // Use text color or other visual indicators for selection
-                                Text(
-                                    text = language,
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                )
+                                Text(text = "OK")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showLanguageDialog = false
+                                    tempSelectedLanguageCode =
+                                        null // Reset temporary selection when dialog is dismissed
+                                }
+                            ) {
+                                Text(text = stringResource(id = android.R.string.cancel))
                             }
                         }
-                    }
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            if (tempSelectedLanguageCode != null) {
-                                // Apply the language change only if a selection has been made
-                                LanguageManager.setLocale(context, tempSelectedLanguageCode!!)
-                                languageViewModel.setLanguage(context, tempSelectedLanguageCode!!)
-                                (context as? MainActivity)?.restartActivity()
-                            }
-                            showLanguageDialog = false
-                            tempSelectedLanguageCode = null // Reset temporary selection after applying
-                        }
-                    ) {
-                        Text(text = "OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showLanguageDialog = false
-                            tempSelectedLanguageCode = null // Reset temporary selection when dialog is dismissed
-                        }
-                    ) {
-                        Text(text = stringResource(id = android.R.string.cancel))
-                    }
+                    )
                 }
-            )
+
+
+            }
         }
-
-
-//        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-//            IconButton(
-//                onClick = { showLanguageDialog = true },
-//                modifier = Modifier
-//                    .padding(end = 8.dp)
-//                    .height(48.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Language,
-//                    contentDescription = "Change Language"
-//                )
-//            }
-//        }
-
-//        Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-//
-//            TextButton(onClick = { showLanguageDialog = true }) {
-//                Text(text = stringResource(id = R.string.change_language_button))
-//            }
-//
-//        }
     }
 }
 

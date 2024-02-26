@@ -2,12 +2,12 @@
     <string name="app_name">TildeSU</string>
     <string name="login">Кіру</string>
     <string name="register">Тіркелу</string>
-    <string name="reset_password">Құпия сөзді қалпына келтіру</string>
-    <string name="email">Электрондық пошта</string>
+    <string name="reset_password">Кілтсөзді қалпына келтіру</string>
+    <string name="email">Email</string>
     <string name="password">Құпия сөз</string>
     <string name="current_password">Қазіргі кілтсөз</string>
     <string name="new_password">Жаңа кілтсөз</string>
-    <string name="confirm_password">Құпия сөзді растау</string>
+    <string name="confirm_password">Кілтсөзді растау</string>
     <string name="login_button">Кіру</string>
     <string name="update_button">Жаңарту</string>
     <string name="cancel_button">Бас тарту</string>
@@ -91,5 +91,13 @@
     <string name="name">Есімі</string>
     <string name="surname">Тегі</string>
     <string name="confirm">Растау</string>
+    <string name="congratulations">Құттықтаймыз!</string>
+    <string name="you_scored_points">Сіз %1$d ұпай жинадыңыз!</string>
+    <string name="back_to_home">Басты бетке қайту</string>
+    <string name="oops_sorry">Жолыңыз болмады</string>
+    <string name="dont_worry_try_again">Тағы қайталап көруге болады!</string>
+    <string name="try_again">Қайта көру</string>
+    <string name="read_less">Қысқарту</string>
+    <string name="read_more">Бәрін көру</string>
 
 </resources>

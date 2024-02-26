@@ -18,11 +18,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -57,84 +60,117 @@ fun ResetPasswordPage(
     var email by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
     val keyboardController = LocalSoftwareKeyboardController.current
-    Column(
+    Surface (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline
+        color = MaterialTheme.colorScheme.surfaceVariant, // Choose a contrasting color for the outline
+        shape = RoundedCornerShape(14.dp) // Apply rounded corners if desired
     ) {
-        authMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
-        }
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = stringResource(id = R.string.reset_password),
-            style = MaterialTheme.typography.headlineSmall
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text(stringResource(id = R.string.email)) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Box(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
-                .animateContentSize(),
-            contentAlignment = Alignment.Center
+                .padding(2.dp), // This padding will act as the outline thickness
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(8.dp), // Adjust elevation to control the shadow
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background // Choose a color that contrasts with the outline
+            ),
         ) {
-            var isLoading by rememberSaveable { mutableStateOf(false) }
-            var isSuccess by rememberSaveable { mutableStateOf(false) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                authMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(id = R.string.reset_password),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text(stringResource(id = R.string.email)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
-                val resetSuccessfulMessage = stringResource(id = R.string.reset_successful)
-                val resetFailedMessage = stringResource(id = R.string.reset_failed)
-                when {
-                    isLoading -> CircularProgressIndicator(color = BluePrimary)
-                    isSuccess -> Icon(Icons.Filled.Check, contentDescription = "Success", tint = BluePrimary)
-                    else -> Button(
-                        onClick = {
-                            keyboardController?.hide()
-                            coroutineScope.launch {
-                                isLoading = true
-                                isSuccess = false // Reset success state
-                                val success = viewModel.resetPassword(email)
-                                isLoading = false
-                                isSuccess = success
-                                if (success) {
-                                    snackbarHostState.showSnackbar(resetSuccessfulMessage)
-                                    navController.navigate(Navigation.AUTHENTICATION_ROUTE)
-                                } else {
-                                    snackbarHostState.showSnackbar(resetFailedMessage)
-                                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .animateContentSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    var isLoading by rememberSaveable { mutableStateOf(false) }
+                    var isSuccess by rememberSaveable { mutableStateOf(false) }
+
+                    Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
+                        val resetSuccessfulMessage = stringResource(id = R.string.reset_successful)
+                        val resetFailedMessage = stringResource(id = R.string.reset_failed)
+                        when {
+                            isLoading -> CircularProgressIndicator(color = BluePrimary)
+                            isSuccess -> Icon(
+                                Icons.Filled.Check,
+                                contentDescription = "Success",
+                                tint = BluePrimary
+                            )
+
+                            else -> Button(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    coroutineScope.launch {
+                                        isLoading = true
+                                        isSuccess = false // Reset success state
+                                        val success = viewModel.resetPassword(email)
+                                        isLoading = false
+                                        isSuccess = success
+                                        if (success) {
+                                            snackbarHostState.showSnackbar(resetSuccessfulMessage)
+                                            navController.navigate(Navigation.AUTHENTICATION_ROUTE)
+                                        } else {
+                                            snackbarHostState.showSnackbar(resetFailedMessage)
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .size(100.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
+                                shape = RoundedCornerShape(12.dp)// Use BluePrimary for the Button color
+                            ) {
+                                Text(
+                                    stringResource(id = R.string.confirm_reset_button),
+                                    color = Color.White
+                                )
                             }
-                        },
-                        modifier = Modifier.fillMaxSize().size(100.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BluePrimary),
-                        shape = RoundedCornerShape(12.dp)// Use BluePrimary for the Button color
-                    ) {
-                        Text(stringResource(id = R.string.confirm_reset_button), color = Color.White)
+                        }
                     }
                 }
-            }
-        }
 
 
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
-                Text(stringResource(id = R.string.login))
-            }
-            TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
-                Text(stringResource(id = R.string.register))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = { onNavigate(AuthScreens.Login) }) {
+                        Text(stringResource(id = R.string.login))
+                    }
+                    TextButton(onClick = { onNavigate(AuthScreens.Register) }) {
+                        Text(stringResource(id = R.string.register))
+                    }
+                }
             }
         }
     }

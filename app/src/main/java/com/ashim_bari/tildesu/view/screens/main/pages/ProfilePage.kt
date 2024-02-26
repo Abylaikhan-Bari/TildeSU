@@ -176,8 +176,10 @@ fun ProfilePage(navController: NavHostController) {
                         text = stringResource(id = R.string.edit_profile_button),
                         icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
                         onClick = { showEditProfileDialog = true },
-                        modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.background
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.outlineVariant
                     )
                 }
 
@@ -188,8 +190,10 @@ fun ProfilePage(navController: NavHostController) {
                         text = stringResource(id = R.string.update_password_button),
                         icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
                         onClick = { showUpdatePasswordDialog = true },
-                        modifier = Modifier.height(56.dp).fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.primary
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
 
@@ -213,7 +217,9 @@ fun ProfilePage(navController: NavHostController) {
                         text = stringResource(id = R.string.log_out_language_button),
                         icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
                         onClick = { showLogoutDialog = true },
-                        modifier = Modifier.height(56.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.errorContainer
                     )
                 }
@@ -294,28 +300,45 @@ fun AnimatedCard(content: @Composable () -> Unit) {
 
 @Composable
 fun UserInfoCard(profile: UserProfile) {
-    // Example card content, adapt as needed
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Email: ${profile.email}", style = MaterialTheme.typography.bodyMedium)
-            Text("${stringResource(R.string.city)}: ${profile.city ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-            Text("${stringResource(R.string.age)}: ${profile.age ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-            Text("${stringResource(R.string.gender)}: ${
-                when (profile.gender) {
-                    1 -> stringResource(R.string.gender_male)
-                    2 -> stringResource(R.string.gender_female)
-                    else -> stringResource(R.string.not_set)
-                }
-            }", style = MaterialTheme.typography.bodyMedium)
-            Text("${stringResource(R.string.specialty)}: ${profile.specialty ?: stringResource(R.string.not_set)}", style = MaterialTheme.typography.bodyMedium)
-            // Other user info fields...
+            UserInfoItem(label = stringResource(id = R.string.email), value = profile.email)
+            UserInfoItem(label = stringResource(id = R.string.city), value = profile.city ?: stringResource(R.string.not_set))
+            UserInfoItem(label = stringResource(id = R.string.age), value = profile.age.toString())
+            UserInfoItem(label = stringResource(id = R.string.gender), value = getGenderString(profile.gender))
+            UserInfoItem(label = stringResource(id = R.string.specialty), value = profile.specialty ?: stringResource(R.string.not_set))
         }
     }
+
 }
+@Composable
+fun getGenderString(gender: Int?): String {
+    // Assuming 1 is Male, 2 is Female, and else is Not Set or Other
+    return when (gender) {
+        1 -> stringResource(id = R.string.gender_male)
+        2 -> stringResource(id = R.string.gender_female)
+        else -> stringResource(id = R.string.not_set)
+    }
+}
+@Composable
+fun UserInfoItem(label: String, value: String) {
+    Row(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text("$label: ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+    }
+}
+
+
+
 @Composable
 fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (UserProfile) -> Unit) {
     var name by remember { mutableStateOf(profile?.name ?: "") }
@@ -647,37 +670,23 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
 }
 
 
+
+
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .size(150.dp) // Increased size
+            .size(120.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp) // Increased elevation for depth
+        shape = CircleShape
     ) {
-        Box(modifier = Modifier.clip(CircleShape)) {
-            if (imageUrl != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = imageUrl),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.default_profile_image),
-                    contentDescription = "Default Profile Picture",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
+        Image(
+            painter = if (imageUrl != null) rememberAsyncImagePainter(model = imageUrl) else painterResource(id = R.drawable.default_profile_image),
+            contentDescription = "Profile Picture",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
-
 

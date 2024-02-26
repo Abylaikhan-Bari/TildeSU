@@ -5,6 +5,12 @@ import android.content.res.Configuration
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -26,6 +32,7 @@ import com.ashim_bari.tildesu.view.screens.authentication.pages.RegisterPage
 import com.ashim_bari.tildesu.view.screens.authentication.pages.ResetPasswordPage
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
@@ -47,38 +54,18 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.padding(padding)
         ) {
-            BackHandler {
+            BackHandler(enabled = true) {
                 Log.d("AuthenticationScreen", "Back button pressed")
                 showExitConfirmation = true
             }
 
             if (showExitConfirmation) {
-                AlertDialog(
-                    onDismissRequest = {
-                        Log.d("AuthenticationScreen", "Exit dialog dismissed")
-                        showExitConfirmation = false
-                    },
-                    title = { Text(stringResource(id = R.string.exit_dialog_title)) },
-                    text = { Text(stringResource(id = R.string.exit_dialog_content)) },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                Log.d("AuthenticationScreen", "App exited")
-                                activity?.finish()
-                            }
-                        ) {
-                            Text(stringResource(id = R.string.exit_dialog_yes))
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = {
-                                Log.d("AuthenticationScreen", "Exit dialog dismissed")
-                                showExitConfirmation = false
-                            }
-                        ) {
-                            Text(stringResource(id = R.string.exit_dialog_no))
-                        }
+                ExitConfirmationDialog(
+                    showExitConfirmation = showExitConfirmation,
+                    onDismiss = { showExitConfirmation = false }, // Pass a lambda to update the state
+                    onConfirm = {
+                        Log.d("AuthenticationScreen", "App exited")
+                        activity?.finish()
                     }
                 )
             }
@@ -89,47 +76,57 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                val imageModifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = padding, bottom = padding)
+                Spacer(modifier = Modifier.height(padding))
 
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
-                    modifier = Modifier.size( width = 200.dp, height = 80.dp).padding(top=padding)
-
+                    modifier = Modifier
+                        .size(200.dp) // Adjust the logo size for a modern look
+                        .align(Alignment.CenterHorizontally)
                 )
 
-                when (currentScreen) {
-                    AuthScreens.Login -> {
-                        Log.d("AuthenticationScreen", "Showing Login page")
-                        LoginPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
-                    }
-                    AuthScreens.Register -> {
-                        Log.d("AuthenticationScreen", "Showing Register page")
-                        RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
-                    }
-                    AuthScreens.ResetPassword -> {
-                        Log.d("AuthenticationScreen", "Showing ResetPassword page")
-                        ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                Spacer(modifier = Modifier.height(padding))
+
+                AnimatedContent(
+                    targetState = currentScreen,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(700)) with fadeOut(animationSpec = tween(700))
+                    }, label = ""
+                ) { targetScreen ->
+                    when (targetScreen) {
+                        AuthScreens.Login -> LoginPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                        AuthScreens.Register -> RegisterPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
+                        AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it }, viewModel, snackbarHostState, coroutineScope)
                     }
                 }
-
-                Image(
-                    painter = painterResource(R.drawable.logoauthscreenbottom),
-                    contentDescription = "App Bottom Logo",
-                    modifier = imageModifier.size(200.dp)
-                )
             }
         }
     }
 }
 
-
-
-
-
+@Composable
+fun ExitConfirmationDialog(showExitConfirmation: Boolean,
+                           onDismiss: () -> Unit, // Added an onDismiss lambda parameter
+                           onConfirm: () -> Unit) {
+    if (showExitConfirmation) {
+        AlertDialog(
+            onDismissRequest = { /* Do nothing to prevent dismiss on outside click */ },
+            title = { Text(stringResource(id = R.string.exit_dialog_title)) },
+            text = { Text(stringResource(id = R.string.exit_dialog_content)) },
+            confirmButton = {
+                Button(onClick = onConfirm) {
+                    Text(stringResource(id = R.string.exit_dialog_yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { // Use the onDismiss lambda here
+                    Text(stringResource(id = R.string.exit_dialog_no))
+                }
+            }
+        )
+    }
+}
 
 enum class AuthScreens {
     Login,

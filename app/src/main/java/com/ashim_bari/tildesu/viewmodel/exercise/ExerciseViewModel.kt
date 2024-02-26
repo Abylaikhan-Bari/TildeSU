@@ -29,6 +29,23 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     init {
         // Optionally, load initial data here or trigger from the UI
     }
+    private val _quizPassed = MutableLiveData<Boolean?>(null) // null: quiz not completed, true: passed, false: failed
+    val quizPassed: LiveData<Boolean?> = _quizPassed
+
+    private fun completeQuiz() {
+        val totalQuestions = _exercises.value?.size ?: 0
+        val totalCorrectAnswers = _score.value ?: 0
+        _quizPassed.value = totalCorrectAnswers == totalQuestions
+        _quizCompleted.value = true
+        updateProgress()
+    }
+    fun resetQuiz() {
+        _currentQuestionIndex.value = 0
+        _score.value = 0
+        _quizCompleted.value = false
+        _quizPassed.value = null
+        // Optionally reload exercises or perform other reset actions
+    }
 
     fun loadExercisesForLevel(level: String) {
         viewModelScope.launch {
@@ -87,12 +104,12 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 //        // Update user progress and other cleanup as necessary
 //    }
 
-    private fun completeQuiz() {
-        Log.d("ExerciseVM", "Completing quiz")
-        _quizCompleted.value = true
-        // Call updateProgress here to trigger the update in Firestore
-        updateProgress()
-    }
+//    private fun completeQuiz() {
+//        Log.d("ExerciseVM", "Completing quiz")
+//        _quizCompleted.value = true
+//        // Call updateProgress here to trigger the update in Firestore
+//        updateProgress()
+//    }
 
     private fun updateProgress() {
         val currentUser = FirebaseAuth.getInstance().currentUser
