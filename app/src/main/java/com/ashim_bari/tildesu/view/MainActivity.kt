@@ -44,8 +44,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
             val currentLanguageCode by languageViewModel.language.collectAsState()
-            val LocalLanguageCode = staticCompositionLocalOf { "en" }
-            CompositionLocalProvider(LocalLanguageCode provides currentLanguageCode) {
+            val localLanguageCode = staticCompositionLocalOf { "en" }
+            CompositionLocalProvider(localLanguageCode provides currentLanguageCode) {
                 TildeSUTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),

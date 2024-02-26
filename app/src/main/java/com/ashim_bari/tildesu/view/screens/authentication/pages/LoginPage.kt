@@ -66,6 +66,7 @@ import com.ashim_bari.tildesu.view.screens.authentication.AuthScreens
 import com.ashim_bari.tildesu.view.ui.theme.BluePrimary
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
+import com.google.firebase.FirebaseNetworkException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -82,6 +83,10 @@ fun LoginPage(
 ) {
     val context = LocalContext.current
     val languageViewModel: LanguageViewModel = viewModel()
+    // Additional state to track email availability
+    var isEmailAvailable by remember { mutableStateOf(true) }
+
+    // Modify username and password state initialization to trim input
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
@@ -96,13 +101,85 @@ fun LoginPage(
     var currentLanguage by remember { mutableStateOf(getLanguageName(currentLanguageCode)) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var tempSelectedLanguageCode by rememberSaveable { mutableStateOf<String?>(null) }
+    val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex()
+    val updateUsername: (String) -> Unit = { value -> username = value.trim() }
+    val updatePassword: (String) -> Unit = { value -> password = value.trim() }
+    val invalidCredentialsMessage = stringResource(R.string.invalid_credentials)
+    val  usernameRequiredMessage= stringResource(R.string.username_required)
+    val passwordRequiredMessage = stringResource(R.string.password_required)
+    val invalidEmail = stringResource(R.string.invalid_email)
+    val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
+    val loginFailedMessage = stringResource(id = R.string.login_failed)
+    val emailTaken = stringResource(id = R.string.email_already_taken)
+    val emailNotRegistered = stringResource(id = R.string.email_not_registered)
     val isUsernameValid by remember(username) {
-        mutableStateOf(username.isNotBlank())
+        mutableStateOf(username.isNotBlank() && username.matches(emailPattern))
     }
-
     val isPasswordValid by remember(password) {
         mutableStateOf(password.isNotBlank())
     }
+    val handleLoginAttempt: () -> Unit = {
+        // Validate email and password before attempting to log in
+        if (username.isEmpty() || !username.matches(emailPattern)) {
+            authMessage = if (username.isEmpty()) {
+                usernameRequiredMessage
+            } else {
+                invalidEmail
+            }
+        } else if (password.isEmpty()) {
+            authMessage = passwordRequiredMessage
+        } else {
+            // Proceed if both username and password are valid
+            coroutineScope.launch {
+                isLoading = true
+                try {
+                    val isEmailRegistered = viewModel.isEmailRegistered(username)
+                    if (!isEmailRegistered) {
+
+                    } else {
+                        val success = viewModel.login(username, password)
+                        if (success) {
+                            snackbarHostState.showSnackbar(loginSuccessfulMessage)
+                            navController.navigate(Navigation.MAIN_ROUTE)
+                        } else {
+                            authMessage = loginFailedMessage
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Here you can handle specific exceptions if needed, for example:
+                    when (e) {
+                        is FirebaseNetworkException -> {
+                            authMessage = "Check your internet connection and try again."
+                        }
+                        // Handle other specific exceptions if needed
+                        else -> {
+                            authMessage = "An unexpected error occurred. Please try again."
+                        }
+                    }
+                } finally {
+                    isLoading = false
+                }
+            }
+        }
+    }
+
+
+// Email validation including check if taken
+//    val validateEmail: () -> Unit = {
+//        coroutineScope.launch {
+//            isEmailAvailable = viewModel.isEmailTaken(username).not()
+//            authMessage = when {
+//                username.isEmpty() -> usernameRequiredMessage
+//                !username.matches(emailPattern) -> invalidEmail
+//                !isEmailAvailable -> emailTaken
+//                else -> null
+//            }
+//        }
+//    }
+
+
+    // Update username/password with trimmed values to remove leading/trailing spaces
+
 
     LaunchedEffect(currentLanguageCode) {
         currentLanguage = getLanguageName(currentLanguageCode)
@@ -112,24 +189,23 @@ fun LoginPage(
         Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
         // Additional actions if needed
     }
+//    LaunchedEffect(username) {
+//        validateEmail()
+//    }
 
-    val invalidCredentialsMessage = stringResource(R.string.invalid_credentials)
-    val  usernameRequiredMessage= stringResource(R.string.username_required)
-    val passwordRequiredMessage = stringResource(R.string.password_required)
-
-    LaunchedEffect(username, password) {
-        if (username.isNotBlank() && password.isNotBlank()) {
-            authMessage = null
-        } else {
-            authMessage = if (username.isNotBlank() && password.isBlank()) {
-                passwordRequiredMessage
-            } else if (username.isBlank() && password.isNotBlank()) {
-                usernameRequiredMessage
-            } else {
-                null
-            }
+    val validate: () -> Unit = {
+        authMessage = when {
+            username.isEmpty() -> usernameRequiredMessage
+            !username.matches(emailPattern) -> invalidEmail
+            password.isEmpty() -> passwordRequiredMessage
+            else -> null
         }
+
     }
+//    // Adjusted LaunchedEffect for username, password
+//    LaunchedEffect(username, password) {
+//
+//    }
 
 // Update authMessage when the user enters valid credentials
     LaunchedEffect(isSuccess) {
@@ -173,7 +249,7 @@ fun LoginPage(
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it },
+                    onValueChange = updateUsername,
                     label = { Text(stringResource(id = R.string.email)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -185,7 +261,7 @@ fun LoginPage(
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = updatePassword,
                     label = { Text(stringResource(id = R.string.password)) },
                     singleLine = true,
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -244,6 +320,8 @@ fun LoginPage(
                             else -> {
                                 Button(
                                     onClick = {
+                                        validate()
+                                        handleLoginAttempt()
                                         keyboardController?.hide()
                                         if (isUsernameValid && isPasswordValid) {
                                             authMessage = null

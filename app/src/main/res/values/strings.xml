@@ -66,6 +66,9 @@
     <string name="error_confirm_password_empty">Confirm password field is empty!</string>
     <string name="username_required">Username cannot be empty</string>
     <string name="password_required">Password cannot be empty</string>
+    <string name="invalid_email">Please enter a valid email</string>
+    <string name="email_already_taken">Email already taken</string>
+    <string name="email_not_registered">Email not registered</string>
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="password_mismatch">Passwords do not match</string>
     <string name="useful_tips">Useful Grammar Tips</string>

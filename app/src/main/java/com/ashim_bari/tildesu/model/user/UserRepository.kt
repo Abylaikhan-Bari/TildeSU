@@ -3,8 +3,11 @@ package com.ashim_bari.tildesu.model.user
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -31,6 +34,42 @@ class UserRepository {
             false
         }
     }
+    suspend fun isEmailRegistered(email: String): Boolean {
+        return try {
+            val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
+            result.signInMethods?.isNotEmpty() ?: false
+        } catch (e: Exception) {
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> {
+                    // Handle invalid email format
+                    Log.e("Auth", "Invalid email format", e)
+                }
+                is FirebaseAuthInvalidUserException -> {
+                    // Handle user not found
+                    Log.e("Auth", "User not found", e)
+                }
+                is FirebaseNetworkException -> {
+                    // Handle network errors
+                    Log.e("Auth", "Network error", e)
+                }
+                else -> {
+                    // Handle other errors
+                    Log.e("Auth", "Unknown error", e)
+                }
+            }
+            false
+        }
+    }
+
+
+//    suspend fun isEmailRegistered(email: String): Boolean {
+//        val querySnapshot = firestore.collection("users")
+//            .whereEqualTo("email", email)
+//            .limit(1)
+//            .get()
+//            .await()
+//        return !querySnapshot.isEmpty // If the snapshot is not empty, email is taken
+//    }
 
     private suspend fun createUserProfile(userId: String, email: String) {
         val user = mapOf(
