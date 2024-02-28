@@ -10,7 +10,8 @@ import androidx.navigation.navArgument
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.view.screens.LoadingScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
-import com.ashim_bari.tildesu.view.screens.exercise.ExerciseScreen
+import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
+import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
 import com.ashim_bari.tildesu.view.screens.main.MainScreen
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
@@ -20,7 +21,9 @@ class Navigation {
         const val AUTHENTICATION_ROUTE = "authentication"
         const val MAIN_ROUTE = "main"
         const val LOADING_ROUTE = "loading"
-        const val EXERCISE_ROUTE = "exercise/{level}"
+        const val EXERCISE_TYPE_SELECTION_ROUTE = "exerciseTypeSelection/{level}"
+        const val SPECIFIC_EXERCISE_ROUTE = "specificExercise/{level}/{type}"
+
     }
 }
 
@@ -42,13 +45,25 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             LoadingScreen(navController = navController)
         }
 
+
         composable(
-            route = Navigation.EXERCISE_ROUTE,
+            route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,
             arguments = listOf(navArgument("level") { type = NavType.StringType })
         ) { backStackEntry ->
             val level = backStackEntry.arguments?.getString("level") ?: "A1"
-            ExerciseScreen(navController, exerciseViewModelFactory, level)
+            ExerciseTypeSelectionScreen(navController, level)
         }
 
+        composable(
+            route = Navigation.SPECIFIC_EXERCISE_ROUTE,
+            arguments = listOf(
+                navArgument("level") { type = NavType.StringType },
+                navArgument("type") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level") ?: "A1"
+            val type = backStackEntry.arguments?.getString("type") ?: "quiz"
+            SpecificExerciseScreen(navController, exerciseViewModelFactory, level, type)
+        }
     }
 }

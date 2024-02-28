@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
+import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -24,124 +25,87 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     val quizCompleted: LiveData<Boolean> = _quizCompleted
 
     private var currentLevelId: String? = null
+    private var currentExerciseType: ExerciseType? = null
 
-
-    init {
-        // Optionally, load initial data here or trigger from the UI
-    }
-    private val _quizPassed = MutableLiveData<Boolean?>(null) // null: quiz not completed, true: passed, false: failed
+    private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
 
-    private fun completeQuiz() {
-        val totalQuestions = _exercises.value?.size ?: 0
-        val totalCorrectAnswers = _score.value ?: 0
-        _quizPassed.value = totalCorrectAnswers == totalQuestions
-        _quizCompleted.value = true
-        updateProgress()
-    }
-    fun resetQuiz() {
-        _currentQuestionIndex.value = 0
-        _score.value = 0
-        _quizCompleted.value = false
-        _quizPassed.value = null
-        // Optionally reload exercises or perform other reset actions
-    }
-
-    fun loadExercisesForLevel(level: String) {
+    fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
+        currentLevelId = level
+        currentExerciseType = type
         viewModelScope.launch {
             try {
-                val exercisesList = repository.getExercisesByLevel(level)
+                val exercisesList = repository.getExercisesByLevelAndType(level, type)
                 if (exercisesList.isNotEmpty()) {
                     _exercises.value = exercisesList
                     _currentQuestionIndex.value = 0
                     _score.value = 0
                     _quizCompleted.value = false
-                    currentLevelId = level
-                    Log.d("ExerciseVM", "Exercises loaded, total: ${exercisesList.size}, Level: $level")
+                    Log.d("ExerciseVM", "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
                 } else {
-                    Log.w("ExerciseVM", "No exercises found for level $level")
+                    Log.w("ExerciseVM", "No exercises found for level $level and type $type")
                 }
             } catch (e: Exception) {
-                Log.e("ExerciseVM", "Error loading exercises for level $level", e)
+                Log.e("ExerciseVM", "Error loading exercises for level $level and type $type", e)
             }
         }
     }
 
-    fun submitAnswer(selectedOption: Int) {
-        exercises.value?.let {
-            if (it.isNotEmpty()) {
-                val currentExercise = it[_currentQuestionIndex.value ?: 0]
-                val isCorrect = selectedOption == currentExercise.correctOptionIndex
-                if (isCorrect) {
-                    _score.value = (_score.value ?: 0) + 1
-                    Log.d("ExerciseVM", "Correct answer, score updated: ${_score.value}")
-                }
-                moveToNextQuestion()
+    fun submitAnswer(selectedOption: Boolean) {
+        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        currentExercise?.let {
+            // Assuming 0 represents false and 1 represents true
+            val isCorrect = selectedOption == (it.correctOptionIndex == 1)
+            if (isCorrect) {
+                _score.value = (_score.value ?: 0) + 1
+            }
+            moveToNextQuestion()
+        }
+    }
+
+
+    private fun moveToNextQuestion() {
+        _currentQuestionIndex.value?.let { currentIndex ->
+            if (currentIndex + 1 < _exercises.value?.size ?: 0) {
+                _currentQuestionIndex.value = currentIndex + 1
+            } else {
+                completeQuiz()
             }
         }
     }
 
-    fun moveToNextQuestion() {
-        val currentIdx = currentQuestionIndex.value ?: 0
-        val nextIndex = currentIdx + 1
-        val totalQuestions = exercises.value?.size ?: 0
-
-        Log.d("ExerciseVM", "Current index: $currentIdx, Next index: $nextIndex, Total questions: $totalQuestions")
-
-        if (nextIndex < totalQuestions) {
-            _currentQuestionIndex.postValue(nextIndex)
-            Log.d("ExerciseVM", "Moving to next question: Index $nextIndex")
-        } else {
-            Log.d("ExerciseVM", "No more questions. Marking quiz as completed.")
-            completeQuiz()
-        }
+    private fun completeQuiz() {
+        _quizCompleted.value = true
+        val totalQuestions = _exercises.value?.size ?: 0
+        val totalCorrectAnswers = _score.value ?: 0
+        _quizPassed.value = totalCorrectAnswers >= totalQuestions // Adjust this logic as per your requirements
+        updateProgress()
     }
-
-
-//    private fun completeQuiz() {
-//        Log.d("ExerciseVM", "Completing quiz")
-//        _quizCompleted.value = true
-//        // Update user progress and other cleanup as necessary
-//    }
-
-//    private fun completeQuiz() {
-//        Log.d("ExerciseVM", "Completing quiz")
-//        _quizCompleted.value = true
-//        // Call updateProgress here to trigger the update in Firestore
-//        updateProgress()
-//    }
 
     private fun updateProgress() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid ?: run {
-            Log.e("ExerciseVM", "User not logged in.")
-            return
-        }
-        val email = currentUser.email ?: run {
-            Log.e("ExerciseVM", "User email not available.")
-            return
-        }
-
-        val score = _score.value ?: 0
-        val totalCorrectAnswers = score // Assuming score represents the total correct answers
-
-        currentLevelId?.let { levelId ->
-            viewModelScope.launch {
-                try {
-                    // Get total questions attempted for the level
-                    val totalQuestions = exercises.value?.size ?: 0
-                    repository.updateUserProgress(userId, levelId, score, totalCorrectAnswers, totalQuestions)
-                    Log.d("ExerciseVM", "User progress updated for level $levelId")
-                } catch (e: Exception) {
-                    Log.e("ExerciseVM", "Error updating user progress for level $levelId", e)
+        FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+            currentLevelId?.let { levelId ->
+                viewModelScope.launch {
+                    try {
+                        val totalQuestions = _exercises.value?.size ?: 0
+                        val score = _score.value ?: 0
+                        repository.updateUserProgress(userId, levelId, score, score, totalQuestions) // Assuming score is equal to total correct answers
+                        Log.d("ExerciseVM", "Progress updated for user: $userId, level: $levelId")
+                    } catch (e: Exception) {
+                        Log.e("ExerciseVM", "Failed to update progress for user: $userId, level: $levelId", e)
+                    }
                 }
             }
         }
     }
 
-
+    fun resetQuiz() {
+        _currentQuestionIndex.value = 0
+        _score.value = 0
+        _quizCompleted.value = false
+        _quizPassed.value = null
+    }
 }
-
 
 
 

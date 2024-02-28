@@ -62,7 +62,8 @@ fun HomePage(navController: NavHostController) {
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        CardComponent(level, route, navController, index)
+                        CardComponent(level = level, navController = navController, index = index)
+
                     }
                 } else {
                     // Align to end
@@ -72,7 +73,8 @@ fun HomePage(navController: NavHostController) {
                             .padding(bottom = 8.dp),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        CardComponent(level, route, navController, index)
+                        CardComponent(level = level, navController = navController, index = index)
+
                     }
                 }
             }
@@ -82,40 +84,42 @@ fun HomePage(navController: NavHostController) {
 
 
 @Composable
-fun CardComponent(level: String, route: String, navController: NavHostController, index: Int) {
-    // Manage the visibility state to trigger the animation
+fun CardComponent(level: String, navController: NavHostController, index: Int) {
     var visible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(key1 = "init") { // Use a descriptive key or comment to clarify intent
-        delay(100L * index) // Add delay based on index to stagger animations
-        visible = true // Trigger animation by setting visible to true
+    LaunchedEffect(key1 = "init") {
+        delay(100L * index)
+        visible = true
     }
-
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn() + expandIn(expandFrom = Alignment.Center), // Define your enter animation here
-        exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center), // Define your exit animation here
+        enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+        exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center),
     ) {
         Card(
-            onClick = { navController.navigate(route) },
+            onClick = {
+                // Adjust the navigation action to use the correct route
+                // This should match the route pattern defined for the exercise type selection screen
+                navController.navigate("exerciseTypeSelection/$level")
+            },
             modifier = Modifier
-                .size(width = 200.dp, height = 100.dp) // Set the size as needed
-                .padding(horizontal = 8.dp, vertical = 4.dp), // Adjust padding as needed
+                .size(width = 200.dp, height = 100.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(16.dp) // Add padding inside the card for the text
+                modifier = Modifier.padding(16.dp)
             ) {
                 Text(
                     text = level,
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal),
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.align(Alignment.Center)
-
                 )
             }
         }
     }
 }
+

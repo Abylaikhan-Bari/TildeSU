@@ -11,17 +11,18 @@ class ExerciseRepository {
     private val db = FirebaseFirestore.getInstance()
 
     @OptIn(UnstableApi::class)
-    suspend fun getExercisesByLevel(level: String): List<Exercise> {
-        val exercises = db.collection("levels").document(level).collection("exercises")
+    suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
+        val exercises = db.collection("levels")
+            .document(level)
+            .collection(type.name.toLowerCase())
             .get()
             .await()
             .toObjects(Exercise::class.java)
-        Log.d("ExerciseRepository", "Fetched ${exercises.size} exercises for level $level")
+        Log.d("ExerciseRepository", "Fetched ${exercises.size} exercises for level $level and type $type")
         return exercises
     }
 
     @OptIn(UnstableApi::class)
-    // ExerciseRepository.kt
     suspend fun updateUserProgress(userId: String, level: String, score: Int, totalCorrectAnswers: Int, totalQuestions: Int) {
         val userProgress = mapOf(
             "score" to score,
@@ -29,17 +30,14 @@ class ExerciseRepository {
             "totalQuestions" to totalQuestions, // Store total questions attempted
             "completedOn" to FieldValue.serverTimestamp()
         )
-        db.collection("users").document(userId).collection("progress").document(level)
+        db.collection("users")
+            .document(userId)
+            .collection("progress")
+            .document(level)
             .set(userProgress)
             .await()
         Log.d("ExerciseRepository", "User progress updated for user $userId, level $level")
     }
-
-
-
-
 }
-
-
 
 
