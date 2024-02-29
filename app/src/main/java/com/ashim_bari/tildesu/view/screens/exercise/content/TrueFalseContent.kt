@@ -53,13 +53,11 @@ fun TrueFalseContent(
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState(0)
     val quizCompleted by exerciseViewModel.quizCompleted.observeAsState(false)
-    var selectedOption by rememberSaveable { mutableStateOf<Boolean?>(null) }
-
-    // Feedback for the last selected option
-    var feedbackVisible by rememberSaveable { mutableStateOf(false) }
-    var lastAnswerCorrect by rememberSaveable { mutableStateOf(false) }
+    var showFeedback by rememberSaveable { mutableStateOf(false) }
+    var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
     if (quizCompleted) {
+        // Check the final score to decide which screen to show
         if (exerciseViewModel.quizPassed.value == true) {
             TrueFalseSuccessScreen(navController, exerciseViewModel.score.value ?: 0)
         } else {
@@ -70,43 +68,20 @@ fun TrueFalseContent(
     } else if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
         val currentExercise = exercises[currentQuestionIndex]
 
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(currentExercise.statement ?: "", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
-
-            if (!feedbackVisible) {
-                // Options
-                TrueFalseOptionCard("True") {
-                    selectedOption = true
-                    lastAnswerCorrect = currentExercise.isTrue == true
-                    feedbackVisible = true
+        if (!showFeedback) {
+            TrueFalseQuestion(
+                statement = currentExercise.statement ?: "",
+                isTrue = currentExercise.isTrue ?: false,
+                onAnswer = { userAnswer ->
+                    isAnswerCorrect = userAnswer == currentExercise.isTrue
+                    exerciseViewModel.submitAnswer(isAnswerCorrect)
+                    showFeedback = true
                 }
-                TrueFalseOptionCard("False") {
-                    selectedOption = false
-                    lastAnswerCorrect = currentExercise.isTrue == false
-                    feedbackVisible = true
-                }
-            } else {
-                // Feedback and "Next" button
-                Text(
-                    text = if (lastAnswerCorrect) "Correct!" else "Incorrect",
-                    color = if (lastAnswerCorrect) Color.Green else Color.Red,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Button(
-                    onClick = {
-                        exerciseViewModel.submitAnswer(selectedOption == currentExercise.isTrue)
-                        feedbackVisible = false
-                        exerciseViewModel.moveToNextQuestion()
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text("Next")
-                }
+            )
+        } else {
+            AnswerFeedbackScreen(isAnswerCorrect) {
+                showFeedback = false
+                exerciseViewModel.moveToNextQuestion()
             }
         }
     } else {
@@ -115,7 +90,51 @@ fun TrueFalseContent(
 }
 
 @Composable
-fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
+fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = if (correct) "Correct!" else "Incorrect",
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (correct) Color.Green else Color.Red,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        Button(onClick = onContinue) {
+            Text("Next Question")
+        }
+    }
+}
+
+
+
+@Composable
+fun TrueFalseQuestion(
+    statement: String,
+    isTrue: Boolean,
+    onAnswer: (Boolean) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(statement, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
+
+        TrueFalseOptionCard("True", isTrue) { onAnswer(true) }
+        TrueFalseOptionCard("False", !isTrue) { onAnswer(false) }
+    }
+}
+
+
+
+
+@Composable
+fun TrueFalseOptionCard(optionText: String, isCorrectAnswer: Boolean, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -134,53 +153,6 @@ fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
         }
     }
 }
-
-
-@Composable
-fun TrueFalseQuestion(
-    statement: String,
-    isTrue: Boolean,
-    exerciseViewModel: ExerciseViewModel,
-    onAnswerCheck: (Boolean) -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(statement, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
-
-        TrueFalseOptionCard("True") {
-            onAnswerCheck(isTrue)
-            exerciseViewModel.submitAnswer(isTrue)
-        }
-
-        TrueFalseOptionCard("False") {
-            onAnswerCheck(!isTrue)
-            exerciseViewModel.submitAnswer(!isTrue)
-        }
-    }
-}
-
-@Composable
-fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = if (correct) "Correct!" else "Incorrect",
-            style = MaterialTheme.typography.headlineLarge,
-            color = if (correct) Color.Green else Color.Red,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-        Button(onClick = onContinue) {
-            Text("Continue")
-        }
-    }
-}
-
 
 
 
