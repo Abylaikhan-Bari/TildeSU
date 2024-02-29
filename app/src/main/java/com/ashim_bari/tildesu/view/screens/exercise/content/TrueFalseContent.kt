@@ -9,12 +9,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 @Composable
-fun TrueFalseContent(level: String, exerciseViewModelFactory: ExerciseViewModelFactory) {
+fun TrueFalseContent(
+    navController: NavController,
+    level: String,
+    exerciseViewModelFactory: ExerciseViewModelFactory
+) {
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
     // Assuming your ViewModel has a function to load true/false exercises for the given level
@@ -35,14 +40,15 @@ fun TrueFalseContent(level: String, exerciseViewModelFactory: ExerciseViewModelF
         Column {
             // Option for True
             Text("True", modifier = Modifier.clickable {
-                // Handle true selection
-                exerciseViewModel.submitAnswer(true)
+                // Handle true selection by passing 1
+                exerciseViewModel.submitAnswer(1)
             })
             // Option for False
             Text("False", modifier = Modifier.clickable {
-                // Handle false selection
-                exerciseViewModel.submitAnswer(false)
+                // Handle false selection by passing 0
+                exerciseViewModel.submitAnswer(0)
             })
         }
+
     }
 }

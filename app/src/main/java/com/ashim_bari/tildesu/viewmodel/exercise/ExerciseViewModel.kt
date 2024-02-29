@@ -53,11 +53,11 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
 
-    fun submitAnswer(selectedOption: Boolean) {
+    fun submitAnswer(selectedOption: Int) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
         currentExercise?.let {
-            // Assuming 0 represents false and 1 represents true
-            val isCorrect = selectedOption == (it.correctOptionIndex == 1)
+            // Assuming you want to check if selectedOption matches the correctOptionIndex
+            val isCorrect = selectedOption == it.correctOptionIndex
             if (isCorrect) {
                 _score.value = (_score.value ?: 0) + 1
             }
@@ -66,7 +66,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
 
-    private fun moveToNextQuestion() {
+
+    fun moveToNextQuestion() {
         _currentQuestionIndex.value?.let { currentIndex ->
             if (currentIndex + 1 < _exercises.value?.size ?: 0) {
                 _currentQuestionIndex.value = currentIndex + 1
