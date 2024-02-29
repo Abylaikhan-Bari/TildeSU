@@ -35,6 +35,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         currentExerciseType = type
         viewModelScope.launch {
             try {
+                // Ensure 'level' corresponds to document IDs in Firestore (e.g., "A1", "A2", etc.)
                 val exercisesList = repository.getExercisesByLevelAndType(level, type)
                 if (exercisesList.isNotEmpty()) {
                     _exercises.value = exercisesList
@@ -50,6 +51,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             }
         }
     }
+
 
     fun submitAnswer(selectedOption: Boolean) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)

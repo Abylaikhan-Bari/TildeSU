@@ -12,15 +12,28 @@ class ExerciseRepository {
 
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
+        // Convert the ExerciseType to the correct collection name, ensuring the case matches.
+        val collectionName = when (type) {
+            ExerciseType.QUIZ -> "quizzes"
+            ExerciseType.PUZZLES -> "puzzles"
+            ExerciseType.TRUE_FALSE -> "trueOrFalse"
+        }
+
+        // Fetch the exercises from the correct sub-collection under the level document.
         val exercises = db.collection("levels")
-            .document(level)
-            .collection(type.name.toLowerCase())
+            .document(level) // Make sure this matches the document ID in Firestore exactly.
+            .collection(collectionName) // Use the correct case for collection names.
             .get()
             .await()
             .toObjects(Exercise::class.java)
-        Log.d("ExerciseRepository", "Fetched ${exercises.size} exercises for level $level and type $type")
+
+        Log.d("ExerciseRepository", "Fetched ${exercises.size} exercises for level $level and type ${type.name}")
         return exercises
     }
+
+
+
+
 
     @OptIn(UnstableApi::class)
     suspend fun updateUserProgress(userId: String, level: String, score: Int, totalCorrectAnswers: Int, totalQuestions: Int) {
