@@ -72,7 +72,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                 SuccessScreen(navController, exerciseViewModel.score.value ?: 0)
             } else {
                 FailureScreen(navController) {
-                    exerciseViewModel.resetQuiz()
+                    exerciseViewModel.resetExercise()
                 }
             }
         }

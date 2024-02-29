@@ -26,7 +26,7 @@ fun SpecificExerciseScreen(
     when (exerciseType) {
         ExerciseType.QUIZ -> QuizContent(navController, level, ExerciseType.QUIZ, exerciseViewModelFactory)
         ExerciseType.PUZZLES -> PuzzlesContent(navController, level, exerciseViewModelFactory)
-        ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, exerciseViewModelFactory)
+        ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, ExerciseType.TRUE_FALSE,exerciseViewModelFactory)
     }
 
 }

@@ -15,6 +15,6 @@ data class Exercise(
     val statement: String? = null,
     val isTrue: Boolean? = null,
     val sentenceParts: List<String>? = null, // Only for puzzles
-    val correctOrder: String? = null // Only for puzzles, but consider changing to List<String>
+    val correctOrder: List<Int>? = null // Only for puzzles, but consider changing to List<String>
 )
 

@@ -9,6 +9,7 @@ import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
@@ -35,29 +36,27 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         currentExerciseType = type
         viewModelScope.launch {
             try {
-                // Ensure 'level' corresponds to document IDs in Firestore (e.g., "A1", "A2", etc.)
                 val exercisesList = repository.getExercisesByLevelAndType(level, type)
-                if (exercisesList.isNotEmpty()) {
-                    _exercises.value = exercisesList
-                    _currentQuestionIndex.value = 0
-                    _score.value = 0
-                    _quizCompleted.value = false
-                    Log.d("ExerciseVM", "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
-                } else {
-                    Log.w("ExerciseVM", "No exercises found for level $level and type $type")
-                }
+                _exercises.value = exercisesList
+                _currentQuestionIndex.value = 0
+                _score.value = 0
+                _quizCompleted.value = false
+                Log.d("ExerciseVM", "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
             } catch (e: Exception) {
                 Log.e("ExerciseVM", "Error loading exercises for level $level and type $type", e)
             }
         }
     }
 
-
-    fun submitAnswer(selectedOption: Int) {
+    fun submitAnswer(selectedOption: Any) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
-        currentExercise?.let {
-            // Assuming you want to check if selectedOption matches the correctOptionIndex
-            val isCorrect = selectedOption == it.correctOptionIndex
+        currentExercise?.let { exercise ->
+            val isCorrect = when (exercise.type) {
+                ExerciseType.QUIZ -> selectedOption is Int && selectedOption == exercise.correctOptionIndex
+                ExerciseType.TRUE_FALSE -> selectedOption is Boolean && selectedOption == exercise.isTrue
+                ExerciseType.PUZZLES -> selectedOption is List<*> && selectedOption.filterIsInstance<Int>() == exercise.correctOrder
+                // Default case should not be reached due to exhaustive when on enum
+            }
             if (isCorrect) {
                 _score.value = (_score.value ?: 0) + 1
             }
@@ -65,23 +64,26 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-
-
     fun moveToNextQuestion() {
-        _currentQuestionIndex.value?.let { currentIndex ->
-            if (currentIndex + 1 < _exercises.value?.size ?: 0) {
-                _currentQuestionIndex.value = currentIndex + 1
-            } else {
-                completeQuiz()
+        viewModelScope.launch {
+            _currentQuestionIndex.value?.let { currentIndex ->
+                if (currentIndex + 1 < _exercises.value?.size ?: 0) {
+                    // Add a delay to ensure the UI has time to update
+                    delay(500) // 500ms delay
+                    _currentQuestionIndex.value = currentIndex + 1
+                } else {
+                    completeExercise()
+                }
             }
         }
     }
 
-    private fun completeQuiz() {
+
+    private fun completeExercise() {
         _quizCompleted.value = true
         val totalQuestions = _exercises.value?.size ?: 0
         val totalCorrectAnswers = _score.value ?: 0
-        _quizPassed.value = totalCorrectAnswers >= totalQuestions // Adjust this logic as per your requirements
+        _quizPassed.value = totalCorrectAnswers.toFloat() / totalQuestions >= 0.5 // Example threshold for passing
         updateProgress()
     }
 
@@ -91,8 +93,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                 viewModelScope.launch {
                     try {
                         val totalQuestions = _exercises.value?.size ?: 0
-                        val score = _score.value ?: 0
-                        repository.updateUserProgress(userId, levelId, score, score, totalQuestions) // Assuming score is equal to total correct answers
+                        val correctAnswers = _score.value ?: 0
+                        repository.updateUserProgress(userId, levelId, currentExerciseType!!, correctAnswers, totalQuestions)
                         Log.d("ExerciseVM", "Progress updated for user: $userId, level: $levelId")
                     } catch (e: Exception) {
                         Log.e("ExerciseVM", "Failed to update progress for user: $userId, level: $levelId", e)
@@ -102,14 +104,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun resetQuiz() {
+    fun resetExercise() {
         _currentQuestionIndex.value = 0
         _score.value = 0
         _quizCompleted.value = false
         _quizPassed.value = null
     }
 }
-
-
-
-
