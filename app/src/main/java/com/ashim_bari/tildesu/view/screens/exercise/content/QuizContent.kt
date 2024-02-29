@@ -201,7 +201,7 @@ fun SuccessScreen(navController: NavController, score: Int) {
 
 
 @Composable
-fun FailureScreen(navController: NavController, restartQuiz: () -> Unit) {
+fun FailureScreen(navController: NavController, restartExercise: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -228,7 +228,7 @@ fun FailureScreen(navController: NavController, restartQuiz: () -> Unit) {
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
         Card(
-            onClick = restartQuiz,
+            onClick = restartExercise,
             modifier = Modifier
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)

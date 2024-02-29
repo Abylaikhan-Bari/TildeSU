@@ -67,7 +67,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     fun moveToNextQuestion() {
         viewModelScope.launch {
             _currentQuestionIndex.value?.let { currentIndex ->
-                if (currentIndex + 1 < _exercises.value?.size ?: 0) {
+                if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
                     // Add a delay to ensure the UI has time to update
                     delay(500) // 500ms delay
                     _currentQuestionIndex.value = currentIndex + 1

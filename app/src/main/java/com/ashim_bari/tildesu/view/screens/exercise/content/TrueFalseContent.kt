@@ -1,9 +1,9 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.SentimentDissatisfied
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -21,8 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,43 +47,101 @@ fun TrueFalseContent(
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
     LaunchedEffect(key1 = level) {
-        exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
+        exerciseViewModel.loadExercisesForLevelAndType(level, type)
     }
 
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
+    val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState(0)
     val quizCompleted by exerciseViewModel.quizCompleted.observeAsState(false)
-    val quizPassed by exerciseViewModel.quizPassed.observeAsState()
+    var selectedOption by rememberSaveable { mutableStateOf<Boolean?>(null) }
 
-    // Handle quiz completion and navigate or show appropriate screen
+    // Feedback for the last selected option
+    var feedbackVisible by rememberSaveable { mutableStateOf(false) }
+    var lastAnswerCorrect by rememberSaveable { mutableStateOf(false) }
+
     if (quizCompleted) {
-        if (quizPassed == true) {
-            // Show success screen
+        if (exerciseViewModel.quizPassed.value == true) {
             TrueFalseSuccessScreen(navController, exerciseViewModel.score.value ?: 0)
         } else {
-            // Show failure screen
             TrueFalseFailureScreen(navController) {
                 exerciseViewModel.resetExercise()
             }
         }
-    } else if (exercises.isNotEmpty()) {
-        // Show question and options
-        TrueFalseQuestion(
-            statement = exercises.first().statement ?: "",
-            isTrue = exercises.first().isTrue ?: false,
-            exerciseViewModel = exerciseViewModel,
-            navController = navController
-        )
+    } else if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
+        val currentExercise = exercises[currentQuestionIndex]
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(currentExercise.statement ?: "", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
+
+            if (!feedbackVisible) {
+                // Options
+                TrueFalseOptionCard("True") {
+                    selectedOption = true
+                    lastAnswerCorrect = currentExercise.isTrue == true
+                    feedbackVisible = true
+                }
+                TrueFalseOptionCard("False") {
+                    selectedOption = false
+                    lastAnswerCorrect = currentExercise.isTrue == false
+                    feedbackVisible = true
+                }
+            } else {
+                // Feedback and "Next" button
+                Text(
+                    text = if (lastAnswerCorrect) "Correct!" else "Incorrect",
+                    color = if (lastAnswerCorrect) Color.Green else Color.Red,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                Button(
+                    onClick = {
+                        exerciseViewModel.submitAnswer(selectedOption == currentExercise.isTrue)
+                        feedbackVisible = false
+                        exerciseViewModel.moveToNextQuestion()
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Next")
+                }
+            }
+        }
     } else {
         Text("Loading true/false exercises...")
     }
 }
 
 @Composable
+fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(8.dp)
+            .height(56.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(optionText, style = MaterialTheme.typography.bodyLarge)
+        }
+    }
+}
+
+
+@Composable
 fun TrueFalseQuestion(
     statement: String,
     isTrue: Boolean,
     exerciseViewModel: ExerciseViewModel,
-    navController: NavController
+    onAnswerCheck: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -87,33 +150,39 @@ fun TrueFalseQuestion(
     ) {
         Text(statement, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
 
-        // True option
         TrueFalseOptionCard("True") {
+            onAnswerCheck(isTrue)
             exerciseViewModel.submitAnswer(isTrue)
         }
 
-        // False option
         TrueFalseOptionCard("False") {
+            onAnswerCheck(!isTrue)
             exerciseViewModel.submitAnswer(!isTrue)
         }
     }
 }
 
 @Composable
-fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(4.dp),
-        elevation = CardDefaults.cardElevation(8.dp)
+fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            optionText,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(16.dp)
+            text = if (correct) "Correct!" else "Incorrect",
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (correct) Color.Green else Color.Red,
+            modifier = Modifier.padding(bottom = 24.dp)
         )
+        Button(onClick = onContinue) {
+            Text("Continue")
+        }
     }
 }
+
+
+
 
 
 @Composable
@@ -159,7 +228,7 @@ fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
 
 
 @Composable
-fun TrueFalseFailureScreen(navController: NavController, restartQuiz: () -> Unit) {
+fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -186,7 +255,7 @@ fun TrueFalseFailureScreen(navController: NavController, restartQuiz: () -> Unit
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
         Card(
-            onClick = restartQuiz,
+            onClick = restartExercise,
             modifier = Modifier
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
