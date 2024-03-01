@@ -4,7 +4,6 @@ import DashboardPage
 import UsefulPage
 import android.content.Context
 import android.os.Build
-import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
@@ -118,12 +117,12 @@ fun MainScreen(navController: NavHostController) {
                         onClick = {
                             Log.d(TAG, "NavigationBarItem: ${item.title} clicked")
                             currentMainScreen = item.screen
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-                            } else {
-                                @Suppress("DEPRECATION")
-                                vibrator.vibrate(50)
-                            }
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+//                            } else {
+//                                @Suppress("DEPRECATION")
+//                                vibrator.vibrate(50)
+//                            }
                         }
                     )
                 }

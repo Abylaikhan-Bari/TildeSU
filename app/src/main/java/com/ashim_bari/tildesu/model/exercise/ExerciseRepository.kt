@@ -3,47 +3,49 @@ package com.ashim_bari.tildesu.model.exercise
 import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 
 class ExerciseRepository {
-    private val db = FirebaseFirestore.getInstance()
+    //private val db = FirebaseFirestore.getInstance()
+
+    @OptIn(UnstableApi::class)
+    private val db = Firebase.firestore
 
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
-        // Convert the ExerciseType to the correct collection name, ensuring the case matches.
         val collectionName = when (type) {
             ExerciseType.QUIZ -> "quizzes"
             ExerciseType.PUZZLES -> "puzzles"
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
         }
 
-        // Fetch the exercises from the correct sub-collection under the level document.
         val exercisesSnapshot = db.collection("levels")
-            .document(level) // Make sure this matches the document ID in Firestore exactly.
-            .collection(collectionName) // Use the correct case for collection names.
+            .document(level)
+            .collection(collectionName)
             .get()
             .await()
 
-        // Map each Exercise document to an Exercise object and convert correctOrder if necessary
-        val exercises = exercisesSnapshot.documents.mapNotNull { documentSnapshot ->
-            documentSnapshot.toObject(Exercise::class.java)?.let { exercise ->
-                if (type == ExerciseType.PUZZLES) {
-                    // Assuming correctOrder in Firestore is stored as a comma-separated string
-                    val correctOrderList = documentSnapshot.getString("correctOrder")
-                        ?.split(",")
-                        ?.mapNotNull { it.trim().toIntOrNull() }
-                    exercise.copy(correctOrder = correctOrderList)
-                } else {
-                    exercise
+        return exercisesSnapshot.documents.mapNotNull { documentSnapshot ->
+            val exercise = documentSnapshot.toObject<Exercise>() ?: return@mapNotNull null
+            when (type) {
+                ExerciseType.PUZZLES -> {
+                    // Convert the correctOrder from List<Long> to List<Int>
+                    val correctOrderLongs = documentSnapshot.get("correctOrder") as? List<Long>
+                    val correctOrderInts = correctOrderLongs?.map { it.toInt() }
+                    exercise.copy(correctOrder = correctOrderInts)
                 }
+                else -> exercise
             }
+        }.also {
+            Log.d("ExerciseRepository", "Fetched ${it.size} exercises for level $level and type ${type.name}")
         }
-
-        Log.d("ExerciseRepository", "Fetched ${exercises.size} exercises for level $level and type ${type.name}")
-        return exercises
     }
+
+
 
 
 
