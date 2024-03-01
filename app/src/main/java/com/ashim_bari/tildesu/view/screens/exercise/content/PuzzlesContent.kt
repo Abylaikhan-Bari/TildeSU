@@ -84,6 +84,8 @@ fun PuzzlesContent(
 // Implement DraggableWordPuzzle and DraggableCard as before
 
 
+// ... rest of your code remains the same
+
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
@@ -116,11 +118,27 @@ fun DraggableWordPuzzle(
             )
         }
 
-        Button(onClick = { onPuzzleSolved(words == puzzle.sentenceParts) }) {
+        Button(onClick = {
+            // Check if both sentenceParts and correctOrder are not null
+            if (puzzle.sentenceParts != null && puzzle.correctOrder != null) {
+                // Create a list of indices based on the current order of words in comparison to the original sentence parts
+                val userOrderIndices = words.map { word -> puzzle.sentenceParts!!.indexOf(word) }
+                // Now compare the user's ordered indices with the puzzle's correct order
+                val isCorrect = userOrderIndices == puzzle.correctOrder
+                onPuzzleSolved(isCorrect)
+            } else {
+                // Handle the case where sentenceParts or correctOrder is null
+                onPuzzleSolved(false)
+            }
+        }) {
             Text("Submit")
         }
+
     }
 }
+
+// ... rest of your code remains the same
+
 
 @Composable
 fun DraggableCard(
