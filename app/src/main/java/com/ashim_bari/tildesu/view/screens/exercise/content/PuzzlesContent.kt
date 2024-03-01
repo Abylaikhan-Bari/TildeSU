@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +29,7 @@ import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
+import kotlinx.coroutines.delay
 import kotlin.math.sign
 
 @Composable
@@ -42,14 +44,45 @@ fun PuzzlesContent(
     }
 
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
-    if (puzzles.isNotEmpty()) {
-        DraggableWordPuzzle(puzzle = puzzles.first()) { correct ->
-            exerciseViewModel.submitAnswer(correct)
+    val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState()
+    var feedbackMessage by remember { mutableStateOf<String?>(null) }
+
+    // Display feedback message if any
+    feedbackMessage?.let {
+        // Using Snackbar for immediate feedback; adjust as needed for your UI
+        Snackbar { Text(text = it) }
+        // Automatically clear the feedback message after some delay
+        LaunchedEffect(it) {
+            delay(2000)
+            feedbackMessage = null
         }
+    }
+
+    if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
+        val currentPuzzle = puzzles[currentQuestionIndex!!]
+        DraggableWordPuzzle(
+            puzzle = currentPuzzle,
+            onPuzzleSolved = { correct ->
+                feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                if (correct) {
+                    // Proceed only if the answer is correct
+                    if (currentQuestionIndex!! < puzzles.size - 1) {
+                        exerciseViewModel.moveToNextQuestion()
+                    } else {
+                        exerciseViewModel.completeExercise()
+                        // Optionally navigate to a completion screen
+                    }
+                }
+            }
+        )
     } else {
         Text("Loading puzzles...")
     }
 }
+
+
+// Implement DraggableWordPuzzle and DraggableCard as before
+
 
 @Composable
 fun DraggableWordPuzzle(
