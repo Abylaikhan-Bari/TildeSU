@@ -78,8 +78,19 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
+    fun updatePuzzleAnswer(correct: Boolean) {
+        if (correct) {
+            _score.value = (_score.value ?: 0) + 1
+        }
+        val currentIndex = _currentQuestionIndex.value ?: 0
+        if (currentIndex + 1 < _exercises.value?.size ?: 0) {
+            _currentQuestionIndex.value = currentIndex + 1
+        } else {
+            completeExercise()
+        }
+    }
 
-    private fun completeExercise() {
+    fun completeExercise() {
         _quizCompleted.value = true
         val totalQuestions = _exercises.value?.size ?: 0
         val totalCorrectAnswers = _score.value ?: 0
@@ -87,7 +98,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         updateProgress()
     }
 
-    private fun updateProgress() {
+    fun updateProgress() {
         FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
             currentLevelId?.let { levelId ->
                 viewModelScope.launch {
