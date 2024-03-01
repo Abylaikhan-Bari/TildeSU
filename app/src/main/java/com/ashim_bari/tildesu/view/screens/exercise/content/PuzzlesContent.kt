@@ -62,23 +62,15 @@ fun PuzzlesContent(
         }
 
         if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
-            val currentPuzzle = puzzles[currentQuestionIndex!!]
             DraggableWordPuzzle(
-                puzzle = currentPuzzle,
+                puzzle = puzzles[currentQuestionIndex!!],
                 onPuzzleSolved = { correct ->
                     feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                }
+                },
+                currentPuzzleIndex = currentQuestionIndex!! // Make sure this is passed down
             )
-        } else {
-            Text("Loading puzzles...")
         }
-        if (feedbackMessage == "Correct! Well done.") {
-            LaunchedEffect(key1 = currentQuestionIndex) {
-                delay(1500) // Allow time for the user to see the message
-                exerciseViewModel.moveToNextQuestion()
-                feedbackMessage = null
-            }
-        }
+
     }
 }
 
@@ -87,10 +79,11 @@ fun PuzzlesContent(
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
-    onPuzzleSolved: (Boolean) -> Unit
+    onPuzzleSolved: (Boolean) -> Unit,
+    currentPuzzleIndex: Int
 ) {
-    // Ensure the words are not shuffled every recomposition
-    var words by remember(puzzle.sentenceParts) {
+    // The words list will be re-initialized and shuffled when currentPuzzleIndex changes
+    var words by remember(currentPuzzleIndex) {
         mutableStateOf(puzzle.sentenceParts?.shuffled() ?: listOf())
     }
     var draggedIndex by remember { mutableStateOf(-1) }
@@ -113,7 +106,8 @@ fun DraggableWordPuzzle(
                 },
                 onDragChange = { change ->
                     if (draggedIndex == -1) draggedIndex = index
-                    targetIndex = (index + change).coerceIn(words.indices)
+                    val newIndex = (index + change).coerceIn(words.indices)
+                    targetIndex = newIndex
                 }
             )
         }
@@ -129,6 +123,7 @@ fun DraggableWordPuzzle(
         }
     }
 }
+
 
 
 @Composable
