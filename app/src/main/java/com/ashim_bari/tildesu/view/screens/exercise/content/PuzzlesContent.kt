@@ -121,7 +121,9 @@ fun DraggableWordPuzzle(
                     if (draggedIndex == -1) draggedIndex = index
                     val newIndex = (index + change).coerceIn(words.indices)
                     targetIndex = newIndex
-                }
+                },
+                currentPuzzleIndex = currentPuzzleIndex,
+                index = index
             )
         }
 
@@ -143,15 +145,19 @@ fun DraggableWordPuzzle(
 fun DraggableCard(
     word: String,
     onDragEnd: () -> Unit,
-    onDragChange: (Int) -> Unit
+    onDragChange: (Int) -> Unit,
+    currentPuzzleIndex: Int,
+    index: Int
 ) {
-    var offset by remember { mutableStateOf(0f) }
+    // Reset offset when currentPuzzleIndex or index changes
+    var offset by remember(currentPuzzleIndex, index) { mutableStateOf(0f) }
+
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp)
             .fillMaxWidth()
             .offset(y = offset.dp)
-            .pointerInput(Unit) {
+            .pointerInput(key1 = currentPuzzleIndex, key2 = index) {
                 detectVerticalDragGestures(
                     onVerticalDrag = { _, dragAmount ->
                         offset += dragAmount
@@ -170,6 +176,8 @@ fun DraggableCard(
         }
     }
 }
+
+
 
 @Composable
 fun PuzzleSuccessScreen(navController: NavController, score: Int) {
