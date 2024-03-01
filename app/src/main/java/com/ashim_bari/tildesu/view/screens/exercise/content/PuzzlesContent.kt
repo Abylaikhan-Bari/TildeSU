@@ -53,39 +53,58 @@ fun PuzzlesContent(
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
+    val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+    val score by exerciseViewModel.score.observeAsState(0)
+    val quizPassed by exerciseViewModel.quizPassed.observeAsState()
 
-    // React to changes in level and load exercises
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
     }
 
-    // React to feedback message changes to trigger side effects
     LaunchedEffect(feedbackMessage) {
         if (feedbackMessage == "Correct! Well done.") {
-            delay(1500) // Delay to let user read the feedback
-            feedbackMessage = null // Clear feedback
-            exerciseViewModel.moveToNextQuestion() // Move to the next question
+            delay(1500)
+            feedbackMessage = null
+            exerciseViewModel.moveToNextQuestion()
         }
-        // Handle incorrect feedback if needed
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        feedbackMessage?.let {
-            Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
+    if (exerciseCompleted) {
+        if (quizPassed == true) {
+            PuzzleSuccessScreen(navController, score)
+        } else {
+            PuzzleFailureScreen(navController) {
+                // Reset the exercise and possibly navigate back to the puzzle screen
+                // or simply allow the user to restart the puzzles
+                exerciseViewModel.resetExercise()
+                navController.popBackStack()
+            }
         }
+    } else {
+        Column(modifier = Modifier.padding(16.dp)) {
+            feedbackMessage?.let {
+                Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
+            }
 
-        if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
-            DraggableWordPuzzle(
-                puzzle = puzzles[currentQuestionIndex!!],
-                onPuzzleSolved = { correct ->
-                    feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                },
-                currentPuzzleIndex = currentQuestionIndex!! // Make sure this is passed down
-            )
+            if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
+                val currentPuzzle = puzzles[currentQuestionIndex!!]
+                DraggableWordPuzzle(
+                    puzzle = currentPuzzle,
+                    onPuzzleSolved = { correct ->
+                        feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                        if (correct) {
+                            exerciseViewModel.updatePuzzleAnswer(correct)
+                        }
+                    },
+                    currentPuzzleIndex = currentQuestionIndex!!
+                )
+            } else {
+                Text("Loading puzzles...")
+            }
         }
-
     }
 }
+
 
 
 
