@@ -127,5 +127,3 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
         }
     }
 }
-
-
