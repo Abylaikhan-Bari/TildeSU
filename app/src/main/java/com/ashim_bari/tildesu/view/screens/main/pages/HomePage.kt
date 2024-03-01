@@ -44,12 +44,7 @@ fun HomePage(navController: NavHostController) {
             modifier = Modifier.padding(16.dp)
         ) {
             val levels = listOf(
-                stringResource(id = R.string.level_a1),
-                stringResource(id = R.string.level_a2),
-                stringResource(id = R.string.level_b1),
-                stringResource(id = R.string.level_b2),
-                stringResource(id = R.string.level_c1),
-                stringResource(id = R.string.level_c2)
+                "A1", "A2", "B1", "B2", "C1", "C2"
             )
             val routes = listOf("exercise/A1", "exercise/A2", "exercise/B1", "exercise/B2", "exercise/C1", "exercise/C2")
 
@@ -91,6 +86,17 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
         visible = true
     }
 
+    // Determine the string resource ID based on the level
+    val levelResId = when (level) {
+        "A1" -> R.string.level_a1
+        "A2" -> R.string.level_a2
+        "B1" -> R.string.level_b1
+        "B2" -> R.string.level_b2
+        "C1" -> R.string.level_c1
+        "C2" -> R.string.level_c2
+        else -> R.string.level_a1 // Default case or error handling
+    }
+
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
@@ -98,8 +104,7 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
     ) {
         Card(
             onClick = {
-                // Adjust the navigation action to use the correct route
-                // This should match the route pattern defined for the exercise type selection screen
+                // Navigate using the level as a parameter to find the correct route
                 navController.navigate("exerciseTypeSelection/$level")
             },
             modifier = Modifier
@@ -113,7 +118,7 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = level,
+                    text = stringResource(id = levelResId),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal),
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.align(Alignment.Center)
@@ -122,4 +127,5 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
         }
     }
 }
+
 
