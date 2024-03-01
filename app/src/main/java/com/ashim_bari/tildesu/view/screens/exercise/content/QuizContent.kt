@@ -63,7 +63,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentQuestionIndex.observeAsState().value ?: 0
     var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
-    val quizCompleted = exerciseViewModel.quizCompleted.observeAsState().value ?: false
+    val quizCompleted = exerciseViewModel.exerciseCompleted.observeAsState().value ?: false
     val quizPassed = exerciseViewModel.quizPassed.observeAsState()
 
     if (quizCompleted) {

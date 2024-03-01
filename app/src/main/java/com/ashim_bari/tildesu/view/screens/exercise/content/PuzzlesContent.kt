@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,59 +37,62 @@ fun PuzzlesContent(
     exerciseViewModelFactory: ExerciseViewModelFactory
 ) {
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
-    LaunchedEffect(level) {
-        exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
-    }
-
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
 
-    // Display feedback message if any
-    feedbackMessage?.let {
-        // Using Snackbar for immediate feedback; adjust as needed for your UI
-        Snackbar { Text(text = it) }
-        // Automatically clear the feedback message after some delay
-        LaunchedEffect(it) {
-            delay(2000)
-            feedbackMessage = null
-        }
+    // React to changes in level and load exercises
+    LaunchedEffect(level) {
+        exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
     }
 
-    if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
-        val currentPuzzle = puzzles[currentQuestionIndex!!]
-        DraggableWordPuzzle(
-            puzzle = currentPuzzle,
-            onPuzzleSolved = { correct ->
-                feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                if (correct) {
-                    // Proceed only if the answer is correct
-                    if (currentQuestionIndex!! < puzzles.size - 1) {
-                        exerciseViewModel.moveToNextQuestion()
-                    } else {
-                        exerciseViewModel.completeExercise()
-                        // Optionally navigate to a completion screen
-                    }
+    // React to feedback message changes to trigger side effects
+    LaunchedEffect(feedbackMessage) {
+        if (feedbackMessage == "Correct! Well done.") {
+            delay(1500) // Delay to let user read the feedback
+            feedbackMessage = null // Clear feedback
+            exerciseViewModel.moveToNextQuestion() // Move to the next question
+        }
+        // Handle incorrect feedback if needed
+    }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        feedbackMessage?.let {
+            Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
+        }
+
+        if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
+            val currentPuzzle = puzzles[currentQuestionIndex!!]
+            DraggableWordPuzzle(
+                puzzle = currentPuzzle,
+                onPuzzleSolved = { correct ->
+                    feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
                 }
+            )
+        } else {
+            Text("Loading puzzles...")
+        }
+        if (feedbackMessage == "Correct! Well done.") {
+            LaunchedEffect(key1 = currentQuestionIndex) {
+                delay(1500) // Allow time for the user to see the message
+                exerciseViewModel.moveToNextQuestion()
+                feedbackMessage = null
             }
-        )
-    } else {
-        Text("Loading puzzles...")
+        }
     }
 }
 
 
-// Implement DraggableWordPuzzle and DraggableCard as before
-
-
-// ... rest of your code remains the same
 
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
     onPuzzleSolved: (Boolean) -> Unit
 ) {
-    var words = remember { mutableStateListOf<String>().also { it.addAll(puzzle.sentenceParts?.shuffled() ?: listOf()) } }
+    // Ensure the words are not shuffled every recomposition
+    var words by remember(puzzle.sentenceParts) {
+        mutableStateOf(puzzle.sentenceParts?.shuffled() ?: listOf())
+    }
     var draggedIndex by remember { mutableStateOf(-1) }
     var targetIndex by remember { mutableStateOf(-1) }
 
@@ -103,8 +104,8 @@ fun DraggableWordPuzzle(
                 word = word,
                 onDragEnd = {
                     if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex) {
-                        words.removeAt(draggedIndex).also {
-                            words.add(targetIndex, it)
+                        words = words.toMutableList().apply {
+                            add(targetIndex, removeAt(draggedIndex))
                         }
                     }
                     draggedIndex = -1
@@ -112,32 +113,22 @@ fun DraggableWordPuzzle(
                 },
                 onDragChange = { change ->
                     if (draggedIndex == -1) draggedIndex = index
-                    val newIndex = (index + change).coerceIn(words.indices)
-                    targetIndex = newIndex
+                    targetIndex = (index + change).coerceIn(words.indices)
                 }
             )
         }
 
         Button(onClick = {
-            // Check if both sentenceParts and correctOrder are not null
-            if (puzzle.sentenceParts != null && puzzle.correctOrder != null) {
-                // Create a list of indices based on the current order of words in comparison to the original sentence parts
-                val userOrderIndices = words.map { word -> puzzle.sentenceParts!!.indexOf(word) }
-                // Now compare the user's ordered indices with the puzzle's correct order
-                val isCorrect = userOrderIndices == puzzle.correctOrder
-                onPuzzleSolved(isCorrect)
-            } else {
-                // Handle the case where sentenceParts or correctOrder is null
-                onPuzzleSolved(false)
+            val userOrderIndices = words.mapNotNull { word ->
+                puzzle.sentenceParts?.indexOf(word)
             }
+            val isCorrect = userOrderIndices == puzzle.correctOrder
+            onPuzzleSolved(isCorrect)
         }) {
             Text("Submit")
         }
-
     }
 }
-
-// ... rest of your code remains the same
 
 
 @Composable

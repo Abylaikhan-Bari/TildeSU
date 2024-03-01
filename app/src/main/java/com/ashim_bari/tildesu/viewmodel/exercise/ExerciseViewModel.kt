@@ -9,7 +9,6 @@ import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
@@ -22,8 +21,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _score = MutableLiveData<Int>(0)
     val score: LiveData<Int> = _score
 
-    private val _quizCompleted = MutableLiveData<Boolean>(false)
-    val quizCompleted: LiveData<Boolean> = _quizCompleted
+    private val _exerciseCompleted = MutableLiveData<Boolean>(false)
+    val exerciseCompleted: LiveData<Boolean> = _exerciseCompleted
 
     private var currentLevelId: String? = null
     private var currentExerciseType: ExerciseType? = null
@@ -40,7 +39,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                 _exercises.value = exercisesList
                 _currentQuestionIndex.value = 0
                 _score.value = 0
-                _quizCompleted.value = false
+                _exerciseCompleted.value = false
                 Log.d("ExerciseVM", "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
             } catch (e: Exception) {
                 Log.e("ExerciseVM", "Error loading exercises for level $level and type $type", e)
@@ -64,20 +63,28 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun moveToNextQuestion() {
-        viewModelScope.launch {
-            _currentQuestionIndex.value?.let { currentIndex ->
-                if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
-                    // Add a delay to ensure the UI has time to update
-                    delay(500) // 500ms delay
-                    _currentQuestionIndex.value = currentIndex + 1
-                } else {
-                    completeExercise()
-                }
-            }
+//    fun moveToNextQuestion() {
+//        viewModelScope.launch {
+//            _currentQuestionIndex.value?.let { currentIndex ->
+//                if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+//                    // Add a delay to ensure the UI has time to update
+//                    delay(500) // 500ms delay
+//                    _currentQuestionIndex.value = currentIndex + 1
+//                } else {
+//                    completeExercise()
+//                }
+//            }
+//        }
+//    }
+fun moveToNextQuestion() {
+    _currentQuestionIndex.value?.let { currentIndex ->
+        if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+            _currentQuestionIndex.value = currentIndex + 1
+        } else {
+            completeExercise()
         }
     }
-
+}
     fun updatePuzzleAnswer(correct: Boolean) {
         if (correct) {
             _score.value = (_score.value ?: 0) + 1
@@ -91,7 +98,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
     fun completeExercise() {
-        _quizCompleted.value = true
+        _exerciseCompleted.value = true
         val totalQuestions = _exercises.value?.size ?: 0
         val totalCorrectAnswers = _score.value ?: 0
         _quizPassed.value = totalCorrectAnswers.toFloat() / totalQuestions >= 0.5 // Example threshold for passing
@@ -118,7 +125,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     fun resetExercise() {
         _currentQuestionIndex.value = 0
         _score.value = 0
-        _quizCompleted.value = false
+        _exerciseCompleted.value = false
         _quizPassed.value = null
     }
 }
