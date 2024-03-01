@@ -168,7 +168,7 @@ fun DraggableCard(
     currentPuzzleIndex: Int,
     index: Int
 ) {
-    // Reset offset when currentPuzzleIndex or index changes
+    // Unique key for each card based on puzzle index and card index to ensure proper state reset
     var offset by remember(currentPuzzleIndex, index) { mutableStateOf(0f) }
 
     Card(
@@ -176,14 +176,14 @@ fun DraggableCard(
             .padding(vertical = 4.dp)
             .fillMaxWidth()
             .offset(y = offset.dp)
-            .pointerInput(key1 = currentPuzzleIndex, key2 = index) {
+            .pointerInput(currentPuzzleIndex, index) {
                 detectVerticalDragGestures(
                     onVerticalDrag = { _, dragAmount ->
                         offset += dragAmount
                         onDragChange(dragAmount.sign.toInt())
                     },
                     onDragEnd = {
-                        offset = 0f
+                        offset = 0f // Reset the offset on drag end
                         onDragEnd()
                     }
                 )
@@ -191,10 +191,11 @@ fun DraggableCard(
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(16.dp)) {
-            Text(word)
+            Text(text = word)
         }
     }
 }
+
 
 
 
