@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
+import android.util.Log
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,16 +57,17 @@ fun PuzzlesContent(
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val score by exerciseViewModel.score.observeAsState(0)
     val quizPassed by exerciseViewModel.quizPassed.observeAsState()
-
+    val TAG = "PuzzlesContent"
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
+        Log.d(TAG, "Exercises loaded for level: $level")
     }
 
     LaunchedEffect(feedbackMessage) {
         if (feedbackMessage == "Correct! Well done.") {
             delay(1500)
             feedbackMessage = null
-            exerciseViewModel.moveToNextQuestion()
+            exerciseViewModel.moveToNextPuzzle()
         }
     }
 
@@ -92,15 +94,15 @@ fun PuzzlesContent(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
                         feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                        if (correct) {
-                            exerciseViewModel.updatePuzzleAnswer(correct)
-                        }
+                        // This might now be redundant or need adjustment since the logic has moved.
                     },
-                    currentPuzzleIndex = currentQuestionIndex!!
+                    currentPuzzleIndex = currentQuestionIndex!!,
+                    exerciseViewModel = exerciseViewModel // Pass the ViewModel instance here
                 )
             } else {
                 Text("Loading puzzles...")
             }
+
         }
     }
 }
@@ -112,7 +114,8 @@ fun PuzzlesContent(
 fun DraggableWordPuzzle(
     puzzle: Exercise,
     onPuzzleSolved: (Boolean) -> Unit,
-    currentPuzzleIndex: Int
+    currentPuzzleIndex: Int,
+    exerciseViewModel: ExerciseViewModel
 ) {
     // The words list will be re-initialized and shuffled when currentPuzzleIndex changes
     var words by remember(currentPuzzleIndex) {
@@ -120,7 +123,7 @@ fun DraggableWordPuzzle(
     }
     var draggedIndex by remember { mutableStateOf(-1) }
     var targetIndex by remember { mutableStateOf(-1) }
-
+    val TAG = "DraggableWordPuzzle"
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Arrange the words into a sentence:")
 
@@ -152,6 +155,12 @@ fun DraggableWordPuzzle(
             }
             val isCorrect = userOrderIndices == puzzle.correctOrder
             onPuzzleSolved(isCorrect)
+            Log.d(TAG, "Puzzle solved correctly.")// This callback might be redundant now and can be replaced
+            if (isCorrect) {
+                // Directly call ViewModel function when puzzle is solved correctly
+                exerciseViewModel.submitPuzzleAnswer(userOrderIndices)
+                Log.d(TAG, "Puzzle solved incorrectly.")
+            }
         }) {
             Text("Submit")
         }

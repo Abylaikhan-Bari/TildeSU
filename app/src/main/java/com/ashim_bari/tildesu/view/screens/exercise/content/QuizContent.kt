@@ -126,7 +126,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                                     val currentExercise = exercises[currentQuestionIndex]
                                     val correctOptionIndex = currentExercise.correctOptionIndex ?: -1
                                     val isCorrect = selectedOption == correctOptionIndex
-                                    exerciseViewModel.submitAnswer(selectedOption)
+                                    exerciseViewModel.submitQuizAnswer(selectedOption)
                                     selectedOption = -1
                                 }
                             },

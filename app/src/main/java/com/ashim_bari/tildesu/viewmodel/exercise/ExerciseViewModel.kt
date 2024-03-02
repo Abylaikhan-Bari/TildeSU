@@ -29,7 +29,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
     private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
-
+    private val TAG = "ExerciseViewModel"
     fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
         currentLevelId = level
         currentExerciseType = type
@@ -47,29 +47,20 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun submitAnswer(selectedOption: Any) {
+    fun submitQuizAnswer(selectedOption: Int) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
         currentExercise?.let { exercise ->
-            when (exercise.type) {
-                ExerciseType.QUIZ -> {
-                    val isCorrect = selectedOption is Int && selectedOption == exercise.correctOptionIndex
-                    if (isCorrect) {
-                        _score.value = (_score.value ?: 0) + 1
-                    }
+            if (exercise.type == ExerciseType.QUIZ) {
+                val isCorrect = selectedOption == exercise.correctOptionIndex
+                if (isCorrect) {
+                    _score.value = (_score.value ?: 0) + 1
                 }
-                ExerciseType.PUZZLES -> {
-                    val isCorrect = selectedOption is List<*> && selectedOption.filterIsInstance<Int>() == exercise.correctOrder
-                    if (isCorrect) {
-                        _score.value = (_score.value ?: 0) + 1
-                    }
-                }
-                else -> {
-                    // No action for TRUE_FALSE type, as it's handled separately
-                }
+                // Move to the next question regardless of the answer being correct or not
+                moveToNextQuestion()
             }
-            moveToNextQuestion()
         }
     }
+
 
     fun submitTrueFalseAnswer(userAnswer: Boolean) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
@@ -93,8 +84,30 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
 
+    fun submitPuzzleAnswer(userOrder: List<Int>) {
+        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        currentExercise?.let { exercise ->
+            if (exercise.type == ExerciseType.PUZZLES) {
+                val isCorrect = userOrder == exercise.correctOrder
+                if (isCorrect) {
+                    _score.value = (_score.value ?: 0) + 1
+                    Log.d(TAG, "Puzzle answer is correct. Score incremented: ${_score.value}")
+                    moveToNextPuzzle()
+                }
+                // Optionally handle incorrect answers or give feedback
+            }
+        }
+    }
 
-
+    fun moveToNextPuzzle() {
+        val currentIndex = _currentQuestionIndex.value ?: return
+        if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+            _currentQuestionIndex.value = currentIndex + 1
+            Log.d(TAG, "Moved to next puzzle: index ${_currentQuestionIndex.value}")
+        } else {
+            completeExercise()
+        }
+    }
 
 
 
