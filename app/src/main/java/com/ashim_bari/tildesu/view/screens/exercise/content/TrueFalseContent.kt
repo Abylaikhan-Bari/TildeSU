@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,9 +75,11 @@ fun TrueFalseContent(
                 statement = currentExercise.statement ?: "",
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
-                    isAnswerCorrect = userAnswer == currentExercise.isTrue
+                    // Compare the user's answer with the correct answer
+                    isAnswerCorrect = userAnswer == (currentExercise.isTrue ?: false)
                     showFeedback = true
                     exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
+                    Log.d("TrueFalseContent", "Answer submitted: $isAnswerCorrect")
                 }
             )
 
@@ -91,10 +94,9 @@ fun TrueFalseContent(
     }
 }
 
-
-
 @Composable
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
+    Log.d("AnswerFeedbackScreen", "Correct: $correct")
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -113,13 +115,14 @@ fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
 }
 
 
-
 @Composable
 fun TrueFalseQuestion(
     statement: String,
     isTrue: Boolean,
     onAnswer: (Boolean) -> Unit
 ) {
+    var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
+    Log.d("TrueFalseQuestion", "Statement: $statement, isTrue: $isTrue")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -127,12 +130,29 @@ fun TrueFalseQuestion(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(statement, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
+        Text(
+            statement,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
 
-        TrueFalseOptionCard("True", isTrue) { onAnswer(true) }
-        TrueFalseOptionCard("False", !isTrue) { onAnswer(false) }
+        TrueFalseOptionCard("True", isTrue) {
+            isAnswerCorrect = isTrue == true
+            Log.d("TrueFalseQuestion", "Selected option is true: $isAnswerCorrect")
+            onAnswer(isAnswerCorrect)
+        }
+
+        TrueFalseOptionCard("False", !isTrue) {
+            isAnswerCorrect = isTrue == false
+            Log.d("TrueFalseQuestion", "Selected option is false: $isAnswerCorrect")
+            onAnswer(isAnswerCorrect)
+        }
     }
 }
+
+
+
+
 
 
 
@@ -157,7 +177,6 @@ fun TrueFalseOptionCard(optionText: String, isCorrectAnswer: Boolean, onClick: (
         }
     }
 }
-
 
 
 
@@ -198,10 +217,8 @@ fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
         ) {
             Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
-
     }
 }
-
 
 @Composable
 fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> Unit) {
@@ -244,7 +261,6 @@ fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> 
             Text(stringResource(id = R.string.try_again), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
 
-
         Card(
             onClick = { navController.navigate("main") },
             modifier = Modifier
@@ -258,7 +274,6 @@ fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> 
         ) {
             Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
-
     }
 }
 
