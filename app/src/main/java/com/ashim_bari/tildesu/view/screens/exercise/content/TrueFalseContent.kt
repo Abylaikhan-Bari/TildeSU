@@ -54,13 +54,14 @@ fun TrueFalseContent(
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState(0)
     val quizCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+    val totalQuestions = exercises.size
+    var correctAnswers by rememberSaveable { mutableStateOf(0) }
     var showFeedback by rememberSaveable { mutableStateOf(false) }
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
     if (quizCompleted) {
         // Check if all answers are correct to decide which screen to show
-        val allCorrect = exerciseViewModel.quizPassed.value == true
-        if (allCorrect) {
+        if (correctAnswers == totalQuestions) {
             TrueFalseSuccessScreen(navController, exerciseViewModel.score.value ?: 0)
         } else {
             TrueFalseFailureScreen(navController) {
@@ -76,24 +77,23 @@ fun TrueFalseContent(
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
                     isAnswerCorrect = userAnswer == currentExercise.isTrue
+                    correctAnswers += if (isAnswerCorrect) 1 else 0
                     showFeedback = true
                     exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
                     Log.d("TrueFalseContent", "User answered: $userAnswer, isTrue: ${currentExercise.isTrue}, Evaluated Correct: $isAnswerCorrect")
                 }
             )
-        }
-
-        else {
+        } else {
             AnswerFeedbackScreen(isAnswerCorrect) {
                 showFeedback = false
                 exerciseViewModel.moveToNextQuestion()
             }
         }
-
     } else {
         Text("Loading true/false exercises...")
     }
 }
+
 
 @Composable
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
