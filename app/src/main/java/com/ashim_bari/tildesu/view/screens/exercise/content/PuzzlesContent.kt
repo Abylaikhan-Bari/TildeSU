@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.SentimentDissatisfied
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,7 +55,6 @@ fun PuzzlesContent(
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val score by exerciseViewModel.score.observeAsState(0)
-    val quizPassed by exerciseViewModel.quizPassed.observeAsState()
     val TAG = "PuzzlesContent"
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
@@ -72,16 +70,9 @@ fun PuzzlesContent(
     }
 
     if (exerciseCompleted) {
-        if (quizPassed == true) {
+
             PuzzleSuccessScreen(navController, score)
-        } else {
-            PuzzleFailureScreen(navController) {
-                // Reset the exercise and possibly navigate back to the puzzle screen
-                // or simply allow the user to restart the puzzles
-                exerciseViewModel.resetExercise()
-                navController.popBackStack()
-            }
-        }
+
     } else {
         Column(modifier = Modifier.padding(16.dp)) {
             feedbackMessage?.let {
@@ -125,6 +116,7 @@ fun DraggableWordPuzzle(
     var targetIndex by remember { mutableStateOf(-1) }
     val TAG = "DraggableWordPuzzle"
     Column(modifier = Modifier.padding(16.dp)) {
+
         Text("Arrange the words into a sentence:")
 
         words.forEachIndexed { index, word ->
@@ -148,22 +140,27 @@ fun DraggableWordPuzzle(
                 index = index
             )
         }
-
         Button(onClick = {
-            val userOrderIndices = words.mapNotNull { word ->
-                puzzle.sentenceParts?.indexOf(word)
-            }
+            val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
+
+            // Log user's chosen order of words
+            Log.d("Puzzles", "User order: $userOrderIndices")
+
             val isCorrect = userOrderIndices == puzzle.correctOrder
             onPuzzleSolved(isCorrect)
-            Log.d(TAG, "Puzzle solved correctly.")// This callback might be redundant now and can be replaced
             if (isCorrect) {
-                // Directly call ViewModel function when puzzle is solved correctly
-                exerciseViewModel.submitPuzzleAnswer(userOrderIndices)
-                Log.d(TAG, "Puzzle solved incorrectly.")
+                // Log before submitting the answer
+                Log.d("Puzzles", "Submitting correct answer")
+                exerciseViewModel.submitPuzzleAnswer(userOrderIndices, puzzle)
+            } else {
+                // Log incorrect attempt message
+                Log.d("Puzzles", "User answer is incorrect")
             }
         }) {
             Text("Submit")
         }
+
+
     }
 }
 
@@ -250,61 +247,3 @@ fun PuzzleSuccessScreen(navController: NavController, score: Int) {
 }
 
 
-@Composable
-fun PuzzleFailureScreen(navController: NavController, restartExercise: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.oops_sorry),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
-        )
-        Icon(
-            imageVector = Icons.Filled.SentimentDissatisfied,
-            contentDescription = "Sad face",
-            modifier = Modifier
-                .size(100.dp)
-                .padding(bottom = 16.dp)
-        )
-
-        Text(
-            text = stringResource(id = R.string.dont_worry_try_again),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
-        )
-        Card(
-            onClick = restartExercise,
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
-                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
-                .height(100.dp), // Set the height to a specific value
-            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(stringResource(id = R.string.try_again), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
-        }
-
-
-        Card(
-            onClick = { navController.navigate("main") },
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
-                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
-                .height(100.dp), // Set the height to a specific value
-            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
-        }
-
-    }
-}
