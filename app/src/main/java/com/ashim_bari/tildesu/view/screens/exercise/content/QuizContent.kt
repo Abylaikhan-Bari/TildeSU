@@ -117,10 +117,8 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                             onClick = {
                                 if (selectedOption >= 0) {
                                     exerciseViewModel.submitAnswer(selectedOption)
-                                    exerciseViewModel.moveToNextQuestion()
                                     selectedOption = -1
                                 }
-
                             },
                             modifier = Modifier
                                 .padding(top = 16.dp)
@@ -129,6 +127,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                         ) {
                             Text("Next")
                         }
+
                     } else {
                         Text("No questions found for this quiz.")
                     }

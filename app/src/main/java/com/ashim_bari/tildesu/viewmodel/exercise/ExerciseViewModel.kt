@@ -80,6 +80,7 @@ fun moveToNextQuestion() {
     _currentQuestionIndex.value?.let { currentIndex ->
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
             _currentQuestionIndex.value = currentIndex + 1
+            Log.d("ExerciseVM", "Moved to next question: index ${_currentQuestionIndex.value}")
         } else {
             completeExercise()
         }
