@@ -75,20 +75,21 @@ fun TrueFalseContent(
                 statement = currentExercise.statement ?: "",
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
-                    // Compare the user's answer with the correct answer
-                    isAnswerCorrect = userAnswer == (currentExercise.isTrue ?: false)
+                    isAnswerCorrect = userAnswer == currentExercise.isTrue
                     showFeedback = true
                     exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
-                    Log.d("TrueFalseContent", "Answer submitted: $isAnswerCorrect")
+                    Log.d("TrueFalseContent", "User answered: $userAnswer, isTrue: ${currentExercise.isTrue}, Evaluated Correct: $isAnswerCorrect")
                 }
             )
+        }
 
-        } else {
+        else {
             AnswerFeedbackScreen(isAnswerCorrect) {
                 showFeedback = false
                 exerciseViewModel.moveToNextQuestion()
             }
         }
+
     } else {
         Text("Loading true/false exercises...")
     }
@@ -121,8 +122,6 @@ fun TrueFalseQuestion(
     isTrue: Boolean,
     onAnswer: (Boolean) -> Unit
 ) {
-    var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
-    Log.d("TrueFalseQuestion", "Statement: $statement, isTrue: $isTrue")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -136,16 +135,12 @@ fun TrueFalseQuestion(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        TrueFalseOptionCard("True", isTrue) {
-            isAnswerCorrect = isTrue == true
-            Log.d("TrueFalseQuestion", "Selected option is true: $isAnswerCorrect")
-            onAnswer(isAnswerCorrect)
+        TrueFalseOptionCard("True") {
+            onAnswer(true) // Pass true to the onAnswer callback for the "True" option.
         }
 
-        TrueFalseOptionCard("False", !isTrue) {
-            isAnswerCorrect = isTrue == false
-            Log.d("TrueFalseQuestion", "Selected option is false: $isAnswerCorrect")
-            onAnswer(isAnswerCorrect)
+        TrueFalseOptionCard("False") {
+            onAnswer(false) // Pass false to the onAnswer callback for the "False" option.
         }
     }
 }
@@ -153,12 +148,8 @@ fun TrueFalseQuestion(
 
 
 
-
-
-
-
 @Composable
-fun TrueFalseOptionCard(optionText: String, isCorrectAnswer: Boolean, onClick: () -> Unit) {
+fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier

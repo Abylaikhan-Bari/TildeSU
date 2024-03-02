@@ -47,35 +47,59 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun submitAnswer(selectedOption: Any, isCorrect: Boolean) {
+    fun submitAnswer(selectedOption: Any) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
         currentExercise?.let { exercise ->
-            val isCorrect = when (exercise.type) {
-                ExerciseType.QUIZ -> selectedOption is Int && selectedOption == exercise.correctOptionIndex
-                ExerciseType.TRUE_FALSE -> selectedOption is Boolean && selectedOption == exercise.isTrue
-                ExerciseType.PUZZLES -> selectedOption is List<*> && selectedOption.filterIsInstance<Int>() == exercise.correctOrder
-                // Default case should not be reached due to exhaustive when on enum
-            }
-            if (isCorrect) {
-                _score.value = (_score.value ?: 0) + 1
+            when (exercise.type) {
+                ExerciseType.QUIZ -> {
+                    val isCorrect = selectedOption is Int && selectedOption == exercise.correctOptionIndex
+                    if (isCorrect) {
+                        _score.value = (_score.value ?: 0) + 1
+                    }
+                }
+                ExerciseType.PUZZLES -> {
+                    val isCorrect = selectedOption is List<*> && selectedOption.filterIsInstance<Int>() == exercise.correctOrder
+                    if (isCorrect) {
+                        _score.value = (_score.value ?: 0) + 1
+                    }
+                }
+                else -> {
+                    // No action for TRUE_FALSE type, as it's handled separately
+                }
             }
             moveToNextQuestion()
         }
     }
-    fun submitTrueFalseAnswer(isCorrect: Boolean) {
+
+    fun submitTrueFalseAnswer(userAnswer: Boolean) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
         currentExercise?.let { exercise ->
             if (exercise.type == ExerciseType.TRUE_FALSE) {
-                if (isCorrect) {
-                    _score.value = (_score.value ?: 0) + 1
+                // Check if isTrue is not null. If it is, log an error or handle it accordingly.
+                if (exercise.isTrue == null) {
+                    Log.e("ExerciseVM", "Error: isTrue is null for exercise ${exercise.id}")
+                    // Consider handling this error appropriately, e.g., showing an error message to the user.
+                } else {
+                    val isCorrect = userAnswer == exercise.isTrue
+                    Log.d("ExerciseVM", "User answer: $userAnswer, Actual answer: ${exercise.isTrue}, Evaluated Correct: $isCorrect")
+
+                    if (isCorrect) {
+                        _score.value = (_score.value ?: 0) + 1
+                    }
+                    moveToNextQuestion()
                 }
-                moveToNextQuestion()
             }
         }
     }
 
 
-fun moveToNextQuestion() {
+
+
+
+
+
+
+    fun moveToNextQuestion() {
     _currentQuestionIndex.value?.let { currentIndex ->
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
             _currentQuestionIndex.value = currentIndex + 1
