@@ -139,13 +139,13 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 userProfile?.let { profile ->
-                    AnimatedCard {
+
                         ProfilePicture(profileImageUrl) {
                             launcher.launch("image/*")
                         }
-                    }
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    AnimatedCard {
+
                         Row(modifier = Modifier.padding(top = 8.dp)) {
                             Text(
                                 text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
@@ -153,13 +153,13 @@ fun ProfilePage(navController: NavHostController) {
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
                         }
-                    }
+
                     Spacer(modifier = Modifier.height(16.dp))
                     // Animate the rest of the user information
-                    AnimatedCard {
+
                         UserInfoCard(profile)
                     }
-                }
+
 
 
                 // Continuing inside the Column from above
@@ -171,7 +171,7 @@ fun ProfilePage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                AnimatedCard {
+
                     ActionCard(
                         text = stringResource(id = R.string.edit_profile_button),
                         icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
@@ -181,11 +181,11 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.outlineVariant
                     )
-                }
+
 
 
                 Spacer(modifier = Modifier.height(16.dp))
-                AnimatedCard {
+
                     ActionCard(
                         text = stringResource(id = R.string.update_password_button),
                         icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
@@ -195,7 +195,7 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
-                }
+
 
 
 
@@ -212,7 +212,7 @@ fun ProfilePage(navController: NavHostController) {
 
 
                 Spacer(modifier = Modifier.height(16.dp))
-                AnimatedCard {
+
                     ActionCard(
                         text = stringResource(id = R.string.log_out_language_button),
                         icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
@@ -222,7 +222,7 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.errorContainer
                     )
-                }
+
 
 
                 if (showUpdatePasswordDialog) {
@@ -283,10 +283,11 @@ fun ProfilePage(navController: NavHostController) {
 }
 
 @Composable
-fun AnimatedCard(content: @Composable () -> Unit) {
+fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
     var isVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = true) {
-        isVisible = true
+
+    LaunchedEffect(showContent) {
+        isVisible = showContent
     }
 
     AnimatedVisibility(
