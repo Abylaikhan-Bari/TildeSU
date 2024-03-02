@@ -98,6 +98,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                 else{
                     Log.d("ExerciseVM", "Puzzle attempt incorrect.")
                 }
+                moveToNextQuestion()
                 // Optionally handle incorrect answers or give feedback
             }
         }

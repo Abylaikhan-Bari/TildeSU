@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,13 +27,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.user.UserRepository
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
+import java.util.Locale
 
 @Composable
 fun DashboardPage(mainViewModel: MainViewModel) {
@@ -44,15 +54,16 @@ fun DashboardPage(mainViewModel: MainViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             if (progressData.isNotEmpty()) {
-                progressData.forEach { (level, progress) ->
-                    LanguageLevelProgressBar(level, progress)
+                progressData.forEach { (level, userProgress) ->
+                    ExpandableProgressBar(level, userProgress)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
-                Text(stringResource(
-                    R.string.no_progress_data),
+                Text(
+                    stringResource(R.string.no_progress_data),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(16.dp))
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
     }
@@ -61,6 +72,45 @@ fun DashboardPage(mainViewModel: MainViewModel) {
         mainViewModel.loadUserProgress()
     }
 }
+
+@Composable
+fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgress) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Column {
+        LanguageLevelProgressBar(level, Pair(userProgress.overallProgress, 0))
+
+        IconButton(onClick = { isExpanded = !isExpanded }) {
+            Icon(
+                imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (isExpanded) "Collapse" else "Expand"
+            )
+        }
+        AnimatedVisibility(visible = isExpanded) {
+            Column {
+                userProgress.exerciseTypeProgress.forEach { (exerciseType, progress) ->
+                    Text(text = exerciseType.capitalize(Locale.getDefault()))
+                    ProgressBar(progress = progress)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProgressBar(progress: Float) {
+    LinearProgressIndicator(
+        progress = progress,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .clip(RoundedCornerShape(4.dp)),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
+    )
+}
+
+
 
 @Composable
 fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {

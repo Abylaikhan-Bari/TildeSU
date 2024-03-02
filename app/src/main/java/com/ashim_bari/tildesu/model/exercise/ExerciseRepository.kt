@@ -45,13 +45,6 @@ class ExerciseRepository {
         }
     }
 
-
-
-
-
-
-
-
     @OptIn(UnstableApi::class)
     suspend fun updateUserProgress(userId: String, levelId: String, exerciseType: ExerciseType, correctAnswers: Int, totalQuestions: Int) {
         val progressRef = db.collection("users")
@@ -61,36 +54,49 @@ class ExerciseRepository {
 
         db.runTransaction { transaction ->
             val snapshot = transaction.get(progressRef)
-            val scoresMap = snapshot.get("scores") as? Map<String, Map<String, Any>> ?: emptyMap()
+            if (!snapshot.exists()) {
+                // Initialize scores map with all exercise types to ensure structure consistency
+                val initialScoresMap = ExerciseType.values().associate { exerciseType ->
+                    exerciseType.name.toLowerCase() to mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
+                }
 
-            // Extract the current scores for the exercise type
-            val currentTypeScores = scoresMap[exerciseType.name.toLowerCase()] ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
-            val updatedTypeCorrectAnswers = (currentTypeScores["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
-            val updatedTypeTotalQuestions = (currentTypeScores["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
+                // Document does not exist, create it with initial values
+                transaction.set(progressRef, mapOf(
+                    "scores" to initialScoresMap,
+                    "overallScore" to mapOf("correctAnswers" to 0L, "totalQuestions" to 0L),
+                    "completedOn" to FieldValue.serverTimestamp() // Consider if initial creation needs this
+                ))
+            } else {
+                // Document exists, proceed with updating
+                val scoresMap = snapshot.get("scores") as? Map<String, Map<String, Any>> ?: emptyMap()
 
-            // Update the specific type scores
-            val updatedScoresMap = scoresMap.toMutableMap()
-            updatedScoresMap[exerciseType.name.toLowerCase()] = mapOf(
-                "correctAnswers" to updatedTypeCorrectAnswers,
-                "totalQuestions" to updatedTypeTotalQuestions
-            )
+                val currentTypeScores = scoresMap[exerciseType.name.toLowerCase()] ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
+                val updatedTypeCorrectAnswers = (currentTypeScores["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
+                val updatedTypeTotalQuestions = (currentTypeScores["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
 
-            // Update overall score
-            val overallScore = snapshot.get("overallScore") as? Map<String, Any> ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
-            val updatedOverallCorrectAnswers = (overallScore["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
-            val updatedOverallTotalQuestions = (overallScore["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
+                val updatedScoresMap = scoresMap.toMutableMap()
+                updatedScoresMap[exerciseType.name.toLowerCase()] = mapOf(
+                    "correctAnswers" to updatedTypeCorrectAnswers,
+                    "totalQuestions" to updatedTypeTotalQuestions
+                )
 
-            transaction.update(progressRef, mapOf(
-                "scores" to updatedScoresMap,
-                "overallScore" to mapOf(
-                    "correctAnswers" to updatedOverallCorrectAnswers,
-                    "totalQuestions" to updatedOverallTotalQuestions
-                ),
-                "completedOn" to FieldValue.serverTimestamp()
-            ))
+                val overallScore = snapshot.get("overallScore") as? Map<String, Any> ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
+                val updatedOverallCorrectAnswers = (overallScore["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
+                val updatedOverallTotalQuestions = (overallScore["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
+
+                transaction.update(progressRef, mapOf(
+                    "scores" to updatedScoresMap,
+                    "overallScore" to mapOf(
+                        "correctAnswers" to updatedOverallCorrectAnswers,
+                        "totalQuestions" to updatedOverallTotalQuestions
+                    ),
+                    "completedOn" to FieldValue.serverTimestamp()
+                ))
+            }
         }.await()
-        Log.d("ExerciseRepository", "User progress updated for user $userId, level $levelId, type ${exerciseType.name}")
+        Log.d("ExerciseRepository", "User progress updated for user: $userId, level: $levelId, type: ${exerciseType.name}")
     }
+
 
 
 }

@@ -62,14 +62,6 @@ class UserRepository {
     }
 
 
-//    suspend fun isEmailRegistered(email: String): Boolean {
-//        val querySnapshot = firestore.collection("users")
-//            .whereEqualTo("email", email)
-//            .limit(1)
-//            .get()
-//            .await()
-//        return !querySnapshot.isEmpty // If the snapshot is not empty, email is taken
-//    }
 
     private suspend fun createUserProfile(userId: String, email: String) {
         val user = mapOf(
@@ -195,19 +187,42 @@ class UserRepository {
         }
     }
 
-    suspend fun getUserProgress(userId: String): Map<String, Pair<Float, Int>> {
-        val userProgressData = mutableMapOf<String, Pair<Float, Int>>()
+    suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
+        val userProgressData = mutableMapOf<String, UserProgress>()
         val userProgressCollection = firestore.collection("users").document(userId).collection("progress")
         val querySnapshot = userProgressCollection.get().await()
+
         for (document in querySnapshot.documents) {
             val levelId = document.id
-            val correctAnswers = (document.data?.get("totalCorrectAnswers") as? Number)?.toInt() ?: 0
-            val totalQuestions = (document.data?.get("totalQuestions") as? Number)?.toInt() ?: 0
-            val progress = if (totalQuestions > 0) correctAnswers.toFloat() / totalQuestions else 0f
-            userProgressData[levelId] = Pair(progress, correctAnswers)
+            val scores = document.data?.get("scores") as? Map<String, Map<String, Any>> ?: continue
+            val overallScore = document.data?.get("overallScore") as? Map<String, Any> ?: continue
+            val overallCorrectAnswers = (overallScore["correctAnswers"] as? Number)?.toFloat() ?: continue
+            val overallTotalQuestions = (overallScore["totalQuestions"] as? Number)?.toFloat() ?: continue
+            val overallProgress = if (overallTotalQuestions > 0) overallCorrectAnswers / overallTotalQuestions else 0f
+
+            val exerciseTypeProgress = scores.mapNotNull {
+                val typeName = it.key
+                val details = it.value
+                val correctAnswers = (details["correctAnswers"] as? Number)?.toFloat()
+                val totalQuestions = (details["totalQuestions"] as? Number)?.toFloat()
+                if (correctAnswers != null && totalQuestions != null && totalQuestions > 0) {
+                    typeName to correctAnswers / totalQuestions
+                } else {
+                    null
+                }
+            }.toMap()
+
+            userProgressData[levelId] = UserProgress(overallProgress, exerciseTypeProgress)
         }
-        Log.d("UserRepository", "User progress fetched successfully")
+        //Log.d("UserRepository", "User progress fetched successfully for $userId")
         return userProgressData
     }
+
+
+    data class UserProgress(
+        val overallProgress: Float,
+        val exerciseTypeProgress: Map<String, Float>
+    )
+
 }
 

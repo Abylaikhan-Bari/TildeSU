@@ -27,8 +27,9 @@ class MainViewModel: ViewModel() {
     private val _isLoggedIn = MutableLiveData<Boolean>()
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
 
-    private val _progressData = MutableLiveData<Map<String, Pair<Float, Int>>>()
-    val progressData: LiveData<Map<String, Pair<Float, Int>>> = _progressData
+    private val _progressData = MutableLiveData<Map<String, UserRepository.UserProgress>>()
+    val progressData: LiveData<Map<String, UserRepository.UserProgress>> = _progressData
+
     private val _userProfile = MutableLiveData<UserProfile?>()
     val userProfile: LiveData<UserProfile?> = _userProfile
     init {
@@ -59,15 +60,6 @@ class MainViewModel: ViewModel() {
         }
     }
 
-//    fun getUserEmail() {
-//        viewModelScope.launch {
-//            userRepository.getUserEmail { email ->
-//                _userEmail.postValue(email)
-//                // Log user email retrieval
-//                println("User email retrieved: $email")
-//            }
-//        }
-//    }
 
     fun logout(navController: NavHostController) {
         viewModelScope.launch {
@@ -91,14 +83,9 @@ class MainViewModel: ViewModel() {
 
     fun loadUserProgress() {
         viewModelScope.launch {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid
-            if (userId != null) {
-                // Fetch progress data from repository and update LiveData
-                val userProgress = userRepository.getUserProgress(userId)
-                _progressData.value = userProgress
-                // Log user progress retrieval
-                println("User progress loaded: $userProgress")
-            }
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+            val progress = userRepository.getUserProgress(userId)
+            _progressData.value = progress
         }
     }
 
