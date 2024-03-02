@@ -32,7 +32,7 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
     val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
     val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
 
-    NavHost(navController = navController, startDestination = Navigation.LOADING_ROUTE) {
+    NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             // Obtain ViewModel scoped to the NavHostController
             val authViewModel: AuthenticationViewModel = viewModel()
