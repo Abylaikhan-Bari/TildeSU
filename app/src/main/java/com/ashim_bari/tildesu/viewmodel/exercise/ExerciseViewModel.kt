@@ -47,7 +47,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
-    fun submitAnswer(selectedOption: Any) {
+    fun submitAnswer(selectedOption: Any, isCorrect: Boolean) {
         val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
         currentExercise?.let { exercise ->
             val isCorrect = when (exercise.type) {
@@ -62,20 +62,19 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             moveToNextQuestion()
         }
     }
+    fun submitTrueFalseAnswer(isCorrect: Boolean) {
+        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        currentExercise?.let { exercise ->
+            if (exercise.type == ExerciseType.TRUE_FALSE) {
+                if (isCorrect) {
+                    _score.value = (_score.value ?: 0) + 1
+                }
+                moveToNextQuestion()
+            }
+        }
+    }
 
-//    fun moveToNextQuestion() {
-//        viewModelScope.launch {
-//            _currentQuestionIndex.value?.let { currentIndex ->
-//                if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
-//                    // Add a delay to ensure the UI has time to update
-//                    delay(500) // 500ms delay
-//                    _currentQuestionIndex.value = currentIndex + 1
-//                } else {
-//                    completeExercise()
-//                }
-//            }
-//        }
-//    }
+
 fun moveToNextQuestion() {
     _currentQuestionIndex.value?.let { currentIndex ->
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {

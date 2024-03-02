@@ -57,8 +57,9 @@ fun TrueFalseContent(
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
     if (quizCompleted) {
-        // Check the final score to decide which screen to show
-        if (exerciseViewModel.quizPassed.value == true) {
+        // Check if all answers are correct to decide which screen to show
+        val allCorrect = exerciseViewModel.quizPassed.value == true
+        if (allCorrect) {
             TrueFalseSuccessScreen(navController, exerciseViewModel.score.value ?: 0)
         } else {
             TrueFalseFailureScreen(navController) {
@@ -74,10 +75,11 @@ fun TrueFalseContent(
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
                     isAnswerCorrect = userAnswer == currentExercise.isTrue
-                    exerciseViewModel.submitAnswer(isAnswerCorrect)
                     showFeedback = true
+                    exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
                 }
             )
+
         } else {
             AnswerFeedbackScreen(isAnswerCorrect) {
                 showFeedback = false
@@ -88,6 +90,8 @@ fun TrueFalseContent(
         Text("Loading true/false exercises...")
     }
 }
+
+
 
 @Composable
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {

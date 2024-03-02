@@ -69,7 +69,14 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
     if (quizCompleted) {
         quizPassed.value?.let { passed ->
             if (passed) {
-                SuccessScreen(navController, exerciseViewModel.score.value ?: 0)
+                val score = exerciseViewModel.score.value ?: 0
+                if (score > 0) {
+                    SuccessScreen(navController, score)
+                } else {
+                    FailureScreen(navController) {
+                        exerciseViewModel.resetExercise()
+                    }
+                }
             } else {
                 FailureScreen(navController) {
                     exerciseViewModel.resetExercise()
@@ -116,7 +123,10 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                         Button(
                             onClick = {
                                 if (selectedOption >= 0) {
-                                    exerciseViewModel.submitAnswer(selectedOption)
+                                    val currentExercise = exercises[currentQuestionIndex]
+                                    val correctOptionIndex = currentExercise.correctOptionIndex ?: -1
+                                    val isCorrect = selectedOption == correctOptionIndex
+                                    exerciseViewModel.submitAnswer(selectedOption, isCorrect)
                                     selectedOption = -1
                                 }
                             },
@@ -127,6 +137,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                         ) {
                             Text("Next")
                         }
+
 
                     } else {
                         Text("No questions found for this quiz.")
