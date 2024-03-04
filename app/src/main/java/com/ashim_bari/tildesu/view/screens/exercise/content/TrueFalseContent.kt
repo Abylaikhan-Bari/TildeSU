@@ -62,7 +62,7 @@ fun TrueFalseContent(
     if (quizCompleted) {
         // Check if all answers are correct to decide which screen to show
         if (correctAnswers == totalQuestions) {
-            TrueFalseSuccessScreen(navController, exerciseViewModel.score.value ?: 0)
+            TrueFalseSuccessScreen(navController, exerciseViewModel.trueFalseScore.value ?: 0)
         } else {
             TrueFalseFailureScreen(navController) {
                 exerciseViewModel.resetExercise()

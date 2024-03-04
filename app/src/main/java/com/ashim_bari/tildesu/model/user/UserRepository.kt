@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 
@@ -173,19 +174,35 @@ class UserRepository {
     }
 
     suspend fun getUserImage(): String? {
+        // Get the current user ID, return null if not signed in
         val userId = firebaseAuth.currentUser?.uid ?: return null
+
+        // Construct the reference to the image in Firebase Storage
         val imageRef = storageReference.child("profileImages/$userId/profilePic.jpg")
 
+        // Attempt to get the download URL of the image
         return try {
             val imageUrl = imageRef.downloadUrl.await().toString()
-            Log.d("UserRepository", "User image fetched successfully")
-            imageUrl
+            Log.d("UserRepository", "User image fetched successfully: $imageUrl")
+            imageUrl // Return the image URL if successful
+        } catch (e: StorageException) {
+            if (e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                // If the image does not exist, log the information and return null
+                Log.i("UserRepository", "User image does not exist at location: profileImages/$userId/profilePic.jpg")
+                null
+            } else {
+                // If another error occurred, log the exception and return null
+                Log.e("UserRepository", "User image fetch failed", e)
+                null
+            }
         } catch (e: Exception) {
-            Log.e("UserRepository", "User image fetch failed", e)
-            e.printStackTrace()
+            // Catch any other exceptions that might occur and return null
+            Log.e("UserRepository", "Unexpected error fetching user image", e)
             null
         }
     }
+
+
 
     suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
         val userProgressData = mutableMapOf<String, UserProgress>()
@@ -194,29 +211,36 @@ class UserRepository {
 
         for (document in querySnapshot.documents) {
             val levelId = document.id
-            val scores = document.data?.get("scores") as? Map<String, Map<String, Any>> ?: continue
-            val overallScore = document.data?.get("overallScore") as? Map<String, Any> ?: continue
-            val overallCorrectAnswers = (overallScore["correctAnswers"] as? Number)?.toFloat() ?: continue
-            val overallTotalQuestions = (overallScore["totalQuestions"] as? Number)?.toFloat() ?: continue
-            val overallProgress = if (overallTotalQuestions > 0) overallCorrectAnswers / overallTotalQuestions else 0f
+            val scores = document["scores"] as? Map<String, Map<String, Number>> ?: continue
+            val overallScore = document["overallScore"] as? Map<String, Number> ?: continue
 
-            val exerciseTypeProgress = scores.mapNotNull {
-                val typeName = it.key
-                val details = it.value
-                val correctAnswers = (details["correctAnswers"] as? Number)?.toFloat()
-                val totalQuestions = (details["totalQuestions"] as? Number)?.toFloat()
-                if (correctAnswers != null && totalQuestions != null && totalQuestions > 0) {
-                    typeName to correctAnswers / totalQuestions
-                } else {
-                    null
-                }
-            }.toMap()
+            // Extract values and calculate overall progress
+            val overallCorrectAnswers = overallScore["correctAnswers"]?.toFloat() ?: 0f
+            val overallTotalQuestions = overallScore["totalQuestions"]?.toFloat() ?: 0f
+            val overallProgress = if (overallTotalQuestions > 0) {
+                overallCorrectAnswers / overallTotalQuestions
+            } else {
+                0f
+            }
 
+            // Calculate progress for each exercise type
+            val exerciseTypeProgress = scores.mapValues { (_, typeScores) ->
+                val correct = typeScores["correctAnswers"]?.toFloat() ?: 0f
+                val total = typeScores["totalQuestions"]?.toFloat() ?: 0f
+                if (total > 0) correct / total else 0f
+            }
+
+            // Create UserProgress instance
             userProgressData[levelId] = UserProgress(overallProgress, exerciseTypeProgress)
         }
-        //Log.d("UserRepository", "User progress fetched successfully for $userId")
+
         return userProgressData
     }
+
+
+
+
+
 
 
     data class UserProgress(

@@ -54,7 +54,7 @@ fun PuzzlesContent(
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
-    val score by exerciseViewModel.score.observeAsState(0)
+    val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
     val TAG = "PuzzlesContent"
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
@@ -70,10 +70,10 @@ fun PuzzlesContent(
     }
 
     if (exerciseCompleted) {
+        PuzzleSuccessScreen(navController, puzzleScore) // Directly use puzzleScore
+    }
 
-            PuzzleSuccessScreen(navController, score)
-
-    } else {
+    else {
         Column(modifier = Modifier.padding(16.dp)) {
             feedbackMessage?.let {
                 Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
@@ -206,7 +206,7 @@ fun DraggableCard(
 
 
 @Composable
-fun PuzzleSuccessScreen(navController: NavController, score: Int) {
+fun PuzzleSuccessScreen(navController: NavController, puzzleScore: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -215,7 +215,7 @@ fun PuzzleSuccessScreen(navController: NavController, score: Int) {
         Text(
             text = stringResource(id = R.string.congratulations),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.EmojiEvents,
@@ -223,11 +223,16 @@ fun PuzzleSuccessScreen(navController: NavController, score: Int) {
             modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
         )
 
+        // Displaying the score passed to the success screen
         Text(
-            text = stringResource(id = R.string.you_scored_points, score),
+            text = stringResource(id = R.string.you_scored_points, puzzleScore),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
+
+        // Optionally, display more detailed score information if available
+        // For example, correctAnswers and totalQuestions could be additional parameters
+        // Text(text = "You answered $correctAnswers out of $totalQuestions correctly!")
 
         Card(
             onClick = { navController.navigate("main") },
@@ -242,8 +247,8 @@ fun PuzzleSuccessScreen(navController: NavController, score: Int) {
         ) {
             Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
         }
-
     }
 }
+
 
 

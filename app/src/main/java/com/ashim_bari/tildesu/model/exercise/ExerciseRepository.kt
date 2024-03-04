@@ -4,7 +4,6 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
@@ -46,56 +45,25 @@ class ExerciseRepository {
     }
 
     @OptIn(UnstableApi::class)
-    suspend fun updateUserProgress(userId: String, levelId: String, exerciseType: ExerciseType, correctAnswers: Int, totalQuestions: Int) {
-        val progressRef = db.collection("users")
-            .document(userId)
-            .collection("progress")
-            .document(levelId)
+    suspend fun updateUserProgress(userId: String, levelId: String, updateData: Map<String, Any>) {
+        val progressRef = db.collection("users").document(userId).collection("progress").document(levelId)
 
         db.runTransaction { transaction ->
             val snapshot = transaction.get(progressRef)
             if (!snapshot.exists()) {
-                // Initialize scores map with all exercise types to ensure structure consistency
-                val initialScoresMap = ExerciseType.values().associate { exerciseType ->
-                    exerciseType.name.toLowerCase() to mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
-                }
-
-                // Document does not exist, create it with initial values
-                transaction.set(progressRef, mapOf(
-                    "scores" to initialScoresMap,
-                    "overallScore" to mapOf("correctAnswers" to 0L, "totalQuestions" to 0L),
-                    "completedOn" to FieldValue.serverTimestamp() // Consider if initial creation needs this
-                ))
+                transaction.set(progressRef, updateData)
             } else {
-                // Document exists, proceed with updating
-                val scoresMap = snapshot.get("scores") as? Map<String, Map<String, Any>> ?: emptyMap()
-
-                val currentTypeScores = scoresMap[exerciseType.name.toLowerCase()] ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
-                val updatedTypeCorrectAnswers = (currentTypeScores["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
-                val updatedTypeTotalQuestions = (currentTypeScores["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
-
-                val updatedScoresMap = scoresMap.toMutableMap()
-                updatedScoresMap[exerciseType.name.toLowerCase()] = mapOf(
-                    "correctAnswers" to updatedTypeCorrectAnswers,
-                    "totalQuestions" to updatedTypeTotalQuestions
-                )
-
-                val overallScore = snapshot.get("overallScore") as? Map<String, Any> ?: mapOf("correctAnswers" to 0L, "totalQuestions" to 0L)
-                val updatedOverallCorrectAnswers = (overallScore["correctAnswers"] as? Number ?: 0L).toLong() + correctAnswers
-                val updatedOverallTotalQuestions = (overallScore["totalQuestions"] as? Number ?: 0L).toLong() + totalQuestions
-
-                transaction.update(progressRef, mapOf(
-                    "scores" to updatedScoresMap,
-                    "overallScore" to mapOf(
-                        "correctAnswers" to updatedOverallCorrectAnswers,
-                        "totalQuestions" to updatedOverallTotalQuestions
-                    ),
-                    "completedOn" to FieldValue.serverTimestamp()
-                ))
+                // Directly update the fields with the provided map
+                transaction.update(progressRef, updateData)
             }
         }.await()
-        Log.d("ExerciseRepository", "User progress updated for user: $userId, level: $levelId, type: ${exerciseType.name}")
     }
+
+
+
+
+
+
 
 
 

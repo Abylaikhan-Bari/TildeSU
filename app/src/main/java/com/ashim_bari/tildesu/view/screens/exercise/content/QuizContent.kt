@@ -69,7 +69,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
     if (quizCompleted) {
         quizPassed.value?.let { passed ->
             if (passed) {
-                val score = exerciseViewModel.score.value ?: 0
+                val score = exerciseViewModel.quizScore.value ?: 0
                 if (score > 0) {
                     SuccessScreen(navController, score)
                 } else {
