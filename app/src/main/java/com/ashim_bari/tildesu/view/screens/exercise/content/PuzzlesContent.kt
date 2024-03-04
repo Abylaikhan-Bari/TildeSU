@@ -54,7 +54,10 @@ fun PuzzlesContent(
     val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+
+    // Observe the puzzle score here
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
+
     val TAG = "PuzzlesContent"
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
@@ -70,10 +73,9 @@ fun PuzzlesContent(
     }
 
     if (exerciseCompleted) {
-        PuzzleSuccessScreen(navController, puzzleScore) // Directly use puzzleScore
-    }
-
-    else {
+        // Pass the puzzle score to the PuzzleSuccessScreen
+        PuzzleSuccessScreen(navController, puzzleScore)
+    } else {
         Column(modifier = Modifier.padding(16.dp)) {
             feedbackMessage?.let {
                 Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
@@ -85,18 +87,17 @@ fun PuzzlesContent(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
                         feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                        // This might now be redundant or need adjustment since the logic has moved.
                     },
                     currentPuzzleIndex = currentExerciseIndex!!,
-                    exerciseViewModel = exerciseViewModel // Pass the ViewModel instance here
+                    exerciseViewModel = exerciseViewModel
                 )
             } else {
                 Text("Loading puzzles...")
             }
-
         }
     }
 }
+
 
 
 
