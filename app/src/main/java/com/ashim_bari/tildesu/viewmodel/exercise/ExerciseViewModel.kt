@@ -16,8 +16,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
     val exercises: LiveData<List<Exercise>> = _exercises
 
-    private val _currentQuestionIndex = MutableLiveData<Int>(0)
-    val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
+    private val _currentExerciseIndex = MutableLiveData<Int>(0)
+    val currentExercisesIndex: LiveData<Int> = _currentExerciseIndex
 
     // Separate score for each exercise type
     private val _quizScore = MutableLiveData(0)
@@ -44,7 +44,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             try {
                 val exercisesList = repository.getExercisesByLevelAndType(level, type)
                 _exercises.value = exercisesList
-                _currentQuestionIndex.value = 0
+                _currentExerciseIndex.value = 0
                 resetScores()
                 _exerciseCompleted.value = false
                 Log.d(TAG, "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
@@ -61,33 +61,34 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
     fun submitQuizAnswer(selectedOption: Int) {
-        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
         currentExercise?.let { exercise ->
             if (exercise.type == ExerciseType.QUIZ) {
                 val isCorrect = selectedOption == exercise.correctOptionIndex
                 if (isCorrect) {
                     _quizScore.value = (_quizScore.value ?: 0) + 1
                 }
-                moveToNextQuestion()
+                moveToNextQuiz()
             }
         }
     }
 
     fun submitTrueFalseAnswer(userAnswer: Boolean) {
-        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
         currentExercise?.let { exercise ->
             if (exercise.type == ExerciseType.TRUE_FALSE) {
                 val isCorrect = userAnswer == exercise.isTrue
                 if (isCorrect) {
                     _trueFalseScore.value = (_trueFalseScore.value ?: 0) + 1
                 }
-                moveToNextQuestion()
+                moveToNextTrueFalse()
             }
         }
     }
 
+
     fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
-        val currentExercise = _exercises.value?.get(_currentQuestionIndex.value ?: 0)
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
         currentExercise?.let { exercise ->
             if (exercise.type == ExerciseType.PUZZLES) {
                 val isCorrect = userOrder == exercise.correctOrder
@@ -151,26 +152,33 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
 
-
+    fun moveToNextTrueFalse() {
+        val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
+        if (nextIndex < (_exercises.value?.size ?: 0)) {
+            _currentExerciseIndex.value = nextIndex
+        } else {
+            completeExercise()
+        }
+    }
 
     fun moveToNextPuzzle() {
-        val currentIndex = _currentQuestionIndex.value ?: return
+        val currentIndex = _currentExerciseIndex.value ?: return
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
-            _currentQuestionIndex.value = currentIndex + 1
-            Log.d(TAG, "Moved to next puzzle: index ${_currentQuestionIndex.value}")
+            _currentExerciseIndex.value = currentIndex + 1
+            Log.d(TAG, "Moved to next puzzle: index ${_currentExerciseIndex.value}")
         } else {
-            _exerciseCompleted.value = true
+            completeExercise()
         }
     }
 
 
 
 
-    fun moveToNextQuestion() {
-    _currentQuestionIndex.value?.let { currentIndex ->
+    fun moveToNextQuiz() {
+        _currentExerciseIndex.value?.let { currentIndex ->
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
-            _currentQuestionIndex.value = currentIndex + 1
-            Log.d("ExerciseVM", "Moved to next question: index ${_currentQuestionIndex.value}")
+            _currentExerciseIndex.value = currentIndex + 1
+            Log.d("ExerciseVM", "Moved to next question: index ${_currentExerciseIndex.value}")
         } else {
             completeExercise()
         }
@@ -187,7 +195,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
 
     fun resetExercise() {
-        _currentQuestionIndex.value = 0
+        _currentExerciseIndex.value = 0
         _exerciseCompleted.value = false
         _quizPassed.value = null
     }

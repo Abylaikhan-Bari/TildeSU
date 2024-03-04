@@ -51,7 +51,7 @@ fun PuzzlesContent(
 ) {
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
-    val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState()
+    val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
@@ -79,15 +79,15 @@ fun PuzzlesContent(
                 Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
             }
 
-            if (puzzles.isNotEmpty() && currentQuestionIndex != null) {
-                val currentPuzzle = puzzles[currentQuestionIndex!!]
+            if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
+                val currentPuzzle = puzzles[currentExerciseIndex!!]
                 DraggableWordPuzzle(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
                         feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
                         // This might now be redundant or need adjustment since the logic has moved.
                     },
-                    currentPuzzleIndex = currentQuestionIndex!!,
+                    currentPuzzleIndex = currentExerciseIndex!!,
                     exerciseViewModel = exerciseViewModel // Pass the ViewModel instance here
                 )
             } else {

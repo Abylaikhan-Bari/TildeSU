@@ -52,7 +52,7 @@ fun TrueFalseContent(
     }
 
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
-    val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState(0)
+    val currentQuestionIndex by exerciseViewModel.currentExercisesIndex.observeAsState(0)
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val totalQuestions = exercises.size
     var correctAnswers by rememberSaveable { mutableStateOf(0) }
@@ -86,7 +86,7 @@ fun TrueFalseContent(
         } else {
             AnswerFeedbackScreen(isAnswerCorrect) {
                 showFeedback = false
-                exerciseViewModel.moveToNextQuestion()
+                exerciseViewModel.moveToNextTrueFalse()
             }
         }
     } else {
