@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -128,6 +129,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                                     val isCorrect = selectedOption == correctOptionIndex
                                     exerciseViewModel.submitQuizAnswer(selectedOption)
                                     selectedOption = -1
+                                    Log.d("QuizContent", "Answer submitted. Correct: $isCorrect")
                                 }
                             },
                             modifier = Modifier

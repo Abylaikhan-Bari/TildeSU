@@ -81,6 +81,7 @@ fun TrueFalseContent(
                     showFeedback = true
                     exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
                     Log.d("TrueFalseContent", "User answered: $userAnswer, isTrue: ${currentExercise.isTrue}, Evaluated Correct: $isAnswerCorrect")
+                    Log.d("TrueFalseContent", "Current Score: $correctAnswers out of $totalQuestions")
                 }
             )
         } else {
@@ -93,7 +94,6 @@ fun TrueFalseContent(
         Text("Loading true/false exercises...")
     }
 }
-
 
 
 @Composable

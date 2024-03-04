@@ -142,23 +142,19 @@ fun DraggableWordPuzzle(
         }
         Button(onClick = {
             val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
-
-            // Log user's chosen order of words
-            Log.d("Puzzles", "User order: $userOrderIndices")
-
+            Log.d(TAG, "User order: $userOrderIndices")
             val isCorrect = userOrderIndices == puzzle.correctOrder
             onPuzzleSolved(isCorrect)
             if (isCorrect) {
-                // Log before submitting the answer
-                Log.d("Puzzles", "Submitting correct answer")
+                Log.d(TAG, "Submitting correct answer")
                 exerciseViewModel.submitPuzzleAnswer(userOrderIndices, puzzle)
             } else {
-                // Log incorrect attempt message
-                Log.d("Puzzles", "User answer is incorrect")
+                Log.d(TAG, "User answer is incorrect")
             }
         }) {
             Text("Submit")
         }
+
 
 
     }

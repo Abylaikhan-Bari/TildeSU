@@ -81,24 +81,33 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                 if (isCorrect) {
                     _trueFalseScore.value = (_trueFalseScore.value ?: 0) + 1
                 }
-                moveToNextTrueFalse()
-            }
-        }
-    }
-
-
-    fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
-        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
-        currentExercise?.let { exercise ->
-            if (exercise.type == ExerciseType.PUZZLES) {
-                val isCorrect = userOrder == exercise.correctOrder
-                if (isCorrect) {
-                    _puzzleScore.value = (_puzzleScore.value ?: 0) + 1
-                    moveToNextPuzzle()
+                val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
+                if (nextIndex >= (_exercises.value?.size ?: 0)) {
+                    _exerciseCompleted.value = true
+                    updateProgress()
+                } else {
+                    _currentExerciseIndex.value = nextIndex
                 }
             }
         }
     }
+
+
+
+    fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
+        val isCorrect = userOrder == puzzle.correctOrder
+        if (isCorrect) {
+            _puzzleScore.value = (_puzzleScore.value ?: 0) + 1
+        }
+        val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
+        if (nextIndex >= (_exercises.value?.size ?: 0)) {
+            _exerciseCompleted.value = true
+            updateProgress()
+        } else {
+            _currentExerciseIndex.value = nextIndex
+        }
+    }
+
 
 
     fun updateProgress() {
@@ -197,6 +206,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     fun resetExercise() {
         _currentExerciseIndex.value = 0
         _exerciseCompleted.value = false
+        _quizScore.value = 0
+        _trueFalseScore.value = 0
+        _puzzleScore.value = 0
         _quizPassed.value = null
     }
+
 }
