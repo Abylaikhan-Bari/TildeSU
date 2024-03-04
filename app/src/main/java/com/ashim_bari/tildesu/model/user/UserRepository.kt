@@ -211,8 +211,8 @@ class UserRepository {
 
         for (document in querySnapshot.documents) {
             val levelId = document.id
-            val scores = document["scores"] as? Map<String, Map<String, Number>> ?: continue
-            val overallScore = document["overallScore"] as? Map<String, Number> ?: continue
+            val scores = document.data?.get("scores") as? Map<String, Map<String, Number>> ?: continue
+            val overallScore = document.data?.get("overallScore") as? Map<String, Number> ?: continue
 
             // Extract values and calculate overall progress
             val overallCorrectAnswers = overallScore["correctAnswers"]?.toFloat() ?: 0f
@@ -247,6 +247,7 @@ class UserRepository {
         val overallProgress: Float,
         val exerciseTypeProgress: Map<String, Float>
     )
+
 
 }
 

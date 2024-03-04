@@ -105,39 +105,38 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             currentLevelId?.let { levelId ->
                 viewModelScope.launch {
                     try {
-                        // Create maps for each exercise type
-                        val quizMap = mapOf(
-                            "correctAnswers" to (_quizScore.value ?: 0),
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.QUIZ } ?: 0)
-                        )
-                        val puzzlesMap = mapOf(
-                            "correctAnswers" to (_puzzleScore.value ?: 0),
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.PUZZLES } ?: 0)
-                        )
-                        val trueFalseMap = mapOf(
-                            "correctAnswers" to (_trueFalseScore.value ?: 0),
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.TRUE_FALSE } ?: 0)
-                        )
-
-                        // Calculate the overall score
+                        // Calculate the individual and overall scores
                         val overallCorrectAnswers = _quizScore.value!! + _puzzleScore.value!! + _trueFalseScore.value!!
                         val overallTotalQuestions = _exercises.value?.size ?: 0
 
-                        // Create a map for scores and overall score
-                        val scoresMap = mapOf(
-                            "quiz" to quizMap,
-                            "puzzles" to puzzlesMap,
-                            "true_false" to trueFalseMap
+                        // Create a map for each exercise type scores
+                        val quizScores = mapOf(
+                            "correctAnswers" to _quizScore.value!!,
+                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.QUIZ } ?: 0)
                         )
-                        val overallScoresMap = mapOf(
+                        val puzzleScores = mapOf(
+                            "correctAnswers" to _puzzleScore.value!!,
+                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.PUZZLES } ?: 0)
+                        )
+                        val trueFalseScores = mapOf(
+                            "correctAnswers" to _trueFalseScore.value!!,
+                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.TRUE_FALSE } ?: 0)
+                        )
+
+                        // Create a combined map for overall scores
+                        val overallScores = mapOf(
                             "correctAnswers" to overallCorrectAnswers,
                             "totalQuestions" to overallTotalQuestions
                         )
 
-                        // Combine everything into the update data
+                        // Combine all scores into the update data map
                         val updateData = mapOf(
-                            "scores" to scoresMap,
-                            "overallScore" to overallScoresMap,
+                            "scores" to mapOf(
+                                "quiz" to quizScores,
+                                "puzzles" to puzzleScores,
+                                "true_false" to trueFalseScores
+                            ),
+                            "overallScore" to overallScores,
                             "completedOn" to FieldValue.serverTimestamp()
                         )
 
@@ -150,6 +149,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             }
         }
     }
+
 
 
 

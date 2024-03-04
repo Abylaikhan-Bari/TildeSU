@@ -78,7 +78,7 @@ fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgre
     var isExpanded by remember { mutableStateOf(false) }
 
     Column {
-        LanguageLevelProgressBar(level, Pair(userProgress.overallProgress, 0))
+        LanguageLevelProgressBar(level, userProgress.overallProgress)
 
         IconButton(onClick = { isExpanded = !isExpanded }) {
             Icon(
@@ -86,10 +86,14 @@ fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgre
                 contentDescription = if (isExpanded) "Collapse" else "Expand"
             )
         }
-        AnimatedVisibility(visible = isExpanded) {
-            Column {
+        AnimatedVisibility(visible = isExpanded, enter = expandVertically(), exit = fadeOut()) {
+            Column(modifier = Modifier.padding(start = 16.dp)) {
                 userProgress.exerciseTypeProgress.forEach { (exerciseType, progress) ->
-                    Text(text = exerciseType.capitalize(Locale.getDefault()))
+                    Text(
+                        text = exerciseType.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
                     ProgressBar(progress = progress)
                 }
             }
@@ -97,28 +101,29 @@ fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgre
     }
 }
 
+
 @Composable
 fun ProgressBar(progress: Float) {
     LinearProgressIndicator(
-        progress = progress,
+        progress = { progress },
         modifier = Modifier
             .fillMaxWidth()
             .height(8.dp)
             .clip(RoundedCornerShape(4.dp)),
         color = MaterialTheme.colorScheme.primary,
-        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
+        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
     )
 }
 
 
 
 @Composable
-fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
-    val (targetProgress, _) = progressPair
+fun LanguageLevelProgressBar(level: String, progress: Float) {
+    // Use the 'progress' directly as it's already a Float value
 
     // Animate the progress value
     val animatedProgress by animateFloatAsState(
-        targetValue = targetProgress,
+        targetValue = progress, // Use 'progress' directly here
         animationSpec = tween(
             durationMillis = 1000, // Duration of the animation in milliseconds
             delayMillis = 500 // Start delay in milliseconds
@@ -145,7 +150,7 @@ fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
                     .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
             ) {
                 LinearProgressIndicator(
-                    progress = animatedProgress,
+                    progress = { animatedProgress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp) // Match the height of the Box to fill it completely
@@ -157,6 +162,7 @@ fun LanguageLevelProgressBar(level: String, progressPair: Pair<Float, Int>) {
         }
     }
 }
+
 
 
 

@@ -53,13 +53,13 @@ fun TrueFalseContent(
 
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentQuestionIndex.observeAsState(0)
-    val quizCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+    val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val totalQuestions = exercises.size
     var correctAnswers by rememberSaveable { mutableStateOf(0) }
     var showFeedback by rememberSaveable { mutableStateOf(false) }
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
-    if (quizCompleted) {
+    if (exerciseCompleted) {
         // Check if all answers are correct to decide which screen to show
         if (correctAnswers == totalQuestions) {
             TrueFalseSuccessScreen(navController, exerciseViewModel.trueFalseScore.value ?: 0)
