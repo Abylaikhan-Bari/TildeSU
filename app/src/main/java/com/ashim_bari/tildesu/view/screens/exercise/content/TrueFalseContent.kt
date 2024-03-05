@@ -3,15 +3,18 @@ package com.ashim_bari.tildesu.view.screens.exercise.content
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +59,8 @@ fun TrueFalseContent(
 
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
     // Observe exercise completion state
+    val progress = (currentQuestionIndex.toFloat()) / (exercises.size.toFloat())
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val restartTrueFalseExercise: () -> Unit = {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
@@ -88,48 +93,59 @@ fun TrueFalseContent(
             }
         }
     }
+    Column {
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        )
 
-    if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
-        val currentExercise = exercises[currentQuestionIndex]
+        Spacer(modifier = Modifier.height(16.dp))
+        if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
+            val currentExercise = exercises[currentQuestionIndex]
 
-        if (showFeedback) {
-            AnswerFeedbackScreen(isAnswerCorrect) {
-                showFeedback = false
-                if (currentQuestionIndex + 1 < exercises.size) {
-                    exerciseViewModel.moveToNextTrueFalse()
+
+            if (showFeedback) {
+                AnswerFeedbackScreen(isAnswerCorrect) {
+                    showFeedback = false
+                    if (currentQuestionIndex + 1 < exercises.size) {
+                        exerciseViewModel.moveToNextTrueFalse()
+                    }
                 }
+            } else {
+                TrueFalseQuestion(
+                    statement = currentExercise.statement ?: "",
+                    isTrue = currentExercise.isTrue ?: false,
+                    onAnswer = { userAnswer ->
+                        val correct = userAnswer == currentExercise.isTrue
+                        if (correct) {
+                            trueFalseScore++
+                        }
+                        exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
+
+                        if (currentQuestionIndex == exercises.size - 1) {
+                            // This is the last question
+                            exerciseCompleted = true
+                            // Directly navigate based on the score without setting showFeedback
+                            if (trueFalseScore > 0) {
+                                navController.navigate("trueFalseSuccess/$trueFalseScore")
+                            } else {
+                                navController.navigate("trueFalseFailure")
+                            }
+                        } else {
+                            // Not the last question, show feedback as usual
+                            isAnswerCorrect = correct
+                            showFeedback = true
+                        }
+                    }
+                )
             }
         } else {
-            TrueFalseQuestion(
-                statement = currentExercise.statement ?: "",
-                isTrue = currentExercise.isTrue ?: false,
-                onAnswer = { userAnswer ->
-                    val correct = userAnswer == currentExercise.isTrue
-                    if (correct) {
-                        trueFalseScore++
-                    }
-                    exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
-
-                    if (currentQuestionIndex == exercises.size - 1) {
-                        // This is the last question
-                        exerciseCompleted = true
-                        // Directly navigate based on the score without setting showFeedback
-                        if (trueFalseScore > 0) {
-                            navController.navigate("trueFalseSuccess/$trueFalseScore")
-                        } else {
-                            navController.navigate("trueFalseFailure")
-                        }
-                    } else {
-                        // Not the last question, show feedback as usual
-                        isAnswerCorrect = correct
-                        showFeedback = true
-                    }
-                }
-            )
+            Text("Loading true/false exercises...")
         }
-    } else {
-        Text("Loading true/false exercises...")
     }
+
 
 }
 
@@ -139,7 +155,9 @@ fun TrueFalseContent(
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
     Log.d("AnswerFeedbackScreen", "Correct: $correct")
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -170,42 +188,40 @@ fun TrueFalseQuestion(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            statement,
+            text = statement,
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 24.dp)
         )
 
-        TrueFalseOptionCard("True") {
-            onAnswer(true) // Pass true to the onAnswer callback for the "True" option.
-        }
-
-        TrueFalseOptionCard("False") {
-            onAnswer(false) // Pass false to the onAnswer callback for the "False" option.
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TrueFalseOptionCard("True", Color(0xFF4CAF50), Modifier.weight(1f), onClick = { onAnswer(true) })
+            Spacer(Modifier.width(16.dp)) // Space between buttons
+            TrueFalseOptionCard("False", Color(0xFFF44336), Modifier.weight(1f), onClick = { onAnswer(false) })
         }
     }
 }
 
-
-
-
 @Composable
-fun TrueFalseOptionCard(optionText: String, onClick: () -> Unit) {
-    Card(
+fun TrueFalseOptionCard(
+    optionText: String,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier, // Added a parameter for the modifier
+    onClick: () -> Unit
+) {
+    Button(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .height(56.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .height(IntrinsicSize.Min),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor)
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(optionText, style = MaterialTheme.typography.bodyLarge)
-        }
+        Text(optionText, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
     }
 }
 

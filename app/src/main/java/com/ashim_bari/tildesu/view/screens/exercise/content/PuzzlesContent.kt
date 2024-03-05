@@ -112,10 +112,6 @@ fun PuzzlesContent(
 }
 
 
-
-
-
-
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
