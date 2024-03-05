@@ -53,6 +53,22 @@ class ExerciseRepository {
         }
     }
 
+    suspend fun fetchUserProgress(userId: String, levelId: String): Map<String, Any> {
+        // Placeholder implementation. Adjust according to your Firestore structure.
+        return try {
+            val document = db.collection("users")
+                .document(userId)
+                .collection("progress")
+                .document(levelId)
+                .get()
+                .await()
+
+            document.data ?: emptyMap()
+        } catch (e: Exception) {
+            Log.e("ExerciseRepository", "Error fetching user progress", e)
+            emptyMap()
+        }
+    }
 
 
     @OptIn(UnstableApi::class)

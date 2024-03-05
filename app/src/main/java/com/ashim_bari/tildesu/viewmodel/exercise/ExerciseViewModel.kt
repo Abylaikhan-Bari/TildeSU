@@ -166,35 +166,41 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             currentLevelId?.let { levelId ->
                 viewModelScope.launch {
                     try {
-                        // Assume exercises are properly loaded and filtered by the type when they are fetched.
-                        val totalQuizQuestions = _exercises.value?.count { it.type == ExerciseType.QUIZ } ?: 0
-                        val totalTrueFalseQuestions = _exercises.value?.count { it.type == ExerciseType.TRUE_FALSE } ?: 0
-                        val totalPuzzleQuestions = _exercises.value?.count { it.type == ExerciseType.PUZZLES } ?: 0
+                        // Fetch the current progress for the level
+                        val currentProgress = repository.fetchUserProgress(userId, levelId)
 
-                        val quizCorrectAnswers = _quizScore.value ?: 0
-                        val trueFalseCorrectAnswers = _trueFalseScore.value ?: 0
-                        val puzzleCorrectAnswers = _puzzleScore.value ?: 0
+                        // Prepare the updated data based on the exercise type
+                        val updatedData = when (currentExerciseType) {
+                            ExerciseType.QUIZ -> mapOf(
+                                "quizCorrect" to (_quizScore.value ?: 0) + (currentProgress["quizCorrect"] as? Number ?: 0).toInt(),
+                                "quizTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            ExerciseType.TRUE_FALSE -> mapOf(
+                                "trueFalseCorrect" to (_trueFalseScore.value ?: 0) + (currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt(),
+                                "trueFalseTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            ExerciseType.PUZZLES -> mapOf(
+                                "puzzleCorrect" to (_puzzleScore.value ?: 0) + (currentProgress["puzzleCorrect"] as? Number ?: 0).toInt(),
+                                "puzzleTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            else -> emptyMap()
+                        }
 
-                        val overallTotalQuestions = totalQuizQuestions + totalTrueFalseQuestions + totalPuzzleQuestions
-                        val overallCorrectAnswers = quizCorrectAnswers + trueFalseCorrectAnswers + puzzleCorrectAnswers
 
-                        val progressData = mapOf(
-                            "quizCorrect" to quizCorrectAnswers,
-                            "quizTotal" to totalQuizQuestions,
-                            "trueFalseCorrect" to trueFalseCorrectAnswers,
-                            "trueFalseTotal" to totalTrueFalseQuestions,
-                            "puzzleCorrect" to puzzleCorrectAnswers,
-                            "puzzleTotal" to totalPuzzleQuestions,
-                            "overallCorrect" to overallCorrectAnswers,
-                            "overallTotal" to overallTotalQuestions,
-                            "completedOn" to FieldValue.serverTimestamp()
-                        )
+                        // Ensure there's something to update
+                        if (updatedData.isNotEmpty()) {
+                            // Include common fields that should always be updated
+                            // Inside your updateProgress method
+                            val commonData = mapOf(
+                                "overallTotal" to calculateOverallTotalQuestions(currentProgress, updatedData),
+                                "overallCorrect" to calculateOverallCorrectAnswers(currentProgress, updatedData),
+                                "completedOn" to FieldValue.serverTimestamp()
+                            )
 
-                        // Log the data for debugging purposes
-                        Log.d(TAG, "Updating progress with data: $progressData")
 
-                        // Call the repository to update the progress in Firestore
-                        repository.updateUserProgress(userId, levelId, progressData)
+                            repository.updateUserProgress(userId, levelId, updatedData + commonData)
+                            Log.d(TAG, "Progress updated for user: $userId, level: $levelId with data: $updatedData")
+                        }
                     } catch (e: Exception) {
                         Log.e(TAG, "Failed to update progress for user: $userId, level: $levelId", e)
                     }
@@ -202,6 +208,25 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             }
         }
     }
+
+    private fun calculateOverallTotalQuestions(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
+        // Ensure values are Int and handle nullability
+        val quizTotal = (updatedData["quizTotal"] as? Number ?: currentProgress["quizTotal"] as? Number ?: 0).toInt()
+        val trueFalseTotal = (updatedData["trueFalseTotal"] as? Number ?: currentProgress["trueFalseTotal"] as? Number ?: 0).toInt()
+        val puzzleTotal = (updatedData["puzzleTotal"] as? Number ?: currentProgress["puzzleTotal"] as? Number ?: 0).toInt()
+
+        return quizTotal + trueFalseTotal + puzzleTotal
+    }
+
+    private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
+        // Ensure values are Int and handle nullability
+        val quizCorrect = (updatedData["quizCorrect"] as? Number ?: currentProgress["quizCorrect"] as? Number ?: 0).toInt()
+        val trueFalseCorrect = (updatedData["trueFalseCorrect"] as? Number ?: currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt()
+        val puzzleCorrect = (updatedData["puzzleCorrect"] as? Number ?: currentProgress["puzzleCorrect"] as? Number ?: 0).toInt()
+
+        return quizCorrect + trueFalseCorrect + puzzleCorrect
+    }
+
 
 
 
