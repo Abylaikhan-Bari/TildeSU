@@ -1,25 +1,16 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,13 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 import kotlinx.coroutines.delay
@@ -57,7 +47,7 @@ fun PuzzlesContent(
 
     // Observe the puzzle score here
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
-
+    Log.d(TAG, "Current score observed: $puzzleScore")
     val TAG = "PuzzlesContent"
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
@@ -71,32 +61,39 @@ fun PuzzlesContent(
             exerciseViewModel.moveToNextPuzzle()
         }
     }
-
-    if (exerciseCompleted) {
-        // Pass the puzzle score to the PuzzleSuccessScreen
-        PuzzleSuccessScreen(navController, puzzleScore)
-    } else {
-        Column(modifier = Modifier.padding(16.dp)) {
-            feedbackMessage?.let {
-                Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
-            }
-
-            if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
-                val currentPuzzle = puzzles[currentExerciseIndex!!]
-                DraggableWordPuzzle(
-                    puzzle = currentPuzzle,
-                    onPuzzleSolved = { correct ->
-                        feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
-                    },
-                    currentPuzzleIndex = currentExerciseIndex!!,
-                    exerciseViewModel = exerciseViewModel
-                )
-            } else {
-                Text("Loading puzzles...")
+    LaunchedEffect(exerciseCompleted, puzzleScore) {
+        if (exerciseCompleted) {
+            delay(100) // Short delay to ensure LiveData updates are observed
+            Log.d(TAG, "Navigating to success screen with score: $puzzleScore")
+            navController.navigate("success/$puzzleScore") {
+                popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }
             }
         }
     }
+
+
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        feedbackMessage?.let {
+            Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
+        }
+
+        if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
+            val currentPuzzle = puzzles[currentExerciseIndex!!]
+            DraggableWordPuzzle(
+                puzzle = currentPuzzle,
+                onPuzzleSolved = { correct ->
+                    feedbackMessage = if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                },
+                currentPuzzleIndex = currentExerciseIndex!!,
+                exerciseViewModel = exerciseViewModel
+            )
+        } else {
+            Text("Loading puzzles...")
+        }
+    }
 }
+
 
 
 
@@ -109,15 +106,13 @@ fun DraggableWordPuzzle(
     currentPuzzleIndex: Int,
     exerciseViewModel: ExerciseViewModel
 ) {
-    // The words list will be re-initialized and shuffled when currentPuzzleIndex changes
-    var words by remember(currentPuzzleIndex) {
-        mutableStateOf(puzzle.sentenceParts?.shuffled() ?: listOf())
-    }
+    // The words list will be re-initialized and shuffled when currentPuzzleIndex changes.
+    // This ensures the puzzle is reset correctly when the current puzzle index changes.
+    var words by remember(currentPuzzleIndex) { mutableStateOf(puzzle.sentenceParts!!.shuffled()) }
     var draggedIndex by remember { mutableStateOf(-1) }
     var targetIndex by remember { mutableStateOf(-1) }
-    val TAG = "DraggableWordPuzzle"
-    Column(modifier = Modifier.padding(16.dp)) {
 
+    Column(modifier = Modifier.padding(16.dp)) {
         Text("Arrange the words into a sentence:")
 
         words.forEachIndexed { index, word ->
@@ -127,39 +122,38 @@ fun DraggableWordPuzzle(
                     if (draggedIndex != -1 && targetIndex != -1 && draggedIndex != targetIndex) {
                         words = words.toMutableList().apply {
                             add(targetIndex, removeAt(draggedIndex))
+                        }.also {
+                            // Reset dragged and target indices after the list is modified
+                            draggedIndex = -1
+                            targetIndex = -1
                         }
                     }
-                    draggedIndex = -1
-                    targetIndex = -1
                 },
                 onDragChange = { change ->
                     if (draggedIndex == -1) draggedIndex = index
-                    val newIndex = (index + change).coerceIn(words.indices)
-                    targetIndex = newIndex
+                    targetIndex = (index + change.sign).coerceIn(words.indices)
                 },
                 currentPuzzleIndex = currentPuzzleIndex,
                 index = index
             )
         }
+
         Button(onClick = {
+            // This maps the current order of words back to their original indices
+            // to verify if the user's arrangement matches the correct order.
             val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
-            Log.d(TAG, "User order: $userOrderIndices")
             val isCorrect = userOrderIndices == puzzle.correctOrder
             onPuzzleSolved(isCorrect)
             if (isCorrect) {
-                Log.d(TAG, "Submitting correct answer")
+                // Update the score in the ViewModel
                 exerciseViewModel.submitPuzzleAnswer(userOrderIndices, puzzle)
-            } else {
-                Log.d(TAG, "User answer is incorrect")
             }
         }) {
             Text("Submit")
         }
-
-
-
     }
 }
+
 
 
 
@@ -199,53 +193,6 @@ fun DraggableCard(
     }
 }
 
-
-
-
-@Composable
-fun PuzzleSuccessScreen(navController: NavController, puzzleScore: Int) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.congratulations),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
-        )
-        Icon(
-            imageVector = Icons.Filled.EmojiEvents,
-            contentDescription = "Trophy",
-            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
-        )
-
-        // Displaying the score passed to the success screen
-        Text(
-            text = stringResource(id = R.string.you_scored_points, puzzleScore),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
-        )
-
-        // Optionally, display more detailed score information if available
-        // For example, correctAnswers and totalQuestions could be additional parameters
-        // Text(text = "You answered $correctAnswers out of $totalQuestions correctly!")
-
-        Card(
-            onClick = { navController.navigate("main") },
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
-                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
-                .height(100.dp), // Set the height to a specific value
-            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
-        }
-    }
-}
 
 
 
