@@ -36,9 +36,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
@@ -168,22 +170,27 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
         }
     }
 
+    // Confirmation Dialog
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Exit Quiz?") },
-            text = { Text("Are you sure you want to exit the quiz? Your progress will not be saved.") },
+            title = { Text(stringResource(id = R.string.exit_exercise_dialog_title)) },
+            text = { Text(stringResource(id = R.string.exit_exercise_dialog_content)) },
             confirmButton = {
-                Button(onClick = {
-                    showDialog = false
-                    navController.navigate("main") // Adjust as needed for your navigation setup
-                }) {
-                    Text("Exit")
+                Button(
+                    onClick = {
+                        showDialog = false
+                        navController.navigate("main")
+                    }
+                ) {
+                    Text(stringResource(id = R.string.exit_dialog_yes))
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("Cancel")
+                Button(
+                    onClick = { showDialog = false }
+                ) {
+                    Text(stringResource(id = R.string.exit_dialog_no))
                 }
             }
         )
@@ -199,10 +206,10 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
 fun OptionCard(option: String, isSelected: Boolean, onSelect: () -> Unit) {
     // Assign distinct colors to each option
     val backgroundColor = when (option) {
-        "What" -> Color(0xFFFFCDD2) // Example color - replace with actual colors you want
-        "Whose" -> Color(0xFFC8E6C9)
-        "How" -> Color(0xFFFFECB3)
-        "Where" -> Color(0xFFB3E5FC)
+        "1" -> Color(0xFFFFCDD2) // Example color - replace with actual colors you want
+        "2" -> Color(0xFFC8E6C9)
+        "3" -> Color(0xFFFFECB3)
+        "4" -> Color(0xFFB3E5FC)
         else -> MaterialTheme.colorScheme.surfaceVariant
     }
 

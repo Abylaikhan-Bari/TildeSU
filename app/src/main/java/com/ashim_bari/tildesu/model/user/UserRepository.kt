@@ -237,16 +237,11 @@ class UserRepository {
         return userProgressData
     }
 
-
-
-
-
-
-
     data class UserProgress(
         val overallProgress: Float,
         val exerciseTypeProgress: Map<String, Float>
     )
+
 
 
 }

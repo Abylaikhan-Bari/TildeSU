@@ -10,7 +10,9 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
@@ -56,18 +58,24 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
 
 
+    // Inside submitQuizAnswer method
     fun submitQuizAnswer(selectedOption: Int) {
         val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
         currentExercise?.let { exercise ->
             if (exercise.type == ExerciseType.QUIZ) {
                 val isCorrect = selectedOption == exercise.correctOptionIndex
                 if (isCorrect) {
-                    _quizScore.value = (_quizScore.value ?: 0) + 1
+                    val newScore = (_quizScore.value ?: 0) + 1
+                    _quizScore.value = newScore
+                    Log.d("ExerciseVM", "Quiz Score Updated to: $newScore")
                 }
                 moveToNextQuiz()
+            } else {
+                Log.d("ExerciseVM", "Non-Quiz exercise attempted in Quiz method. Exercise type: ${exercise.type}")
             }
         }
     }
+
     fun moveToNextQuiz() {
         _currentExerciseIndex.value?.let { currentIndex ->
             if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
@@ -111,7 +119,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         if (isCorrect) {
             val newScore = (_puzzleScore.value ?: 0) + 1
             Log.d(TAG, "Updating score from ${_puzzleScore.value} to $newScore")
-            _puzzleScore.value = newScore // Or use postValue if updating from a background thread
+            _puzzleScore.value = newScore
             Log.d(TAG, "Score updated to ${_puzzleScore.value}")
         }
     }
@@ -134,54 +142,68 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             currentLevelId?.let { levelId ->
                 viewModelScope.launch {
                     try {
-                        // Calculate the individual and overall scores
-                        val overallCorrectAnswers = _quizScore.value!! + _puzzleScore.value!! + _trueFalseScore.value!!
-                        val overallTotalQuestions = _exercises.value?.size ?: 0
+                        // Calculate individual exercise type counts
+                        val totalQuizQuestions = _exercises.value?.count { it.type == ExerciseType.QUIZ } ?: 0
+                        val totalTrueFalseQuestions = _exercises.value?.count { it.type == ExerciseType.TRUE_FALSE } ?: 0
+                        val totalPuzzleQuestions = _exercises.value?.count { it.type == ExerciseType.PUZZLES } ?: 0
 
-                        // Create a map for each exercise type scores
-                        val quizScores = mapOf(
-                            "correctAnswers" to _quizScore.value!!,
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.QUIZ } ?: 0)
-                        )
-                        val puzzleScores = mapOf(
-                            "correctAnswers" to _puzzleScore.value!!,
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.PUZZLES } ?: 0)
-                        )
-                        val trueFalseScores = mapOf(
-                            "correctAnswers" to _trueFalseScore.value!!,
-                            "totalQuestions" to (_exercises.value?.count { it.type == ExerciseType.TRUE_FALSE } ?: 0)
+                        // Calculate overall correct answers
+                        val quizCorrectAnswers = _quizScore.value ?: 0
+                        val trueFalseCorrectAnswers = _trueFalseScore.value ?: 0
+                        val puzzleCorrectAnswers = _puzzleScore.value ?: 0
+                        val overallCorrectAnswers = quizCorrectAnswers + trueFalseCorrectAnswers + puzzleCorrectAnswers
+
+                        // Calculate overall questions using set to remove duplicates
+                        val overallTotalQuestions = _exercises.value?.toSet()?.size ?: 0
+
+                        val scoresMap = mapOf(
+                            "quiz" to mapOf(
+                                "correctAnswers" to quizCorrectAnswers,
+                                "totalQuestions" to totalQuizQuestions
+                            ),
+                            "true_false" to mapOf(
+                                "correctAnswers" to trueFalseCorrectAnswers,
+                                "totalQuestions" to totalTrueFalseQuestions
+                            ),
+                            "puzzles" to mapOf(
+                                "correctAnswers" to puzzleCorrectAnswers,
+                                "totalQuestions" to totalPuzzleQuestions
+                            )
                         )
 
-                        // Create a combined map for overall scores
-                        val overallScores = mapOf(
+                        val overallScoresMap = mapOf(
                             "correctAnswers" to overallCorrectAnswers,
                             "totalQuestions" to overallTotalQuestions
                         )
 
-                        // Combine all scores into the update data map
                         val updateData = mapOf(
-                            "scores" to mapOf(
-                                "quiz" to quizScores,
-                                "puzzles" to puzzleScores,
-                                "true_false" to trueFalseScores
-                            ),
-                            "overallScore" to overallScores,
+                            "scores" to scoresMap,
+                            "overallScore" to overallScoresMap,
                             "completedOn" to FieldValue.serverTimestamp()
                         )
 
-                        repository.updateUserProgress(userId, levelId, updateData)
+                        // Check for cancellation using coroutineContext
+                        if (coroutineContext[Job]!!.isCancelled) {
+                            Log.w(TAG, "Job was cancelled for user: $userId, level: $levelId")
+                            // **Fix cancellation logic here (replace with your solution)**
+                        } else {
+                            repository.updateUserProgress(userId, levelId, updateData)
+                        }
+
+                        // Logging
                         Log.d(TAG, "Progress updated for user: $userId, level: $levelId")
+                        // ... rest of your logging code
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to update progress for user: $userId, level: $levelId", e)
+                        if (e is CancellationException) {
+                            Log.w(TAG, "Job was cancelled for user: $userId, level: $levelId", e)
+                        } else {
+                            Log.e(TAG, "Failed to update progress for user: $userId, level: $levelId", e)
+                        }
                     }
                 }
             }
         }
     }
-
-
-
-
 
 
 

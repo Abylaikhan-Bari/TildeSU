@@ -53,11 +53,12 @@ class ExerciseRepository {
             if (!snapshot.exists()) {
                 transaction.set(progressRef, updateData)
             } else {
-                // Directly update the fields with the provided map
                 transaction.update(progressRef, updateData)
             }
         }.await()
     }
+
+
 
 
 
