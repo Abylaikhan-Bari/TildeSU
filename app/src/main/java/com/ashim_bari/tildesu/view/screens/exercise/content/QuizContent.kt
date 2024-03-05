@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,9 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.QUIZ)
     }
+    fun showConfirmationDialog() {
+        showDialog = true
+    }
 
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState().value ?: 0
@@ -83,6 +87,11 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
         }
     } else {
         Scaffold { paddingValues ->
+            BackHandler {
+                showConfirmationDialog()
+                Log.d("ExerciseScreen", "BackHandler triggered")
+            }
+
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -152,7 +161,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
 
 
                     } else {
-                        Text("No questions found for this quiz.")
+                        Text("No quiz questions found for this level...")
                     }
                 }
             }

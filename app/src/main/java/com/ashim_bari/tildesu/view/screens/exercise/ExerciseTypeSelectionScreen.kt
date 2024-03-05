@@ -1,34 +1,99 @@
 package com.ashim_bari.tildesu.view.screens.exercise
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import kotlinx.coroutines.delay
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Select an Exercise Type", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(16.dp))
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Column {
+            // Adding the top app bar
+            SmallTopAppBar(
+                title = { Text(text = "Level $level",color = Color.White) } ,
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
 
-        ExerciseType.values().forEach { exerciseType ->
-            ExerciseTypeCard(exerciseType) {
-                // Ensure your navigation route here matches the NavGraph definition
-                navController.navigate("specificExercise/$level/${exerciseType.name.lowercase(Locale.getDefault())}")
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    "Select an Exercise Type",
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ExerciseType.values().forEachIndexed { index, exerciseType ->
+                    AnimatedExerciseTypeCard(index, exerciseType) {
+                        // Ensure your navigation route here matches the NavGraph definition
+                        navController.navigate("specificExercise/$level/${exerciseType.name.lowercase(Locale.getDefault())}")
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: () -> Unit) {
+    var visible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(key1 = "init") {
+        delay(100L * index)
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(300)) + expandIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)) + shrinkOut(animationSpec = tween(300))
+    ) {
+        ExerciseTypeCard(exerciseType, onClick)
     }
 }
 
@@ -39,11 +104,18 @@ fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Text(
-            text = exerciseType.name.split('_').joinToString(" ") { it.lowercase(Locale.getDefault()).replaceFirstChar { char -> char.uppercase() } },
-            style = MaterialTheme.typography.bodyMedium,
+            text = exerciseType.name.replace('_', ' ')
+                .lowercase(Locale.getDefault())
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             modifier = Modifier.padding(16.dp)
         )
     }

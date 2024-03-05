@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.view.screens.exercise.content
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -29,10 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
@@ -65,7 +69,10 @@ fun TrueFalseContent(
     val restartTrueFalseExercise: () -> Unit = {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
     }
-
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    fun showConfirmationDialog() {
+        showDialog = true
+    }
     DisposableEffect(key1 = exerciseViewModel.exerciseCompleted) {
         val observer = Observer<Boolean> { completed ->
             exerciseCompleted = completed
@@ -74,6 +81,10 @@ fun TrueFalseContent(
         onDispose {
             exerciseViewModel.exerciseCompleted.removeObserver(observer)
         }
+    }
+    BackHandler {
+        showConfirmationDialog()
+        Log.d("ExerciseScreen", "BackHandler triggered")
     }
 
     if (exerciseCompleted) {
@@ -93,6 +104,32 @@ fun TrueFalseContent(
             }
         }
     }
+    // Confirmation Dialog
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(id = R.string.exit_exercise_dialog_title)) },
+            text = { Text(stringResource(id = R.string.exit_exercise_dialog_content)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                        navController.navigate("main")
+                    }
+                ) {
+                    Text(stringResource(id = R.string.exit_dialog_yes))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog = false }
+                ) {
+                    Text(stringResource(id = R.string.exit_dialog_no))
+                }
+            }
+        )
+    }
+
     Column {
         LinearProgressIndicator(
             progress = { progress },
@@ -142,7 +179,7 @@ fun TrueFalseContent(
                 )
             }
         } else {
-            Text("Loading true/false exercises...")
+            Text("No true/false exercises found for this level ...")
         }
     }
 
