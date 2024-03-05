@@ -109,28 +109,28 @@ fun TrueFalseFailureScreen(navController: NavController, restartTrueFalseExercis
                 .padding(bottom = 16.dp)
         )
 
-        Text(
-            text = stringResource(id = R.string.dont_worry_try_again),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
-        )
-        Card(
-            onClick = restartTrueFalseExercise, // Use restartTrueFalseExercise instead of restartExercise
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
-                .width(200.dp)
-                .height(100.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(
-                stringResource(id = R.string.try_again),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
-            )
-        }
+//        Text(
+//            text = stringResource(id = R.string.dont_worry_try_again),
+//            style = MaterialTheme.typography.bodyMedium,
+//            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+//        )
+//        Card(
+//            onClick = restartTrueFalseExercise, // Use restartTrueFalseExercise instead of restartExercise
+//            modifier = Modifier
+//                .padding(top = 16.dp)
+//                .align(Alignment.CenterHorizontally)
+//                .width(200.dp)
+//                .height(100.dp),
+//            shape = RoundedCornerShape(16.dp),
+//            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+//            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+//        ) {
+//            Text(
+//                stringResource(id = R.string.try_again),
+//                style = MaterialTheme.typography.labelLarge,
+//                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+//            )
+//        }
 
         Card(
             onClick = { navController.navigate("main") },

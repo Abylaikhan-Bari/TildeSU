@@ -58,7 +58,7 @@ fun TrueFalseContent(
     // Observe exercise completion state
     val lifecycleOwner = LocalLifecycleOwner.current
     val restartTrueFalseExercise: () -> Unit = {
-        exerciseViewModel.loadExercisesForLevelAndType(level, type)
+        exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
     }
 
     DisposableEffect(key1 = exerciseViewModel.exerciseCompleted) {
@@ -92,22 +92,37 @@ fun TrueFalseContent(
     if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
         val currentExercise = exercises[currentQuestionIndex]
 
-        // Logic to show the AnswerFeedbackScreen based on user interaction.
         if (showFeedback) {
             AnswerFeedbackScreen(isAnswerCorrect) {
                 showFeedback = false
-                exerciseViewModel.moveToNextTrueFalse()
+                if (currentQuestionIndex + 1 < exercises.size) {
+                    exerciseViewModel.moveToNextTrueFalse()
+                }
             }
         } else {
             TrueFalseQuestion(
                 statement = currentExercise.statement ?: "",
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
-                    isAnswerCorrect = userAnswer == currentExercise.isTrue
-                    showFeedback = true  // Show feedback after an answer is given.
-                    if (isAnswerCorrect) {
+                    val correct = userAnswer == currentExercise.isTrue
+                    if (correct) {
                         trueFalseScore++
-                        exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
+                    }
+                    exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
+
+                    if (currentQuestionIndex == exercises.size - 1) {
+                        // This is the last question
+                        exerciseCompleted = true
+                        // Directly navigate based on the score without setting showFeedback
+                        if (trueFalseScore > 0) {
+                            navController.navigate("trueFalseSuccess/$trueFalseScore")
+                        } else {
+                            navController.navigate("trueFalseFailure")
+                        }
+                    } else {
+                        // Not the last question, show feedback as usual
+                        isAnswerCorrect = correct
+                        showFeedback = true
                     }
                 }
             )
@@ -115,6 +130,7 @@ fun TrueFalseContent(
     } else {
         Text("Loading true/false exercises...")
     }
+
 }
 
 
