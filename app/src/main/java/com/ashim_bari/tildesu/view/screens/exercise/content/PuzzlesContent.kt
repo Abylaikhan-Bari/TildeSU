@@ -5,12 +5,16 @@ import android.util.Log
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,10 +78,23 @@ fun PuzzlesContent(
 
 
     Column(modifier = Modifier.padding(16.dp)) {
+
+        LinearProgressIndicator(
+            progress = {
+                // Safely calculate the progress ensuring non-null and floating point division
+                (currentExerciseIndex?.toFloat() ?: 0f) / (puzzles.size.toFloat().takeIf { it > 0 } ?: 1f)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        )
+
+
+        Spacer(modifier = Modifier.height(16.dp)) // Add space between progress bar and instruction text
+
         feedbackMessage?.let {
             Text(text = it, modifier = Modifier.padding(bottom = 8.dp))
         }
-
         if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
             val currentPuzzle = puzzles[currentExerciseIndex!!]
             DraggableWordPuzzle(
@@ -113,8 +130,12 @@ fun DraggableWordPuzzle(
     var targetIndex by remember { mutableStateOf(-1) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Arrange the words into a sentence:")
 
+        Text(
+            text = "Arrange the words into a sentence!",
+            style = MaterialTheme.typography.headlineMedium, // Adjust typography to match the design
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         words.forEachIndexed { index, word ->
             DraggableCard(
                 word = word,
@@ -138,7 +159,8 @@ fun DraggableWordPuzzle(
             )
         }
 
-        Button(onClick = {
+        Button(modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
             // This maps the current order of words back to their original indices
             // to verify if the user's arrangement matches the correct order.
             val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
@@ -154,7 +176,27 @@ fun DraggableWordPuzzle(
     }
 }
 
-
+//@Composable
+//fun SubmitButton() {
+//    Button(
+//        onClick = { /* Handle submit action */ },
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 8.dp)
+//            .height(56.dp), // Match the height in the design
+//        // Match the colors, elevation, and shape in the design
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(0xFF000000), // Use the color value that matches the design
+//            contentColor = Color.White
+//        ),
+//        elevation = ButtonDefaults.buttonElevation(4.dp)
+//    ) {
+//        Text(
+//            text = "Submit",
+//            style = MaterialTheme.typography.button // Use a style that matches the design
+//        )
+//    }
+//}
 
 
 @Composable
