@@ -22,27 +22,38 @@ class ExerciseRepository {
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
         }
 
-        val exercisesSnapshot = db.collection("levels")
-            .document(level)
-            .collection(collectionName)
-            .get()
-            .await()
+        return try {
+            val exercisesSnapshot = db.collection("levels")
+                .document(level)
+                .collection(collectionName)
+                .get()
+                .await()
 
-        return exercisesSnapshot.documents.mapNotNull { documentSnapshot ->
-            val exercise = documentSnapshot.toObject<Exercise>() ?: return@mapNotNull null
-            when (type) {
-                ExerciseType.PUZZLES -> {
-                    // Convert the correctOrder from List<Long> to List<Int>
-                    val correctOrderLongs = documentSnapshot.get("correctOrder") as? List<Long>
-                    val correctOrderInts = correctOrderLongs?.map { it.toInt() }
-                    exercise.copy(correctOrder = correctOrderInts)
+            exercisesSnapshot.documents.mapNotNull { documentSnapshot ->
+                val exercise = documentSnapshot.toObject<Exercise>()?.also {
+                    it.type = type // Explicitly set the type from the method parameter if missing
                 }
-                else -> exercise
+
+                when (type) {
+                    ExerciseType.PUZZLES -> {
+                        val correctOrderLongs = documentSnapshot.get("correctOrder") as? List<Long>
+                        val correctOrderInts = correctOrderLongs?.map { it.toInt() }
+                        exercise?.copy(correctOrder = correctOrderInts)
+                    }
+                    else -> exercise
+                }.also {
+                    if (it == null) Log.d("ExerciseRepository", "Failed to convert document to Exercise object: ${documentSnapshot.id}")
+                }
+            }.also {
+                Log.d("ExerciseRepository", "Fetched ${it.size} exercises for level $level and type ${type.name}")
             }
-        }.also {
-            Log.d("ExerciseRepository", "Fetched ${it.size} exercises for level $level and type ${type.name}")
+        } catch (e: Exception) {
+            Log.e("ExerciseRepository", "Error fetching exercises for level $level and type ${type.name}", e)
+            emptyList()
         }
     }
+
+
 
     @OptIn(UnstableApi::class)
     suspend fun updateUserProgress(userId: String, levelId: String, updateData: Map<String, Any>) {

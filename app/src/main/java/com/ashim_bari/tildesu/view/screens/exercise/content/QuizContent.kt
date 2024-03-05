@@ -132,7 +132,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                             currentExercise.options?.let {
                                 items(it.size) { index ->
                                     OptionCard(
-                                        option = currentExercise.options[index] ?: "No option",
+                                        option = currentExercise.options!![index] ?: "No option",
                                         isSelected = selectedOption == index,
                                         onSelect = {
                                             selectedOption = index

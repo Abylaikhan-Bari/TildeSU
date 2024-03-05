@@ -73,6 +73,7 @@ fun PuzzlesContent(
             delay(1500)
             feedbackMessage = null
             exerciseViewModel.moveToNextPuzzle()
+            Log.d(TAG, "Moved to next puzzle")
         }
     }
     LaunchedEffect(exerciseCompleted, puzzleScore) {
@@ -87,7 +88,7 @@ fun PuzzlesContent(
 
     BackHandler {
         showConfirmationDialog()
-        Log.d("ExerciseScreen", "BackHandler triggered")
+        Log.d(TAG, "BackHandler triggered")
     }
 
 
@@ -118,6 +119,7 @@ fun PuzzlesContent(
                     onPuzzleSolved = { correct ->
                         feedbackMessage =
                             if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                        Log.d(TAG, "Puzzle solved: $correct")
                     },
                     currentPuzzleIndex = currentExerciseIndex!!,
                     exerciseViewModel = exerciseViewModel
@@ -136,6 +138,7 @@ fun PuzzlesContent(
                             onClick = {
                                 showDialog = false
                                 navController.navigate("main")
+                                Log.d(TAG, "Navigated to main screen")
                             }
                         ) {
                             Text(stringResource(id = R.string.exit_dialog_yes))
@@ -201,43 +204,21 @@ fun DraggableWordPuzzle(
 
         Button(modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-            // This maps the current order of words back to their original indices
-            // to verify if the user's arrangement matches the correct order.
-            val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
-            val isCorrect = userOrderIndices == puzzle.correctOrder
-            onPuzzleSolved(isCorrect)
-            if (isCorrect) {
-                // Update the score in the ViewModel
-                exerciseViewModel.submitPuzzleAnswer(userOrderIndices, puzzle)
-            }
-        }) {
+                // This maps the current order of words back to their original indices
+                // to verify if the user's arrangement matches the correct order.
+                val userOrderIndices = words.mapNotNull { puzzle.sentenceParts?.indexOf(it) }
+                val isCorrect = userOrderIndices == puzzle.correctOrder
+                onPuzzleSolved(isCorrect)
+                if (isCorrect) {
+                    // Update the score in the ViewModel
+                    exerciseViewModel.submitPuzzleAnswer(userOrderIndices, puzzle)
+                    Log.d(TAG, "Puzzle answer submitted")
+                }
+            }) {
             Text("Submit")
         }
     }
 }
-
-//@Composable
-//fun SubmitButton() {
-//    Button(
-//        onClick = { /* Handle submit action */ },
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(vertical = 8.dp)
-//            .height(56.dp), // Match the height in the design
-//        // Match the colors, elevation, and shape in the design
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(0xFF000000), // Use the color value that matches the design
-//            contentColor = Color.White
-//        ),
-//        elevation = ButtonDefaults.buttonElevation(4.dp)
-//    ) {
-//        Text(
-//            text = "Submit",
-//            style = MaterialTheme.typography.button // Use a style that matches the design
-//        )
-//    }
-//}
-
 
 @Composable
 fun DraggableCard(
@@ -274,7 +255,5 @@ fun DraggableCard(
         }
     }
 }
-
-
 
 

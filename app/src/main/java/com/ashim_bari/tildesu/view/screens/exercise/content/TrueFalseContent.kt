@@ -52,7 +52,7 @@ fun TrueFalseContent(
     val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
 
     LaunchedEffect(key1 = level) {
-        exerciseViewModel.loadExercisesForLevelAndType(level, type)
+        exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
     }
 
     val exercises by exerciseViewModel.exercises.observeAsState(emptyList())
@@ -159,7 +159,7 @@ fun TrueFalseContent(
                         if (correct) {
                             trueFalseScore++
                         }
-                        exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
+                        exerciseViewModel.submitTrueFalseAnswer(userAnswer)
 
                         if (currentQuestionIndex == exercises.size - 1) {
                             // This is the last question
