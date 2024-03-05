@@ -78,18 +78,25 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             }
         }
     }
-    fun submitTrueFalseAnswer(userAnswer: Boolean) {
-        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
-        currentExercise?.let { exercise ->
-            if (exercise.type == ExerciseType.TRUE_FALSE) {
-                val isCorrect = userAnswer == exercise.isTrue
-                if (isCorrect) {
-                    _trueFalseScore.value = (_trueFalseScore.value ?: 0) + 1
-                }
-                moveToNextTrueFalse()
+    fun submitTrueFalseAnswer(userAnswer: Boolean, currentExercise: Exercise) {
+        if (currentExercise.type == ExerciseType.TRUE_FALSE) {
+            val isCorrect = userAnswer == currentExercise.isTrue
+            Log.d("ExerciseVM", "True/False Answer Submitted: User answer is $userAnswer, Correct answer is ${currentExercise.isTrue}, Correct: $isCorrect")
+
+            if (isCorrect) {
+                val newScore = (_trueFalseScore.value ?: 0) + 1
+                _trueFalseScore.postValue(newScore)
+                Log.d("ExerciseVM", "True/False Score Updated to: $newScore")
             }
+            moveToNextTrueFalse()
+        } else {
+            Log.d("ExerciseVM", "Non-True/False exercise attempted in True/False method.")
         }
     }
+
+
+
+
     fun moveToNextTrueFalse() {
         val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
         if (nextIndex < (_exercises.value?.size ?: 0)) {

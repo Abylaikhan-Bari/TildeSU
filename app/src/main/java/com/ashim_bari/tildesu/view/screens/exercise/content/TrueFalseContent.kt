@@ -14,6 +14,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,12 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
-import com.ashim_bari.tildesu.view.screens.FailureScreen
-import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
@@ -45,49 +46,64 @@ fun TrueFalseContent(
         exerciseViewModel.loadExercisesForLevelAndType(level, type)
     }
 
-    val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
-    val currentQuestionIndex by exerciseViewModel.currentExercisesIndex.observeAsState(0)
-    val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
-    val totalQuestions = exercises.size
-    var correctAnswers by rememberSaveable { mutableStateOf(0) }
+    val exercises by exerciseViewModel.exercises.observeAsState(emptyList())
+    var exerciseCompleted by rememberSaveable { mutableStateOf(false) }
+    var trueFalseScore by rememberSaveable { mutableStateOf(0) }
     var showFeedback by rememberSaveable { mutableStateOf(false) }
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
-    if (exerciseCompleted) {
-        // Check if all answers are correct to decide which screen to show
-        if (correctAnswers == totalQuestions) {
-            SuccessScreen(navController, exerciseViewModel.trueFalseScore.value ?: 0)
-        } else {
-            FailureScreen(navController) {
-                exerciseViewModel.resetExercise()
+    val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
+
+    // Observe exercise completion state
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = exerciseViewModel.exerciseCompleted) {
+        val observer = Observer<Boolean> { completed ->
+            exerciseCompleted = completed
+            if (exerciseCompleted) {
+                if (trueFalseScore == exercises.size) {
+                    navController.navigate("trueFalseSuccess/$trueFalseScore")
+                } else {
+                    navController.navigate("trueFalseFailure")
+                }
             }
         }
-    } else if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
+        exerciseViewModel.exerciseCompleted.observe(lifecycleOwner, observer)
+        onDispose {
+            exerciseViewModel.exerciseCompleted.removeObserver(observer)
+        }
+    }
+
+    if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
         val currentExercise = exercises[currentQuestionIndex]
 
-        if (!showFeedback) {
+        // Logic to show the AnswerFeedbackScreen based on user interaction.
+        if (showFeedback) {
+            AnswerFeedbackScreen(isAnswerCorrect) {
+                showFeedback = false
+                exerciseViewModel.moveToNextTrueFalse()
+            }
+        } else {
             TrueFalseQuestion(
                 statement = currentExercise.statement ?: "",
                 isTrue = currentExercise.isTrue ?: false,
                 onAnswer = { userAnswer ->
                     isAnswerCorrect = userAnswer == currentExercise.isTrue
+                    showFeedback = true  // Show feedback after an answer is given.
                     if (isAnswerCorrect) {
-                        correctAnswers += 1
+                        trueFalseScore++
+                        exerciseViewModel.submitTrueFalseAnswer(userAnswer, currentExercise)
                     }
-                    showFeedback = true
-                    exerciseViewModel.submitTrueFalseAnswer(isAnswerCorrect)
                 }
             )
-        } else {
-            AnswerFeedbackScreen(isAnswerCorrect) {
-                showFeedback = false
-                exerciseViewModel.moveToNextTrueFalse()
-            }
         }
     } else {
         Text("Loading true/false exercises...")
     }
 }
+
+
+
 
 
 

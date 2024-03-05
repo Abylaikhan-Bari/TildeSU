@@ -11,6 +11,8 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.LoadingScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
+import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
+import com.ashim_bari.tildesu.view.screens.TrueFalseSuccessScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
@@ -27,6 +29,8 @@ class Navigation {
         const val SPECIFIC_EXERCISE_ROUTE = "specificExercise/{level}/{type}"
         const val SUCCESS = "success"
         const val FAILURE = "failure"
+        const val TRUE_FALSE_SUCCESS = "trueFalseSuccess"
+        const val TRUE_FALSE_FAILURE = "trueFalseFailure"
 
     }
 }
@@ -59,6 +63,24 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
 
         composable(Navigation.FAILURE) {
             FailureScreen(navController = navController) {
+                // Define what happens when the restart button is clicked. For example:
+                navController.navigate("specificExercise/{level}/{type}") {
+                    // Clear back stack to prevent going back to the failure screen
+                    popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }
+                }
+            }
+        }
+        composable(
+            route = "${Navigation.TRUE_FALSE_SUCCESS}/{score}",
+            arguments = listOf(navArgument("score") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val score = backStackEntry.arguments?.getInt("score") ?: 0
+            TrueFalseSuccessScreen(navController = navController, score = score)
+        }
+
+
+        composable(Navigation.TRUE_FALSE_FAILURE) {
+            TrueFalseFailureScreen(navController = navController) {
                 // Define what happens when the restart button is clicked. For example:
                 navController.navigate("specificExercise/{level}/{type}") {
                     // Clear back stack to prevent going back to the failure screen
