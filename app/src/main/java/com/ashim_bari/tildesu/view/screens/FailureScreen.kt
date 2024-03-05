@@ -88,7 +88,7 @@ fun FailureScreen(navController: NavController, restartExercise: () -> Unit = {}
 
 
 @Composable
-fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> Unit) {
+fun TrueFalseFailureScreen(navController: NavController, restartTrueFalseExercise: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -115,17 +115,21 @@ fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> 
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
         Card(
-            onClick = restartExercise,
+            onClick = restartTrueFalseExercise, // Use restartTrueFalseExercise instead of restartExercise
             modifier = Modifier
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
-                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
-                .height(100.dp), // Set the height to a specific value
-            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+                .width(200.dp)
+                .height(100.dp),
+            shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(id = R.string.try_again), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+            Text(
+                stringResource(id = R.string.try_again),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+            )
         }
 
         Card(
@@ -133,13 +137,18 @@ fun TrueFalseFailureScreen(navController: NavController, restartExercise: () -> 
             modifier = Modifier
                 .padding(top = 16.dp)
                 .align(Alignment.CenterHorizontally)
-                .width(200.dp) // Set the width to a specific value or use Modifier.fillMaxWidth() for full width
-                .height(100.dp), // Set the height to a specific value
-            shape = RoundedCornerShape(16.dp), // Use a larger value for more rounded corners
+                .width(200.dp)
+                .height(100.dp),
+            shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+            Text(
+                stringResource(id = R.string.go_home_card),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
+

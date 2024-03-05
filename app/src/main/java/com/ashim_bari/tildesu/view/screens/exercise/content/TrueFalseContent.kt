@@ -3,6 +3,7 @@ package com.ashim_bari.tildesu.view.screens.exercise.content
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
@@ -53,24 +55,37 @@ fun TrueFalseContent(
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
 
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
-
     // Observe exercise completion state
     val lifecycleOwner = LocalLifecycleOwner.current
+    val restartTrueFalseExercise: () -> Unit = {
+        exerciseViewModel.loadExercisesForLevelAndType(level, type)
+    }
 
     DisposableEffect(key1 = exerciseViewModel.exerciseCompleted) {
         val observer = Observer<Boolean> { completed ->
             exerciseCompleted = completed
-            if (exerciseCompleted) {
-                if (trueFalseScore == exercises.size) {
-                    navController.navigate("trueFalseSuccess/$trueFalseScore")
-                } else {
-                    navController.navigate("trueFalseFailure")
-                }
-            }
         }
         exerciseViewModel.exerciseCompleted.observe(lifecycleOwner, observer)
         onDispose {
             exerciseViewModel.exerciseCompleted.removeObserver(observer)
+        }
+    }
+
+    if (exerciseCompleted) {
+        // Check if at least one answer is correct
+        val atLeastOneCorrect = trueFalseScore > 0
+        if (atLeastOneCorrect) {
+            navController.navigate("trueFalseSuccess/$trueFalseScore")
+        } else {
+            // Show the TrueFalseFailureScreen only when no answer is correct
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TrueFalseFailureScreen(navController = navController, restartTrueFalseExercise = restartTrueFalseExercise)
+                Spacer(modifier = Modifier.height(16.dp)) // Add some space between the failure screen and the content above it
+            }
         }
     }
 
@@ -101,9 +116,6 @@ fun TrueFalseContent(
         Text("Loading true/false exercises...")
     }
 }
-
-
-
 
 
 
