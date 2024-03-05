@@ -129,6 +129,7 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         if (isCorrect) {
             val newScore = (_trueFalseScore.value ?: 0) + 1
             setTrueFalseScore(newScore)
+            updateProgress()
         }
 
     }

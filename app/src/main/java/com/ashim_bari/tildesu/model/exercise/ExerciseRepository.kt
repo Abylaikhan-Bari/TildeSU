@@ -69,17 +69,6 @@ class ExerciseRepository {
         }.await()
     }
 
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
