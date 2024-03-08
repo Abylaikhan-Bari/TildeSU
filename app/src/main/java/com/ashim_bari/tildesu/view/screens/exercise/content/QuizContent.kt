@@ -118,7 +118,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                     if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                         val currentExercise = exercises[currentQuestionIndex]
                         Text(
-                            text = " ${currentExercise.question ?: "No question available"}",
+                            text = "  ${currentExercise.question ?: stringResource(id = R.string.no_question_available)}",
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -158,12 +158,14 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType,
                                 .align(Alignment.CenterHorizontally),
                             enabled = selectedOption != -1
                         ) {
-                            Text("Next")
+                            // Text("Next")
+                            Text(stringResource(id = R.string.button_next))
+
                         }
 
 
                     } else {
-                        Text("No quiz questions found for this level...")
+                        Text(stringResource(id = R.string.no_quiz_questions_found))
                     }
                 }
             }

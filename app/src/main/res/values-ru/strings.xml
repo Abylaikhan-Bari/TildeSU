@@ -111,8 +111,20 @@
     <string name="try_again">Попробавать снова</string>
     <string name="read_less">Скрыть</string>
     <string name="read_more">Раскрыть</string>
-    <string name="puzzle">Puzzle</string>
-    <string name="quiz">Quiz</string>
-    <string name="true_false">True or False</string>
+    <string name="puzzle">Пазл</string>
+    <string name="quiz">Куиз</string>
+    <string name="true_false">Истина или нет</string>
+    <string name="level_with_placeholder">Уровень</string>
+    <string name="select_exercise_type">Выберите тип упражнения</string>
+    <string name="no_quiz_questions_found">Не найдено вопросов для данного уровня...</string>
+    <string name="no_question_available">Вопросов не найдено</string>
+    <string name="button_next">Следующий</string>
+    <string name="no_true_false_exercises_found">Упражнения не найдены</string>
+    <string name="feedback_correct">Правильно</string>
+    <string name="feedback_incorrect">Неправильно</string>
+    <string name="feedback_next_question">Дальше</string>
+    <string name="no_puzzles_found">Пазлов не найдено для данного уровня ...</string>
+    <string name="arrange_words">Создайте прделожения из данных слов</string>
+    <string name="submit_button">Подтвердить</string>
 
 </resources>

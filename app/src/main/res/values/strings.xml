@@ -105,4 +105,16 @@
     <string name="puzzle">Puzzle</string>
     <string name="quiz">Quiz</string>
     <string name="true_false">True or False</string>
+    <string name="level_with_placeholder">Level</string>
+    <string name="select_exercise_type">Select an exercise type</string>
+    <string name="no_quiz_questions_found">No quiz questions found for this level...</string>
+    <string name="no_question_available">No questions available</string>
+    <string name="button_next">Next</string>
+    <string name="no_true_false_exercises_found">No true false exercises found</string>
+    <string name="feedback_correct">Correct</string>
+    <string name="feedback_incorrect">Incorrect</string>
+    <string name="feedback_next_question">Next</string>
+    <string name="no_puzzles_found">No puzzles found for this level ...</string>
+    <string name="arrange_words">Arrange the words into a sentence</string>
+    <string name="submit_button">Submit</string>
 </resources>

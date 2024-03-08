@@ -53,6 +53,8 @@ fun PuzzlesContent(
     val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+    val feedbackCorrect = stringResource(id = R.string.feedback_correct)
+    val feedbackIncorrect = stringResource(id = R.string.feedback_incorrect)
 
     // Observe the puzzle score here
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
@@ -69,7 +71,7 @@ fun PuzzlesContent(
     }
 
     LaunchedEffect(feedbackMessage) {
-        if (feedbackMessage == "Correct! Well done.") {
+        if (feedbackMessage == feedbackCorrect) {
             delay(1500)
             feedbackMessage = null
             exerciseViewModel.moveToNextPuzzle()
@@ -114,18 +116,24 @@ fun PuzzlesContent(
             }
             if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
                 val currentPuzzle = puzzles[currentExerciseIndex!!]
+
+
                 DraggableWordPuzzle(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
                         feedbackMessage =
-                            if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                            if (correct) {
+                                feedbackCorrect
+                            } else {
+                                feedbackIncorrect
+                            }
                         Log.d(TAG, "Puzzle solved: $correct")
                     },
                     currentPuzzleIndex = currentExerciseIndex!!,
                     exerciseViewModel = exerciseViewModel
                 )
             } else {
-                Text("No puzzles found for this level ...")
+                Text(stringResource(id = R.string.no_puzzles_found))
             }
             // Confirmation Dialog
             if (showDialog) {
@@ -165,7 +173,7 @@ fun DraggableWordPuzzle(
     onPuzzleSolved: (Boolean) -> Unit,
     currentPuzzleIndex: Int,
     exerciseViewModel: ExerciseViewModel
-) {
+){
     // The words list will be re-initialized and shuffled when currentPuzzleIndex changes.
     // This ensures the puzzle is reset correctly when the current puzzle index changes.
     var words by remember(currentPuzzleIndex) { mutableStateOf(puzzle.sentenceParts!!.shuffled()) }
@@ -175,7 +183,7 @@ fun DraggableWordPuzzle(
     Column(modifier = Modifier.padding(16.dp)) {
 
         Text(
-            text = "Arrange the words into a sentence!",
+            stringResource(id = R.string.arrange_words),
             style = MaterialTheme.typography.headlineMedium, // Adjust typography to match the design
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -215,7 +223,7 @@ fun DraggableWordPuzzle(
                     Log.d(TAG, "Puzzle answer submitted")
                 }
             }) {
-            Text("Submit")
+            Text(stringResource(id = R.string.submit_button))
         }
     }
 }
