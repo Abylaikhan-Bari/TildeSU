@@ -204,6 +204,13 @@ class UserRepository {
 
 
 
+    data class UserProgress(
+        val overallProgress: Float,
+        val puzzleProgress: Float,
+        val quizProgress: Float,
+        val trueFalseProgress: Float
+    )
+
     suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
         val userProgressData = mutableMapOf<String, UserProgress>()
         val userProgressCollection = firestore.collection("users").document(userId).collection("progress")
@@ -211,36 +218,30 @@ class UserRepository {
 
         for (document in querySnapshot.documents) {
             val levelId = document.id
-            val scores = document.data?.get("scores") as? Map<String, Map<String, Number>> ?: continue
-            val overallScore = document.data?.get("overallScore") as? Map<String, Number> ?: continue
 
-            // Extract values and calculate overall progress
-            val overallCorrectAnswers = overallScore["correctAnswers"]?.toFloat() ?: 0f
-            val overallTotalQuestions = overallScore["totalQuestions"]?.toFloat() ?: 0f
-            val overallProgress = if (overallTotalQuestions > 0) {
-                overallCorrectAnswers / overallTotalQuestions
-            } else {
-                0f
-            }
+            // Firestore stores numbers as Long or Double, so you need to cast them accordingly
+            val overallCorrect = (document.getLong("overallCorrect") ?: 0).toFloat()
+            val overallTotal = (document.getLong("overallTotal") ?: 0).toFloat()
+            val puzzleCorrect = (document.getLong("puzzleCorrect") ?: 0).toFloat()
+            val puzzleTotal = (document.getLong("puzzleTotal") ?: 0).toFloat()
+            val quizCorrect = (document.getLong("quizCorrect") ?: 0).toFloat()
+            val quizTotal = (document.getLong("quizTotal") ?: 0).toFloat()
+            val trueFalseCorrect = (document.getLong("trueFalseCorrect") ?: 0).toFloat()
+            val trueFalseTotal = (document.getLong("trueFalseTotal") ?: 0).toFloat()
 
-            // Calculate progress for each exercise type
-            val exerciseTypeProgress = scores.mapValues { (_, typeScores) ->
-                val correct = typeScores["correctAnswers"]?.toFloat() ?: 0f
-                val total = typeScores["totalQuestions"]?.toFloat() ?: 0f
-                if (total > 0) correct / total else 0f
-            }
+            // Calculate progress as a float ratio
+            val overallProgress = if (overallTotal > 0) overallCorrect / overallTotal else 0f
+            val puzzleProgress = if (puzzleTotal > 0) puzzleCorrect / puzzleTotal else 0f
+            val quizProgress = if (quizTotal > 0) quizCorrect / quizTotal else 0f
+            val trueFalseProgress = if (trueFalseTotal > 0) trueFalseCorrect / trueFalseTotal else 0f
 
-            // Create UserProgress instance
-            userProgressData[levelId] = UserProgress(overallProgress, exerciseTypeProgress)
+            // Create UserProgress instance without completedOn
+            userProgressData[levelId] = UserProgress(overallProgress, puzzleProgress, quizProgress, trueFalseProgress)
         }
 
         return userProgressData
     }
 
-    data class UserProgress(
-        val overallProgress: Float,
-        val exerciseTypeProgress: Map<String, Float>
-    )
 
 
 

@@ -111,5 +111,8 @@
     <string name="try_again">Попробавать снова</string>
     <string name="read_less">Скрыть</string>
     <string name="read_more">Раскрыть</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="quiz">Quiz</string>
+    <string name="true_false">True or False</string>
 
 </resources>

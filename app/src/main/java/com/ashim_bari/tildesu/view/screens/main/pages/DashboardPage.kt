@@ -36,9 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.model.user.UserRepository
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
-import java.util.Locale
 
 @Composable
 fun DashboardPage(mainViewModel: MainViewModel) {
@@ -55,7 +53,13 @@ fun DashboardPage(mainViewModel: MainViewModel) {
         ) {
             if (progressData.isNotEmpty()) {
                 progressData.forEach { (level, userProgress) ->
-                    ExpandableProgressBar(level, userProgress)
+                    ExpandableProgressBar(
+                        level = level,
+                        overallProgress = userProgress.overallProgress,
+                        puzzleProgress = userProgress.puzzleProgress,
+                        quizProgress = userProgress.quizProgress,
+                        trueFalseProgress = userProgress.trueFalseProgress
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             } else {
@@ -74,11 +78,17 @@ fun DashboardPage(mainViewModel: MainViewModel) {
 }
 
 @Composable
-fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgress) {
+fun ExpandableProgressBar(
+    level: String,
+    overallProgress: Float,
+    puzzleProgress: Float,
+    quizProgress: Float,
+    trueFalseProgress: Float
+){
     var isExpanded by remember { mutableStateOf(false) }
 
     Column {
-        LanguageLevelProgressBar(level, userProgress.overallProgress)
+        LanguageLevelProgressBar(level, overallProgress)
 
         IconButton(onClick = { isExpanded = !isExpanded }) {
             Icon(
@@ -88,14 +98,20 @@ fun ExpandableProgressBar(level: String, userProgress: UserRepository.UserProgre
         }
         AnimatedVisibility(visible = isExpanded, enter = expandVertically(), exit = fadeOut()) {
             Column(modifier = Modifier.padding(start = 16.dp)) {
-                userProgress.exerciseTypeProgress.forEach { (exerciseType, progress) ->
-                    Text(
-                        text = exerciseType.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-                    )
-                    ProgressBar(progress = progress)
-                }
+                Text(text = stringResource(R.string.puzzle), // Replace with actual string resource or hardcoded string
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                ProgressBar(progress = puzzleProgress)
+
+                Text(text = stringResource(R.string.quiz), // Replace with actual string resource or hardcoded string
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                ProgressBar(progress = quizProgress)
+
+                Text(text = stringResource(R.string.true_false), // Replace with actual string resource or hardcoded string
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                ProgressBar(progress = trueFalseProgress)
             }
         }
     }

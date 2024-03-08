@@ -102,5 +102,8 @@
     <string name="try_again">Қайта көру</string>
     <string name="read_less">Қысқарту</string>
     <string name="read_more">Бәрін көру</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="quiz">Quiz</string>
+    <string name="true_false">True or False</string>
 
 </resources>
