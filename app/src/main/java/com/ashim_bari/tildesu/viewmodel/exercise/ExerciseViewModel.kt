@@ -226,13 +226,28 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     }
 
     private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
-        // Ensure values are Int and handle nullability
-        val quizCorrect = min((updatedData["quizCorrect"] as? Number ?: currentProgress["quizCorrect"] as? Number ?: 0).toInt(), (updatedData["quizTotal"] as? Number ?: 0).toInt())
-        val trueFalseCorrect = min((updatedData["trueFalseCorrect"] as? Number ?: currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt(), (updatedData["trueFalseTotal"] as? Number ?: 0).toInt())
-        val puzzleCorrect = min((updatedData["puzzleCorrect"] as? Number ?: currentProgress["puzzleCorrect"] as? Number ?: 0).toInt(), (updatedData["puzzleTotal"] as? Number ?: 0).toInt())
+        // Fetch current correct answers for all types from the progress
+        val currentQuizCorrect = (currentProgress["quizCorrect"] as? Number ?: 0).toInt()
+        val currentTrueFalseCorrect = (currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt()
+        val currentPuzzleCorrect = (currentProgress["puzzleCorrect"] as? Number ?: 0).toInt()
 
-        return quizCorrect + trueFalseCorrect + puzzleCorrect
+        // Fetch the new correct answer for the current exercise type only
+        val newCorrectAnswer = when (currentExerciseType) {
+            ExerciseType.QUIZ -> (updatedData["quizCorrect"] as? Number ?: currentQuizCorrect).toInt()
+            ExerciseType.TRUE_FALSE -> (updatedData["trueFalseCorrect"] as? Number ?: currentTrueFalseCorrect).toInt()
+            ExerciseType.PUZZLES -> (updatedData["puzzleCorrect"] as? Number ?: currentPuzzleCorrect).toInt()
+            else -> 0
+        }
+
+        // Depending on the type, replace the corresponding old value with the new one
+        val totalQuizCorrect = if (currentExerciseType == ExerciseType.QUIZ) newCorrectAnswer else currentQuizCorrect
+        val totalTrueFalseCorrect = if (currentExerciseType == ExerciseType.TRUE_FALSE) newCorrectAnswer else currentTrueFalseCorrect
+        val totalPuzzleCorrect = if (currentExerciseType == ExerciseType.PUZZLES) newCorrectAnswer else currentPuzzleCorrect
+
+        // Sum up all correct answers across all exercise types
+        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect
     }
+
 
 
 
