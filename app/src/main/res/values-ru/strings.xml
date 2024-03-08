@@ -124,7 +124,7 @@
     <string name="feedback_incorrect">Неправильно</string>
     <string name="feedback_next_question">Дальше</string>
     <string name="no_puzzles_found">Пазлов не найдено для данного уровня ...</string>
-    <string name="arrange_words">Создайте прделожения из данных слов</string>
+    <string name="arrange_words">Создайте предложения из данных слов</string>
     <string name="submit_button">Подтвердить</string>
 
 </resources>

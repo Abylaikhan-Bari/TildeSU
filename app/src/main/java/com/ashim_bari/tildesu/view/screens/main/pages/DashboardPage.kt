@@ -120,35 +120,45 @@ fun ExpandableProgressBar(
 
 @Composable
 fun ProgressBar(progress: Float) {
-    LinearProgressIndicator(
-        progress = { progress },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(8.dp)
-            .clip(RoundedCornerShape(4.dp)),
-        color = MaterialTheme.colorScheme.primary,
-        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+    // Using SafeLinearProgressIndicator instead of LinearProgressIndicator directly
+    SafeLinearProgressIndicator(
+        progress = progress,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(8.dp)
+//            .clip(RoundedCornerShape(4.dp)),
+//        color = MaterialTheme.colorScheme.primary,
+//        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
     )
 }
 
 
 
 @Composable
-fun LanguageLevelProgressBar(level: String, progress: Float) {
-    // Use the 'progress' directly as it's already a Float value
+fun SafeLinearProgressIndicator(progress: Float) {
+    val safeProgress = if (progress.isNaN()) 0f else progress.coerceIn(0f, 1f)
+    LinearProgressIndicator(progress = safeProgress,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .clip(RoundedCornerShape(4.dp)),
+        color = MaterialTheme.colorScheme.primary,
+        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
+    )
+}
 
-    // Animate the progress value
+
+@Composable
+fun LanguageLevelProgressBar(level: String, progress: Float) {
+    val safeProgress = if (progress.isNaN()) 0.0f else progress
+
     val animatedProgress by animateFloatAsState(
-        targetValue = progress, // Use 'progress' directly here
-        animationSpec = tween(
-            durationMillis = 1000, // Duration of the animation in milliseconds
-            delayMillis = 500 // Start delay in milliseconds
-        ), label = ""
+        targetValue = safeProgress,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 500)
     )
 
-    // Entry animation for the progress bar container
     AnimatedVisibility(
-        visible = true, // You can control visibility with a state if needed
+        visible = true,
         enter = fadeIn(animationSpec = tween(1000)) + expandVertically(animationSpec = tween(1000)),
         exit = fadeOut(animationSpec = tween(1000)),
     ) {
@@ -161,27 +171,13 @@ fun LanguageLevelProgressBar(level: String, progress: Float) {
             )
             Box(
                 modifier = Modifier
-                    .height(56.dp) // Adjust the height to match your design
+                    .height(56.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp)) // Apply rounded corners, adjust corner size as necessary
+                    .clip(RoundedCornerShape(12.dp))
             ) {
-                LinearProgressIndicator(
-                    progress = { animatedProgress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp) // Match the height of the Box to fill it completely
-                        .clip(RoundedCornerShape(12.dp)), // Apply the same rounded corners to the progress indicator
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-                )
+                // Replace LinearProgressIndicator with SafeLinearProgressIndicator
+                SafeLinearProgressIndicator(progress = animatedProgress)
             }
         }
     }
 }
-
-
-
-
-
-
-
