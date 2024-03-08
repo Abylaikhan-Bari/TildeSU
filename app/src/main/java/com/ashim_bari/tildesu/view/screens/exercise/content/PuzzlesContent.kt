@@ -53,6 +53,8 @@ fun PuzzlesContent(
     val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
+    val feedbackCorrect = stringResource(id = R.string.feedback_correct)
+    val feedbackIncorrect = stringResource(id = R.string.feedback_incorrect)
 
     // Observe the puzzle score here
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
@@ -69,7 +71,7 @@ fun PuzzlesContent(
     }
 
     LaunchedEffect(feedbackMessage) {
-        if (feedbackMessage == "Correct! Well done.") {
+        if (feedbackMessage == feedbackCorrect) {
             delay(1500)
             feedbackMessage = null
             exerciseViewModel.moveToNextPuzzle()
@@ -115,8 +117,6 @@ fun PuzzlesContent(
             if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
                 val currentPuzzle = puzzles[currentExerciseIndex!!]
 
-                val feedbackCorrect = stringResource(id = R.string.feedback_correct)
-                val feedbackIncorrect = stringResource(id = R.string.feedback_incorrect)
 
                 DraggableWordPuzzle(
                     puzzle = currentPuzzle,

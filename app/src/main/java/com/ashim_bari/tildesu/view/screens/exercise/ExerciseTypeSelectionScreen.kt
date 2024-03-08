@@ -99,8 +99,38 @@ fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: ()
     }
 }
 
+//@Composable
+//fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 8.dp)
+//            .clickable(onClick = onClick),
+//        shape = RoundedCornerShape(16.dp),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+//            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+//        ),
+//        elevation = CardDefaults.cardElevation(4.dp)
+//    ) {
+//        Text(
+//            text = exerciseType.name.replace('_', ' ')
+//                .lowercase(Locale.getDefault())
+//                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+//            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+//            modifier = Modifier.padding(16.dp)
+//        )
+//    }
+//}
 @Composable
 fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
+    val exerciseTypeName = when (exerciseType) {
+        ExerciseType.QUIZ -> stringResource(id = R.string.quiz)
+        ExerciseType.PUZZLES -> stringResource(id = R.string.puzzle)
+        ExerciseType.TRUE_FALSE -> stringResource(id = R.string.true_false)
+
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,9 +144,7 @@ fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Text(
-            text = exerciseType.name.replace('_', ' ')
-                .lowercase(Locale.getDefault())
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+            text = exerciseTypeName,
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
             modifier = Modifier.padding(16.dp)
         )
