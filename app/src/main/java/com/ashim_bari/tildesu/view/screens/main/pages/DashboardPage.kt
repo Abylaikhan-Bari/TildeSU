@@ -121,31 +121,21 @@ fun ExpandableProgressBar(
 @Composable
 fun ProgressBar(progress: Float) {
     // Using SafeLinearProgressIndicator instead of LinearProgressIndicator directly
-    SafeLinearProgressIndicator(
+    LinearProgressIndicator(
         progress = progress,
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(8.dp)
-//            .clip(RoundedCornerShape(4.dp)),
-//        color = MaterialTheme.colorScheme.primary,
-//        trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
-    )
-}
-
-
-
-@Composable
-fun SafeLinearProgressIndicator(progress: Float) {
-    val safeProgress = if (progress.isNaN()) 0f else progress.coerceIn(0f, 1f)
-    LinearProgressIndicator(progress = safeProgress,
         modifier = Modifier
             .fillMaxWidth()
-            .height(8.dp)
+            .height(20.dp)
             .clip(RoundedCornerShape(4.dp)),
         color = MaterialTheme.colorScheme.primary,
         trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
     )
 }
+
+
+
+
+
 
 
 @Composable
@@ -176,7 +166,8 @@ fun LanguageLevelProgressBar(level: String, progress: Float) {
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 // Replace LinearProgressIndicator with SafeLinearProgressIndicator
-                SafeLinearProgressIndicator(progress = animatedProgress)
+                LinearProgressIndicator(progress = animatedProgress,
+                    modifier = Modifier.fillMaxSize())
             }
         }
     }
