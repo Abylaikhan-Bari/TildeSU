@@ -102,8 +102,20 @@
     <string name="try_again">Қайта көру</string>
     <string name="read_less">Қысқарту</string>
     <string name="read_more">Бәрін көру</string>
-    <string name="puzzle">Puzzle</string>
-    <string name="quiz">Quiz</string>
-    <string name="true_false">True or False</string>
+    <string name="puzzle">Пазл</string>
+    <string name="quiz">Куиз</string>
+    <string name="true_false">Рас немесе жалған</string>
+    <string name="level_with_placeholder">Деңгейі</string>
+    <string name="select_exercise_type">Жаттығу түрін таңдаңыз</string>
+    <string name="no_quiz_questions_found">Бұл деңгейге куиз сұрақтары табылмады...</string>
+    <string name="no_question_available">Сұрақ табылмады</string>
+    <string name="button_next">Келесі</string>
+    <string name="no_true_false_exercises_found">Жаттығулар табылмады</string>
+    <string name="feedback_correct">Дұрыс</string>
+    <string name="feedback_incorrect">Қате</string>
+    <string name="feedback_next_question">Келесі</string>
+    <string name="no_puzzles_found">Бұл деңгейге пазлдар табылмады ...</string>
+    <string name="arrange_words">Сөздерден сөйлем құраңыз</string>
+    <string name="submit_button">Растау</string>
 
 </resources>

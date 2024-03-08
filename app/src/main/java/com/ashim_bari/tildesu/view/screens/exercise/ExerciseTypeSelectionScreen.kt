@@ -33,9 +33,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import kotlinx.coroutines.delay
 import java.util.Locale
@@ -47,7 +49,7 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
         Column {
             // Adding the top app bar
             SmallTopAppBar(
-                title = { Text(text = "Level $level",color = Color.White) } ,
+                title = { Text(text = level,color = Color.White) } ,
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -63,7 +65,7 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
 
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    "Select an Exercise Type",
+                    stringResource(id = R.string.select_exercise_type),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onBackground
                 )

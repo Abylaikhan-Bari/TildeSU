@@ -114,18 +114,26 @@ fun PuzzlesContent(
             }
             if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
                 val currentPuzzle = puzzles[currentExerciseIndex!!]
+
+                val feedbackCorrect = stringResource(id = R.string.feedback_correct)
+                val feedbackIncorrect = stringResource(id = R.string.feedback_incorrect)
+
                 DraggableWordPuzzle(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
                         feedbackMessage =
-                            if (correct) "Correct! Well done." else "Incorrect. Please try again."
+                            if (correct) {
+                                feedbackCorrect
+                            } else {
+                                feedbackIncorrect
+                            }
                         Log.d(TAG, "Puzzle solved: $correct")
                     },
                     currentPuzzleIndex = currentExerciseIndex!!,
                     exerciseViewModel = exerciseViewModel
                 )
             } else {
-                Text("No puzzles found for this level ...")
+                Text(stringResource(id = R.string.no_puzzles_found))
             }
             // Confirmation Dialog
             if (showDialog) {
@@ -165,7 +173,7 @@ fun DraggableWordPuzzle(
     onPuzzleSolved: (Boolean) -> Unit,
     currentPuzzleIndex: Int,
     exerciseViewModel: ExerciseViewModel
-) {
+){
     // The words list will be re-initialized and shuffled when currentPuzzleIndex changes.
     // This ensures the puzzle is reset correctly when the current puzzle index changes.
     var words by remember(currentPuzzleIndex) { mutableStateOf(puzzle.sentenceParts!!.shuffled()) }
@@ -175,7 +183,7 @@ fun DraggableWordPuzzle(
     Column(modifier = Modifier.padding(16.dp)) {
 
         Text(
-            text = "Arrange the words into a sentence!",
+            stringResource(id = R.string.arrange_words),
             style = MaterialTheme.typography.headlineMedium, // Adjust typography to match the design
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -215,7 +223,7 @@ fun DraggableWordPuzzle(
                     Log.d(TAG, "Puzzle answer submitted")
                 }
             }) {
-            Text("Submit")
+            Text(stringResource(id = R.string.submit_button))
         }
     }
 }

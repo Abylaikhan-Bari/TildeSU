@@ -179,7 +179,9 @@ fun TrueFalseContent(
                 )
             }
         } else {
-            Text("No true/false exercises found for this level ...")
+            // Text("No true/false exercises found for this level ...")
+            Text(stringResource(id = R.string.no_true_false_exercises_found))
+
         }
     }
 
@@ -199,13 +201,13 @@ fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = if (correct) "Correct!" else "Incorrect",
+            text = if (correct) stringResource(id = R.string.feedback_correct) else stringResource(id = R.string.feedback_incorrect),
             style = MaterialTheme.typography.headlineLarge,
             color = if (correct) Color.Green else Color.Red,
             modifier = Modifier.padding(bottom = 24.dp)
         )
         Button(onClick = onContinue) {
-            Text("Next Question")
+            Text(stringResource(id = R.string.feedback_next_question))
         }
     }
 }
