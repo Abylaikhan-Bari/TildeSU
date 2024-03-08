@@ -11,6 +11,7 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.launch
+import kotlin.math.min
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
@@ -95,7 +96,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             if (exercise.type == ExerciseType.QUIZ) {
                 val isCorrect = selectedOption == exercise.correctOptionIndex
                 if (isCorrect) {
-                    val newScore = (_quizScore.value ?: 0) + 1
+                    // Make sure not to exceed the total number of exercises
+                    val newScore = min((_quizScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
                     setQuizScore(newScore)
                 }
                 moveToNextQuiz()
@@ -125,12 +127,15 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             Log.d(TAG, "Non-True/False exercise attempted in True/False method. Exercise type: ${currentExercise?.type}")
             return
         }
+
         val isCorrect = userAnswer == currentExercise.isTrue
         if (isCorrect) {
-            val newScore = (_trueFalseScore.value ?: 0) + 1
+            // Make sure not to exceed the total number of exercises
+            val newScore = min((_trueFalseScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
             setTrueFalseScore(newScore)
             updateProgress()
         }
+
 
     }
 
@@ -146,9 +151,11 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
         val isCorrect = userOrder == puzzle.correctOrder
         if (isCorrect) {
-            val newScore = (_puzzleScore.value ?: 0) + 1
+            // Make sure not to exceed the total number of exercises
+            val newScore = min((_puzzleScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
             setPuzzleScore(newScore)
         }
+
 
     }
 
@@ -172,15 +179,15 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                         // Prepare the updated data based on the exercise type
                         val updatedData = when (currentExerciseType) {
                             ExerciseType.QUIZ -> mapOf(
-                                "quizCorrect" to (_quizScore.value ?: 0) + (currentProgress["quizCorrect"] as? Number ?: 0).toInt(),
+                                "quizCorrect" to min(_quizScore.value ?: 0, _exercises.value?.size ?: 0),
                                 "quizTotal" to (_exercises.value?.size ?: 0)
                             )
                             ExerciseType.TRUE_FALSE -> mapOf(
-                                "trueFalseCorrect" to (_trueFalseScore.value ?: 0) + (currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt(),
+                                "trueFalseCorrect" to min(_trueFalseScore.value ?: 0, _exercises.value?.size ?: 0),
                                 "trueFalseTotal" to (_exercises.value?.size ?: 0)
                             )
                             ExerciseType.PUZZLES -> mapOf(
-                                "puzzleCorrect" to (_puzzleScore.value ?: 0) + (currentProgress["puzzleCorrect"] as? Number ?: 0).toInt(),
+                                "puzzleCorrect" to min(_puzzleScore.value ?: 0, _exercises.value?.size ?: 0),
                                 "puzzleTotal" to (_exercises.value?.size ?: 0)
                             )
                             else -> emptyMap()
@@ -220,9 +227,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
     private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
         // Ensure values are Int and handle nullability
-        val quizCorrect = (updatedData["quizCorrect"] as? Number ?: currentProgress["quizCorrect"] as? Number ?: 0).toInt()
-        val trueFalseCorrect = (updatedData["trueFalseCorrect"] as? Number ?: currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt()
-        val puzzleCorrect = (updatedData["puzzleCorrect"] as? Number ?: currentProgress["puzzleCorrect"] as? Number ?: 0).toInt()
+        val quizCorrect = min((updatedData["quizCorrect"] as? Number ?: currentProgress["quizCorrect"] as? Number ?: 0).toInt(), (updatedData["quizTotal"] as? Number ?: 0).toInt())
+        val trueFalseCorrect = min((updatedData["trueFalseCorrect"] as? Number ?: currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt(), (updatedData["trueFalseTotal"] as? Number ?: 0).toInt())
+        val puzzleCorrect = min((updatedData["puzzleCorrect"] as? Number ?: currentProgress["puzzleCorrect"] as? Number ?: 0).toInt(), (updatedData["puzzleTotal"] as? Number ?: 0).toInt())
 
         return quizCorrect + trueFalseCorrect + puzzleCorrect
     }
