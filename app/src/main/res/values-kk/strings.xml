@@ -67,6 +67,9 @@
     <string name="username_required">Пайдаланушы аты бос болмауы керек</string>
     <string name="password_required">Кілтсөз алаңы бос</string>
     <string name="invalid_credentials">Кіру ақпараты қате</string>
+    <string name="invalid_email">Дұрыс email енгізіңіз</string>
+    <string name="email_not_registered">Email тіркелмеген</string>
+    <string name="email_already_taken">Осындай email қолданыста бар</string>
     <string name="password_mismatch">Кілтсөздер сәйкес емес</string>
     <string name="useful_tips">Пайдалы кеңестер</string>
     <string name="grammar_tip_1"><b>Күнделікті өмірге негізделген жаңа сөздерді меңгеру:</b> Тек адамдармен оны қоршап тұрған нәрсені, оған не қажет және нені қалайтынын қазақша қалай айту керектігін үйреніңіз: шай, кәмпит, ұйқы, киім, есік, велосипед, түстер т.б.</string>
@@ -99,5 +102,8 @@
     <string name="try_again">Қайта көру</string>
     <string name="read_less">Қысқарту</string>
     <string name="read_more">Бәрін көру</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="quiz">Quiz</string>
+    <string name="true_false">True or False</string>
 
 </resources>

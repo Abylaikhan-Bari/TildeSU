@@ -15,6 +15,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.language.LanguageManager
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
@@ -43,8 +44,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
             val currentLanguageCode by languageViewModel.language.collectAsState()
-            val LocalLanguageCode = staticCompositionLocalOf { "en" }
-            CompositionLocalProvider(LocalLanguageCode provides currentLanguageCode) {
+            val localLanguageCode = staticCompositionLocalOf { "en" }
+            CompositionLocalProvider(localLanguageCode provides currentLanguageCode) {
                 TildeSUTheme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -83,8 +84,10 @@ private fun determineInitialScreen(): String {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-        overridePendingTransition(0, 0) // Optional: Smooth transition or no animation.
+        // Use the custom animations for a more pleasant effect
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
+
 
 
 }

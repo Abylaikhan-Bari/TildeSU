@@ -3,11 +3,15 @@ package com.ashim_bari.tildesu.model.user
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 
@@ -31,6 +35,34 @@ class UserRepository {
             false
         }
     }
+    suspend fun isEmailRegistered(email: String): Boolean {
+        return try {
+            val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
+            result.signInMethods?.isNotEmpty() ?: false
+        } catch (e: Exception) {
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> {
+                    // Handle invalid email format
+                    Log.e("Auth", "Invalid email format", e)
+                }
+                is FirebaseAuthInvalidUserException -> {
+                    // Handle user not found
+                    Log.e("Auth", "User not found", e)
+                }
+                is FirebaseNetworkException -> {
+                    // Handle network errors
+                    Log.e("Auth", "Network error", e)
+                }
+                else -> {
+                    // Handle other errors
+                    Log.e("Auth", "Unknown error", e)
+                }
+            }
+            false
+        }
+    }
+
+
 
     private suspend fun createUserProfile(userId: String, email: String) {
         val user = mapOf(
@@ -142,33 +174,76 @@ class UserRepository {
     }
 
     suspend fun getUserImage(): String? {
+        // Get the current user ID, return null if not signed in
         val userId = firebaseAuth.currentUser?.uid ?: return null
+
+        // Construct the reference to the image in Firebase Storage
         val imageRef = storageReference.child("profileImages/$userId/profilePic.jpg")
 
+        // Attempt to get the download URL of the image
         return try {
             val imageUrl = imageRef.downloadUrl.await().toString()
-            Log.d("UserRepository", "User image fetched successfully")
-            imageUrl
+            Log.d("UserRepository", "User image fetched successfully: $imageUrl")
+            imageUrl // Return the image URL if successful
+        } catch (e: StorageException) {
+            if (e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                // If the image does not exist, log the information and return null
+                Log.i("UserRepository", "User image does not exist at location: profileImages/$userId/profilePic.jpg")
+                null
+            } else {
+                // If another error occurred, log the exception and return null
+                Log.e("UserRepository", "User image fetch failed", e)
+                null
+            }
         } catch (e: Exception) {
-            Log.e("UserRepository", "User image fetch failed", e)
-            e.printStackTrace()
+            // Catch any other exceptions that might occur and return null
+            Log.e("UserRepository", "Unexpected error fetching user image", e)
             null
         }
     }
 
-    suspend fun getUserProgress(userId: String): Map<String, Pair<Float, Int>> {
-        val userProgressData = mutableMapOf<String, Pair<Float, Int>>()
+
+
+    data class UserProgress(
+        val overallProgress: Float,
+        val puzzleProgress: Float,
+        val quizProgress: Float,
+        val trueFalseProgress: Float
+    )
+
+    suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
+        val userProgressData = mutableMapOf<String, UserProgress>()
         val userProgressCollection = firestore.collection("users").document(userId).collection("progress")
         val querySnapshot = userProgressCollection.get().await()
+
         for (document in querySnapshot.documents) {
             val levelId = document.id
-            val correctAnswers = (document.data?.get("totalCorrectAnswers") as? Number)?.toInt() ?: 0
-            val totalQuestions = (document.data?.get("totalQuestions") as? Number)?.toInt() ?: 0
-            val progress = if (totalQuestions > 0) correctAnswers.toFloat() / totalQuestions else 0f
-            userProgressData[levelId] = Pair(progress, correctAnswers)
+
+            // Firestore stores numbers as Long or Double, so you need to cast them accordingly
+            val overallCorrect = (document.getLong("overallCorrect") ?: 0).toFloat()
+            val overallTotal = (document.getLong("overallTotal") ?: 0).toFloat()
+            val puzzleCorrect = (document.getLong("puzzleCorrect") ?: 0).toFloat()
+            val puzzleTotal = (document.getLong("puzzleTotal") ?: 0).toFloat()
+            val quizCorrect = (document.getLong("quizCorrect") ?: 0).toFloat()
+            val quizTotal = (document.getLong("quizTotal") ?: 0).toFloat()
+            val trueFalseCorrect = (document.getLong("trueFalseCorrect") ?: 0).toFloat()
+            val trueFalseTotal = (document.getLong("trueFalseTotal") ?: 0).toFloat()
+
+            // Calculate progress as a float ratio
+            val overallProgress = if (overallTotal > 0) overallCorrect / overallTotal else 0f
+            val puzzleProgress = if (puzzleTotal > 0) puzzleCorrect / puzzleTotal else 0f
+            val quizProgress = if (quizTotal > 0) quizCorrect / quizTotal else 0f
+            val trueFalseProgress = if (trueFalseTotal > 0) trueFalseCorrect / trueFalseTotal else 0f
+
+            // Create UserProgress instance without completedOn
+            userProgressData[levelId] = UserProgress(overallProgress, puzzleProgress, quizProgress, trueFalseProgress)
         }
-        Log.d("UserRepository", "User progress fetched successfully")
+
         return userProgressData
     }
+
+
+
+
 }
 

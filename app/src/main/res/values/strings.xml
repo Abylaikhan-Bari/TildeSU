@@ -54,18 +54,21 @@
     <string name="language_russian">Russian</string>
     <string name="language_kazakh">Kazakh</string>
     <string name="select_language">Select language</string>
-    <string name="level_a1">A1 Level</string>
-    <string name="level_a2">A2 Level</string>
-    <string name="level_b1">B1 Level</string>
-    <string name="level_b2">B2 Level</string>
-    <string name="level_c1">C1 Level</string>
-    <string name="level_c2">C2 Level</string>
+    <string name="level_a1">Level A1</string>
+    <string name="level_a2">Level A2</string>
+    <string name="level_b1">Level B1</string>
+    <string name="level_b2">Level B2</string>
+    <string name="level_c1">Level C1</string>
+    <string name="level_c2">Level C2</string>
     <string name="no_progress_data">No progress data available. Start learning to see your progress!</string>
     <string name="error_current_password_empty">Current password field is empty!</string>
     <string name="error_new_password_empty">New password field is empty!</string>
     <string name="error_confirm_password_empty">Confirm password field is empty!</string>
     <string name="username_required">Username cannot be empty</string>
     <string name="password_required">Password cannot be empty</string>
+    <string name="invalid_email">Please enter a valid email</string>
+    <string name="email_already_taken">Email already taken</string>
+    <string name="email_not_registered">Email not registered</string>
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="password_mismatch">Passwords do not match</string>
     <string name="useful_tips">Useful Grammar Tips</string>
@@ -99,4 +102,7 @@
     <string name="try_again">Try Again</string>
     <string name="read_less">Read less</string>
     <string name="read_more">Read more</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="quiz">Quiz</string>
+    <string name="true_false">True or False</string>
 </resources>

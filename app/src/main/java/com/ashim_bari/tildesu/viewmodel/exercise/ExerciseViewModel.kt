@@ -7,142 +7,264 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
+import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.launch
+import kotlin.math.min
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
     val exercises: LiveData<List<Exercise>> = _exercises
 
-    private val _currentQuestionIndex = MutableLiveData<Int>(0)
-    val currentQuestionIndex: LiveData<Int> = _currentQuestionIndex
+    private val _currentExerciseIndex = MutableLiveData<Int>(0)
+    val currentExercisesIndex: LiveData<Int> = _currentExerciseIndex
 
-    private val _score = MutableLiveData<Int>(0)
-    val score: LiveData<Int> = _score
+    private val _quizScore = MutableLiveData(0)
+    val quizScore: LiveData<Int> = _quizScore
+    private val _trueFalseScore = MutableLiveData(0)
+    val trueFalseScore: LiveData<Int> = _trueFalseScore
+    private val _puzzleScore = MutableLiveData(0)
+    val puzzleScore: LiveData<Int> = _puzzleScore
 
-    private val _quizCompleted = MutableLiveData<Boolean>(false)
-    val quizCompleted: LiveData<Boolean> = _quizCompleted
+    private val _exerciseCompleted = MutableLiveData<Boolean>(false)
+    val exerciseCompleted: LiveData<Boolean> = _exerciseCompleted
 
     private var currentLevelId: String? = null
+    private var currentExerciseType: ExerciseType? = null
 
-
-    init {
-        // Optionally, load initial data here or trigger from the UI
-    }
-    private val _quizPassed = MutableLiveData<Boolean?>(null) // null: quiz not completed, true: passed, false: failed
+    private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
 
-    private fun completeQuiz() {
-        val totalQuestions = _exercises.value?.size ?: 0
-        val totalCorrectAnswers = _score.value ?: 0
-        _quizPassed.value = totalCorrectAnswers == totalQuestions
-        _quizCompleted.value = true
-        updateProgress()
-    }
-    fun resetQuiz() {
-        _currentQuestionIndex.value = 0
-        _score.value = 0
-        _quizCompleted.value = false
-        _quizPassed.value = null
-        // Optionally reload exercises or perform other reset actions
+    private val TAG = "ExerciseViewModel"
+    init {
+        // Add logging for initial values
+        Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}")
     }
 
-    fun loadExercisesForLevel(level: String) {
+    // Setter functions with logging
+    private fun setQuizScore(value: Int) {
+        _quizScore.value = value
+        Log.d(TAG, "Quiz Score Updated to: $value")
+    }
+
+    private fun setTrueFalseScore(value: Int) {
+        _trueFalseScore.value = value
+        Log.d(TAG, "True False Score Updated to: $value")
+    }
+
+    private fun setPuzzleScore(value: Int) {
+        _puzzleScore.value = value
+        Log.d(TAG, "Puzzle Score Updated to: $value")
+    }
+
+    private fun setExerciseCompleted(value: Boolean) {
+        _exerciseCompleted.value = value
+        Log.d(TAG, "Exercise Completed: $value")
+    }
+
+    private fun setQuizPassed(value: Boolean?) {
+        _quizPassed.value = value
+        Log.d(TAG, "Quiz Passed: $value")
+    }
+
+    fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
+        currentLevelId = level
+        currentExerciseType = type
         viewModelScope.launch {
             try {
-                val exercisesList = repository.getExercisesByLevel(level)
+                val exercisesList = repository.getExercisesByLevelAndType(level, type)
                 if (exercisesList.isNotEmpty()) {
                     _exercises.value = exercisesList
-                    _currentQuestionIndex.value = 0
-                    _score.value = 0
-                    _quizCompleted.value = false
-                    currentLevelId = level
-                    Log.d("ExerciseVM", "Exercises loaded, total: ${exercisesList.size}, Level: $level")
+                    _currentExerciseIndex.value = 0
+                    resetExercise()
+                    Log.d(TAG, "Exercises loaded for level: $level, type: $type, total: ${exercisesList.size}")
                 } else {
-                    Log.w("ExerciseVM", "No exercises found for level $level")
+                    Log.d(TAG, "No exercises found for level: $level, type: $type")
                 }
             } catch (e: Exception) {
-                Log.e("ExerciseVM", "Error loading exercises for level $level", e)
+                Log.e(TAG, "Error loading exercises for level $level and type $type", e)
             }
         }
     }
 
-    fun submitAnswer(selectedOption: Int) {
-        exercises.value?.let {
-            if (it.isNotEmpty()) {
-                val currentExercise = it[_currentQuestionIndex.value ?: 0]
-                val isCorrect = selectedOption == currentExercise.correctOptionIndex
+
+
+    fun submitQuizAnswer(selectedOption: Int) {
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
+        currentExercise?.let { exercise ->
+            if (exercise.type == ExerciseType.QUIZ) {
+                val isCorrect = selectedOption == exercise.correctOptionIndex
                 if (isCorrect) {
-                    _score.value = (_score.value ?: 0) + 1
-                    Log.d("ExerciseVM", "Correct answer, score updated: ${_score.value}")
+                    // Make sure not to exceed the total number of exercises
+                    val newScore = min((_quizScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
+                    setQuizScore(newScore)
                 }
-                moveToNextQuestion()
+                moveToNextQuiz()
+            } else {
+                Log.d(TAG, "Non-Quiz exercise attempted in Quiz method. Exercise type: ${exercise.type}")
             }
         }
     }
 
-    fun moveToNextQuestion() {
-        val currentIdx = currentQuestionIndex.value ?: 0
-        val nextIndex = currentIdx + 1
-        val totalQuestions = exercises.value?.size ?: 0
-
-        Log.d("ExerciseVM", "Current index: $currentIdx, Next index: $nextIndex, Total questions: $totalQuestions")
-
-        if (nextIndex < totalQuestions) {
-            _currentQuestionIndex.postValue(nextIndex)
-            Log.d("ExerciseVM", "Moving to next question: Index $nextIndex")
-        } else {
-            Log.d("ExerciseVM", "No more questions. Marking quiz as completed.")
-            completeQuiz()
+    fun moveToNextQuiz() {
+        _currentExerciseIndex.value?.let { currentIndex ->
+            if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+                _currentExerciseIndex.value = currentIndex + 1
+                Log.d(TAG, "Moved to next question: index ${_currentExerciseIndex.value}")
+            } else {
+                setQuizPassed(true)
+                completeExercise()
+            }
         }
     }
 
+    fun submitTrueFalseAnswer(userAnswer: Boolean) {
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
+        Log.d(TAG, "Attempting True/False answer. Current type: ${currentExercise?.type}, Index: ${_currentExerciseIndex.value}")
 
-//    private fun completeQuiz() {
-//        Log.d("ExerciseVM", "Completing quiz")
-//        _quizCompleted.value = true
-//        // Update user progress and other cleanup as necessary
-//    }
+        if (currentExercise?.type != ExerciseType.TRUE_FALSE) {
+            Log.d(TAG, "Non-True/False exercise attempted in True/False method. Exercise type: ${currentExercise?.type}")
+            return
+        }
 
-//    private fun completeQuiz() {
-//        Log.d("ExerciseVM", "Completing quiz")
-//        _quizCompleted.value = true
-//        // Call updateProgress here to trigger the update in Firestore
-//        updateProgress()
-//    }
+        val isCorrect = userAnswer == currentExercise.isTrue
+        if (isCorrect) {
+            // Make sure not to exceed the total number of exercises
+            val newScore = min((_trueFalseScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
+            setTrueFalseScore(newScore)
+            updateProgress()
+        }
+
+
+    }
+
+    fun moveToNextTrueFalse() {
+        val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
+        if (nextIndex < (_exercises.value?.size ?: 0)) {
+            _currentExerciseIndex.value = nextIndex
+        } else {
+            completeExercise()
+        }
+    }
+
+    fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
+        val isCorrect = userOrder == puzzle.correctOrder
+        if (isCorrect) {
+            // Make sure not to exceed the total number of exercises
+            val newScore = min((_puzzleScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
+            setPuzzleScore(newScore)
+        }
+
+
+    }
+
+    fun moveToNextPuzzle() {
+        val currentIndex = _currentExerciseIndex.value ?: return
+        if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+            _currentExerciseIndex.value = currentIndex + 1
+        } else {
+            completeExercise()
+        }
+    }
 
     private fun updateProgress() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid ?: run {
-            Log.e("ExerciseVM", "User not logged in.")
-            return
-        }
-        val email = currentUser.email ?: run {
-            Log.e("ExerciseVM", "User email not available.")
-            return
-        }
+        FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+            currentLevelId?.let { levelId ->
+                viewModelScope.launch {
+                    try {
+                        // Fetch the current progress for the level
+                        val currentProgress = repository.fetchUserProgress(userId, levelId)
 
-        val score = _score.value ?: 0
-        val totalCorrectAnswers = score // Assuming score represents the total correct answers
+                        // Prepare the updated data based on the exercise type
+                        val updatedData = when (currentExerciseType) {
+                            ExerciseType.QUIZ -> mapOf(
+                                "quizCorrect" to min(_quizScore.value ?: 0, _exercises.value?.size ?: 0),
+                                "quizTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            ExerciseType.TRUE_FALSE -> mapOf(
+                                "trueFalseCorrect" to min(_trueFalseScore.value ?: 0, _exercises.value?.size ?: 0),
+                                "trueFalseTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            ExerciseType.PUZZLES -> mapOf(
+                                "puzzleCorrect" to min(_puzzleScore.value ?: 0, _exercises.value?.size ?: 0),
+                                "puzzleTotal" to (_exercises.value?.size ?: 0)
+                            )
+                            else -> emptyMap()
+                        }
 
-        currentLevelId?.let { levelId ->
-            viewModelScope.launch {
-                try {
-                    // Get total questions attempted for the level
-                    val totalQuestions = exercises.value?.size ?: 0
-                    repository.updateUserProgress(userId, levelId, score, totalCorrectAnswers, totalQuestions)
-                    Log.d("ExerciseVM", "User progress updated for level $levelId")
-                } catch (e: Exception) {
-                    Log.e("ExerciseVM", "Error updating user progress for level $levelId", e)
+
+                        // Ensure there's something to update
+                        if (updatedData.isNotEmpty()) {
+                            // Include common fields that should always be updated
+                            // Inside your updateProgress method
+                            val commonData = mapOf(
+                                "overallTotal" to calculateOverallTotalQuestions(currentProgress, updatedData),
+                                "overallCorrect" to calculateOverallCorrectAnswers(currentProgress, updatedData),
+                                "completedOn" to FieldValue.serverTimestamp()
+                            )
+
+
+                            repository.updateUserProgress(userId, levelId, updatedData + commonData)
+                            Log.d(TAG, "Progress updated for user: $userId, level: $levelId with data: $updatedData")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to update progress for user: $userId, level: $levelId", e)
+                    }
                 }
             }
         }
     }
 
+    private fun calculateOverallTotalQuestions(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
+        // Ensure values are Int and handle nullability
+        val quizTotal = (updatedData["quizTotal"] as? Number ?: currentProgress["quizTotal"] as? Number ?: 0).toInt()
+        val trueFalseTotal = (updatedData["trueFalseTotal"] as? Number ?: currentProgress["trueFalseTotal"] as? Number ?: 0).toInt()
+        val puzzleTotal = (updatedData["puzzleTotal"] as? Number ?: currentProgress["puzzleTotal"] as? Number ?: 0).toInt()
 
+        return quizTotal + trueFalseTotal + puzzleTotal
+    }
+
+    private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
+        // Fetch current correct answers for all types from the progress
+        val currentQuizCorrect = (currentProgress["quizCorrect"] as? Number ?: 0).toInt()
+        val currentTrueFalseCorrect = (currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt()
+        val currentPuzzleCorrect = (currentProgress["puzzleCorrect"] as? Number ?: 0).toInt()
+
+        // Fetch the new correct answer for the current exercise type only
+        val newCorrectAnswer = when (currentExerciseType) {
+            ExerciseType.QUIZ -> (updatedData["quizCorrect"] as? Number ?: currentQuizCorrect).toInt()
+            ExerciseType.TRUE_FALSE -> (updatedData["trueFalseCorrect"] as? Number ?: currentTrueFalseCorrect).toInt()
+            ExerciseType.PUZZLES -> (updatedData["puzzleCorrect"] as? Number ?: currentPuzzleCorrect).toInt()
+            else -> 0
+        }
+
+        // Depending on the type, replace the corresponding old value with the new one
+        val totalQuizCorrect = if (currentExerciseType == ExerciseType.QUIZ) newCorrectAnswer else currentQuizCorrect
+        val totalTrueFalseCorrect = if (currentExerciseType == ExerciseType.TRUE_FALSE) newCorrectAnswer else currentTrueFalseCorrect
+        val totalPuzzleCorrect = if (currentExerciseType == ExerciseType.PUZZLES) newCorrectAnswer else currentPuzzleCorrect
+
+        // Sum up all correct answers across all exercise types
+        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect
+    }
+
+
+
+
+
+
+    fun completeExercise() {
+        setExerciseCompleted(true)
+
+        updateProgress()
+    }
+
+    fun resetExercise() {
+        _currentExerciseIndex.value = 0
+        setExerciseCompleted(false)
+        setQuizScore(0)
+        setTrueFalseScore(0)
+        setPuzzleScore(0)
+        setQuizPassed(null)
+    }
 }
-
-
-
-
-

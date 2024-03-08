@@ -67,6 +67,9 @@
     <string name="username_required">Имя пользователя не заполнено</string>
     <string name="password_required">Поле пароля пусто</string>
     <string name="invalid_credentials">Неправильные данные</string>
+    <string name="invalid_email">Введите правильный email</string>
+    <string name="email_not_registered">Email не зарегистрирован</string>
+    <string name="email_already_taken">Пользователь с таким email уже существует</string>
     <string name="password_mismatch">Пароли не совпадают</string>
     <string name="useful_tips">Полезные советы</string>
     <string name="grammar_tip_1"><b>Попробуйте схему 30-45-60:</b> Эта схема предполагает постепенное увеличение учебной нагрузки. В первую неделю вы занимаетесь по 30 минут в день, во вторую 45 и в третью 60 минут. Количество еженедельных занятий вы выбираете самостоятельно, равно как и их длительность. Желательно заниматься 3-4 раза в неделю минимум по 20-30 минут. Можете увеличить длительность уроков? Отлично. Но не перегружайте себя. Помните, что лучше заниматься по 15 минут каждый день, чем по 3 часа 1 раз в неделю.</string>
@@ -108,5 +111,8 @@
     <string name="try_again">Попробавать снова</string>
     <string name="read_less">Скрыть</string>
     <string name="read_more">Раскрыть</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="quiz">Quiz</string>
+    <string name="true_false">True or False</string>
 
 </resources>
