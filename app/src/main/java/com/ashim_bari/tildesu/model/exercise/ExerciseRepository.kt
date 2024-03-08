@@ -53,6 +53,7 @@ class ExerciseRepository {
         }
     }
 
+    @OptIn(UnstableApi::class)
     suspend fun fetchUserProgress(userId: String, levelId: String): Map<String, Any> {
         // Placeholder implementation. Adjust according to your Firestore structure.
         return try {
