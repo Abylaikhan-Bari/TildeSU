@@ -17,9 +17,10 @@ class ExerciseRepository {
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
         val collectionName = when (type) {
-            ExerciseType.QUIZ -> "quizzes"
+            ExerciseType.QUIZ, ExerciseType.IMAGE_QUIZ -> "quizzes" // IMAGE_QUIZ stored in the same collection as QUIZ
             ExerciseType.PUZZLES -> "puzzles"
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
+            ExerciseType.DICTIONARY_CARD -> "dictionaryCards" // Assumed collection name for DICTIONARY_CARD
         }
 
         return try {
@@ -31,14 +32,20 @@ class ExerciseRepository {
 
             exercisesSnapshot.documents.mapNotNull { documentSnapshot ->
                 val exercise = documentSnapshot.toObject<Exercise>()?.also {
-                    it.type = type // Explicitly set the type from the method parameter if missing
+                    it.type = type // Explicitly set the type from the method parameter
                 }
 
+                // Additional logic for IMAGE_QUIZ and DICTIONARY_CARD if needed
                 when (type) {
                     ExerciseType.PUZZLES -> {
                         val correctOrderLongs = documentSnapshot.get("correctOrder") as? List<Long>
                         val correctOrderInts = correctOrderLongs?.map { it.toInt() }
                         exercise?.copy(correctOrder = correctOrderInts)
+                    }
+                    // No additional fields required for IMAGE_QUIZ as they share the same structure as QUIZ
+                    ExerciseType.DICTIONARY_CARD -> {
+                        // Map the fields specific to DICTIONARY_CARD if they differ from the standard fields
+                        exercise
                     }
                     else -> exercise
                 }.also {

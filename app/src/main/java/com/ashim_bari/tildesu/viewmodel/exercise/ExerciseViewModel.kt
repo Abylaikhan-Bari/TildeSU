@@ -36,6 +36,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
 
+    private val _dictionaryCardCompleted = MutableLiveData<Boolean>(false)
+    val dictionaryCardCompleted: LiveData<Boolean> = _dictionaryCardCompleted
+
     private val TAG = "ExerciseViewModel"
     init {
         // Add logging for initial values
@@ -88,7 +91,38 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         }
     }
 
+    fun submitDictionaryCardAnswer(userTranslation: String) {
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
+        if (currentExercise?.type == ExerciseType.DICTIONARY_CARD) {
+            // Here, add logic to validate the userTranslation.
+            // This is an example and might not reflect your app's actual logic.
+            val isCorrect = userTranslation.equals(currentExercise.wordEnglish, ignoreCase = true)
+            if (isCorrect) {
+                // If there's a score for dictionary cards, update it here.
+                setDictionaryCardCompleted(true)
+                Log.d(TAG, "Dictionary card completed correctly.")
+            }
+            moveToNextDictionaryCard()
+        } else {
+            Log.d(TAG, "Non-Dictionary card exercise attempted in Dictionary card method. Exercise type: ${currentExercise?.type}")
+        }
+    }
 
+    fun moveToNextDictionaryCard() {
+        val currentIndex = _currentExerciseIndex.value ?: 0
+        if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+            _currentExerciseIndex.value = currentIndex + 1
+        } else {
+            setDictionaryCardCompleted(true)
+            Log.d(TAG, "All dictionary cards completed.")
+            // If there's a completion status for dictionary cards, set it here.
+        }
+    }
+
+    private fun setDictionaryCardCompleted(value: Boolean) {
+        _dictionaryCardCompleted.value = value
+        Log.d(TAG, "Dictionary Card Completion Status: $value")
+    }
 
     fun submitQuizAnswer(selectedOption: Int) {
         val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
@@ -266,5 +300,6 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         setTrueFalseScore(0)
         setPuzzleScore(0)
         setQuizPassed(null)
+        setDictionaryCardCompleted(false)
     }
 }

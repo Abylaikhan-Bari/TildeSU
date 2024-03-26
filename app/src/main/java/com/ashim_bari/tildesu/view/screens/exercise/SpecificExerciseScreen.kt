@@ -3,6 +3,8 @@ package com.ashim_bari.tildesu.view.screens.exercise
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import com.ashim_bari.tildesu.view.screens.exercise.content.DictionaryCardContent
+import com.ashim_bari.tildesu.view.screens.exercise.content.ImageQuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.PuzzlesContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.QuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.TrueFalseContent
@@ -27,6 +29,8 @@ fun SpecificExerciseScreen(
         ExerciseType.QUIZ -> QuizContent(navController, level, ExerciseType.QUIZ, exerciseViewModelFactory)
         ExerciseType.PUZZLES -> PuzzlesContent(navController, level, exerciseViewModelFactory)
         ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, ExerciseType.TRUE_FALSE,exerciseViewModelFactory)
+        ExerciseType.IMAGE_QUIZ -> ImageQuizContent(navController, level, ExerciseType.IMAGE_QUIZ, exerciseViewModelFactory)
+        ExerciseType.DICTIONARY_CARD -> DictionaryCardContent(navController, level, ExerciseType.DICTIONARY_CARD, exerciseViewModelFactory)
     }
 
 }
