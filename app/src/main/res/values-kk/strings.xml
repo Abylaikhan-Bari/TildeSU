@@ -117,7 +117,7 @@
     <string name="no_puzzles_found">Бұл деңгейге пазлдар табылмады ...</string>
     <string name="arrange_words">Сөздерден сөйлем құраңыз</string>
     <string name="submit_button">Растау</string>
-    <string name="image_quiz">Image quiz</string>
-    <string name="dictionary_card">Dictionary card</string>
+    <string name="image_quiz">Сурет куиз</string>
+    <string name="dictionary_card">Сөздік карточкалары</string>
 
 </resources>

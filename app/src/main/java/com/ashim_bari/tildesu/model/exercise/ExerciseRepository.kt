@@ -17,10 +17,11 @@ class ExerciseRepository {
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
         val collectionName = when (type) {
-            ExerciseType.QUIZ, ExerciseType.IMAGE_QUIZ -> "quizzes" // IMAGE_QUIZ stored in the same collection as QUIZ
+            ExerciseType.QUIZ -> "quizzes"
+            ExerciseType.IMAGE_QUIZ -> "imageQuizzes" // Separate collection for image quizzes
             ExerciseType.PUZZLES -> "puzzles"
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
-            ExerciseType.DICTIONARY_CARD -> "dictionaryCards" // Assumed collection name for DICTIONARY_CARD
+            ExerciseType.DICTIONARY_CARD -> "dictionaryCards"// Assumed collection name for DICTIONARY_CARD
         }
 
         return try {
