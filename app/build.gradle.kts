@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -51,43 +53,60 @@ android {
 }
 
 dependencies {
+    // Core library desugaring enabled
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
-
-
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-
+    // AndroidX core, ktx, and UI
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.autofill:autofill:1.1.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.media3:media3-common:1.2.1")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    //Dagger-Hilt DI
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // Compose dependencies
     implementation("androidx.compose.foundation:foundation:1.6.1")
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.0")
     implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha06")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha03")
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+
+    // Firebase dependencies
     implementation("com.google.firebase:firebase-auth:22.3.1")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("com.google.firebase:firebase-database:20.3.1")
+    implementation("com.google.firebase:firebase-firestore:24.11.0")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
-    implementation("com.google.firebase:firebase-database:20.3.0")
-    implementation("androidx.autofill:autofill:1.1.0")
-    //implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2")
-    implementation("com.google.firebase:firebase-firestore:24.10.2")
-    implementation("androidx.media3:media3-common:1.2.1")
-    implementation("com.google.firebase:firebase-appcheck-debug:17.1.2")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-appcheck-debug")
+    // Firebase App Check for debug builds
+    //implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2") // Firebase App Check for Play Integrity, commented as it might not be needed for all builds
+
+    // Image loading library for Compose
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Testing libraries
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // Debugging and tooling for Compose
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
+}
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
