@@ -1,16 +1,26 @@
 package com.ashim_bari.tildesu.model.exercise
 
 import androidx.annotation.OptIn
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class ExerciseRepository {
+class ExerciseRepository @Inject constructor(
+    private val firestore: FirebaseFirestore
+) {
     //private val db = FirebaseFirestore.getInstance()
+    private val _exercises = MutableLiveData<List<Exercise>>()
+    val exercises: LiveData<List<Exercise>> = _exercises
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
     @OptIn(UnstableApi::class)
     private val db = Firebase.firestore
 
@@ -20,6 +30,8 @@ class ExerciseRepository {
             ExerciseType.QUIZ -> "quizzes"
             ExerciseType.PUZZLES -> "puzzles"
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
+            ExerciseType.DICTIONARY_CARDS -> "dictionaryCards"
+            ExerciseType.IMAGE_QUIZZES -> "imageQuizzes"
         }
 
         return try {
@@ -87,5 +99,3 @@ class ExerciseRepository {
     }
 
 }
-
-

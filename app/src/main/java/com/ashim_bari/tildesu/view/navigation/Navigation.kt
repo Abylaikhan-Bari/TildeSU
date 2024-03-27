@@ -1,13 +1,12 @@
 package com.ashim_bari.tildesu.view.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.LoadingScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
@@ -18,7 +17,6 @@ import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
 import com.ashim_bari.tildesu.view.screens.main.MainScreen
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 class Navigation {
     companion object {
@@ -37,13 +35,13 @@ class Navigation {
 
 @Composable
 fun NavigationGraph(navController: NavHostController, initialScreen: String) {
-    val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
-    val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
+//    val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
+//    val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
 
     NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
-            // Obtain ViewModel scoped to the NavHostController
-            val authViewModel: AuthenticationViewModel = viewModel()
+            // Obtain ViewModel scoped to the NavHostController using hiltViewModel
+            val authViewModel: AuthenticationViewModel = hiltViewModel()
             AuthenticationScreen(navController = navController, viewModel = authViewModel)
         }
         composable(Navigation.MAIN_ROUTE) {
@@ -107,7 +105,8 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
         ) { backStackEntry ->
             val level = backStackEntry.arguments?.getString("level") ?: "A1"
             val type = backStackEntry.arguments?.getString("type") ?: "quiz"
-            SpecificExerciseScreen(navController, exerciseViewModelFactory, level, type)
+            // Use hiltViewModel to retrieve ExerciseViewModel and pass it to the screen
+            SpecificExerciseScreen(navController, level, type)
         }
     }
 }

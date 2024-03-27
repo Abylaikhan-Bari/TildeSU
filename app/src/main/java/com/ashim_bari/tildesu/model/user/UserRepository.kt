@@ -14,10 +14,14 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class UserRepository {
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+class UserRepository @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) {
+//    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+//    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun isLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
@@ -208,7 +212,9 @@ class UserRepository {
         val overallProgress: Float,
         val puzzleProgress: Float,
         val quizProgress: Float,
-        val trueFalseProgress: Float
+        val trueFalseProgress: Float,
+        val imageQuizProgress: Float
+
     )
 
     suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
@@ -228,15 +234,17 @@ class UserRepository {
             val quizTotal = (document.getLong("quizTotal") ?: 0).toFloat()
             val trueFalseCorrect = (document.getLong("trueFalseCorrect") ?: 0).toFloat()
             val trueFalseTotal = (document.getLong("trueFalseTotal") ?: 0).toFloat()
+            val imageQuizCorrect = (document.getLong("imageQuizCorrect") ?: 0).toFloat()
+            val imageQuizTotal = (document.getLong("imageQuizTotal") ?: 0).toFloat()
 
             // Calculate progress as a float ratio
             val overallProgress = if (overallTotal > 0) overallCorrect / overallTotal else 0f
             val puzzleProgress = if (puzzleTotal > 0) puzzleCorrect / puzzleTotal else 0f
             val quizProgress = if (quizTotal > 0) quizCorrect / quizTotal else 0f
             val trueFalseProgress = if (trueFalseTotal > 0) trueFalseCorrect / trueFalseTotal else 0f
-
+            val imageQuizProgress = if (imageQuizTotal > 0) imageQuizCorrect / imageQuizTotal else 0f
             // Create UserProgress instance without completedOn
-            userProgressData[levelId] = UserProgress(overallProgress, puzzleProgress, quizProgress, trueFalseProgress)
+            userProgressData[levelId] = UserProgress(overallProgress, puzzleProgress, quizProgress, trueFalseProgress, imageQuizProgress)
         }
 
         return userProgressData

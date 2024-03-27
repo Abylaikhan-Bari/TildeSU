@@ -33,23 +33,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 @Composable
 fun TrueFalseContent(
     navController: NavController,
     level: String,
     type: ExerciseType,
-    exerciseViewModelFactory: ExerciseViewModelFactory
+
 ) {
-    val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
+    val exerciseViewModel: ExerciseViewModel = hiltViewModel()
+
 
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)

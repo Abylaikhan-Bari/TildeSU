@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ashim_bari.tildesu"
-        minSdk = 21
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.wear.compose:compose-material:1.3.0")
     // Core library desugaring enabled
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -66,8 +67,12 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //Dagger-Hilt DI
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-compiler:2.51")
+//    implementation("com.google.dagger:dagger:2.44")
+//    kapt("com.google.dagger:dagger-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 
     // Compose dependencies
     implementation("androidx.compose.foundation:foundation:1.6.1")
@@ -109,4 +114,8 @@ dependencies {
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
+}
+hilt {
+    enableAggregatingTask = true
+    enableTransformForLocalTests = true
 }

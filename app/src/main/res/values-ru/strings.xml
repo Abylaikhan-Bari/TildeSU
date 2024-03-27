@@ -126,5 +126,7 @@
     <string name="no_puzzles_found">Пазлов не найдено для данного уровня ...</string>
     <string name="arrange_words">Создайте предложения из данных слов</string>
     <string name="submit_button">Подтвердить</string>
+    <string name="image_quiz">Куиз изображение</string>
+    <string name="dictionary_cards">Словарные карточки</string>
 
 </resources>

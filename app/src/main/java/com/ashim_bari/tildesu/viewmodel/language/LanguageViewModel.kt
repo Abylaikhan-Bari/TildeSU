@@ -1,14 +1,19 @@
 package com.ashim_bari.tildesu.viewmodel.language
 
-import com.ashim_bari.tildesu.model.language.LanguageManager
 import android.content.Context
 import android.content.res.Configuration
 import androidx.lifecycle.ViewModel
+import com.ashim_bari.tildesu.model.language.LanguageManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
+import javax.inject.Inject
 
-class LanguageViewModel : ViewModel() {
+@HiltViewModel
+class LanguageViewModel @Inject constructor(
+    private val languageManager: LanguageManager
+) : ViewModel() {
     private val _language = MutableStateFlow(LanguageManager.DEFAULT_LANGUAGE)
     val language: StateFlow<String> = _language
 

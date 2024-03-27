@@ -10,10 +10,15 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.min
 
-class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
+@HiltViewModel
+class ExerciseViewModel @Inject constructor(
+    private val repository: ExerciseRepository
+) : ViewModel()  {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
     val exercises: LiveData<List<Exercise>> = _exercises
 
@@ -23,6 +28,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _quizScore = MutableLiveData(0)
     val quizScore: LiveData<Int> = _quizScore
     private val _trueFalseScore = MutableLiveData(0)
+    private val _imageQuizScore = MutableLiveData(0)
+    val imageQuizScore: LiveData<Int> = _imageQuizScore
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
     val trueFalseScore: LiveData<Int> = _trueFalseScore
     private val _puzzleScore = MutableLiveData(0)
     val puzzleScore: LiveData<Int> = _puzzleScore
@@ -35,17 +44,23 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
     private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
+    private val _imageQuizPassed = MutableLiveData<Boolean?>(null)
+    val imageQuizPassed: LiveData<Boolean?> = _imageQuizPassed
 
     private val TAG = "ExerciseViewModel"
     init {
         // Add logging for initial values
-        Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}")
+        Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}, ImageQuizPassed=${_imageQuizPassed.value}")
     }
 
     // Setter functions with logging
     private fun setQuizScore(value: Int) {
         _quizScore.value = value
         Log.d(TAG, "Quiz Score Updated to: $value")
+    }
+    private fun setImageQuizScore(value: Int) {
+        _imageQuizScore.value = value
+        Log.d(TAG, "Image Quiz Score Updated to: $value")
     }
 
     private fun setTrueFalseScore(value: Int) {
@@ -67,10 +82,15 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         _quizPassed.value = value
         Log.d(TAG, "Quiz Passed: $value")
     }
+    private fun setImageQuizPassed(value: Boolean?) {
+        _imageQuizPassed.value = value
+        Log.d(TAG, "Image Quiz Passed: $value")
+    }
 
     fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
         currentLevelId = level
         currentExerciseType = type
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val exercisesList = repository.getExercisesByLevelAndType(level, type)
@@ -85,25 +105,33 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading exercises for level $level and type $type", e)
             }
+            finally {
+                _isLoading.value = false
+            }
         }
     }
 
 
 
     fun submitQuizAnswer(selectedOption: Int) {
-        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
-        currentExercise?.let { exercise ->
-            if (exercise.type == ExerciseType.QUIZ) {
-                val isCorrect = selectedOption == exercise.correctOptionIndex
-                if (isCorrect) {
-                    // Make sure not to exceed the total number of exercises
-                    val newScore = min((_quizScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0) ?: return
+
+        when (currentExercise.type) {
+            ExerciseType.QUIZ -> {
+                if (selectedOption == currentExercise.correctOptionIndex) {
+                    val newScore = (_quizScore.value ?: 0) + 1
                     setQuizScore(newScore)
                 }
                 moveToNextQuiz()
-            } else {
-                Log.d(TAG, "Non-Quiz exercise attempted in Quiz method. Exercise type: ${exercise.type}")
             }
+            ExerciseType.IMAGE_QUIZZES -> {
+                if (selectedOption == currentExercise.correctImageOptionIndex) {
+                    val newImageQuizScore = (_imageQuizScore.value ?: 0) + 1
+                    setImageQuizScore(newImageQuizScore)
+                }
+                moveToNextImageQuiz()
+            }
+            else -> Log.d(TAG, "Attempted to submit answer for non-supported exercise type.")
         }
     }
 
@@ -114,6 +142,17 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                 Log.d(TAG, "Moved to next question: index ${_currentExerciseIndex.value}")
             } else {
                 setQuizPassed(true)
+                completeExercise()
+            }
+        }
+    }
+    fun moveToNextImageQuiz() {
+        _currentExerciseIndex.value?.let { currentIndex ->
+            if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+                _currentExerciseIndex.value = currentIndex + 1
+                Log.d(TAG, "Moved to next image question: index ${_currentExerciseIndex.value}")
+            } else {
+                setImageQuizPassed(true)
                 completeExercise()
             }
         }
@@ -190,6 +229,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
                                 "puzzleCorrect" to min(_puzzleScore.value ?: 0, _exercises.value?.size ?: 0),
                                 "puzzleTotal" to (_exercises.value?.size ?: 0)
                             )
+                            ExerciseType.IMAGE_QUIZZES -> mapOf(
+                                "imageQuizCorrect" to min(_imageQuizScore.value ?: 0, _exercises.value?.size ?: 0),
+                                "imageQuizTotal" to (_exercises.value?.size ?: 0)
+                            )
                             else -> emptyMap()
                         }
 
@@ -221,8 +264,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
         val quizTotal = (updatedData["quizTotal"] as? Number ?: currentProgress["quizTotal"] as? Number ?: 0).toInt()
         val trueFalseTotal = (updatedData["trueFalseTotal"] as? Number ?: currentProgress["trueFalseTotal"] as? Number ?: 0).toInt()
         val puzzleTotal = (updatedData["puzzleTotal"] as? Number ?: currentProgress["puzzleTotal"] as? Number ?: 0).toInt()
+        val imageQuizTotal = (updatedData["imageQuizTotal"] as? Number ?: currentProgress["imageQuizTotal"] as? Number ?: 0).toInt()
 
-        return quizTotal + trueFalseTotal + puzzleTotal
+        return quizTotal + trueFalseTotal + puzzleTotal + imageQuizTotal
     }
 
     private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
@@ -238,14 +282,19 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             ExerciseType.PUZZLES -> (updatedData["puzzleCorrect"] as? Number ?: currentPuzzleCorrect).toInt()
             else -> 0
         }
-
+        val currentImageQuizCorrect = (currentProgress["imageQuizCorrect"] as? Number ?: 0).toInt()
+        val newImageQuizCorrect = when (currentExerciseType) {
+            ExerciseType.IMAGE_QUIZZES -> (updatedData["imageQuizCorrect"] as? Number ?: currentImageQuizCorrect).toInt()
+            else -> currentImageQuizCorrect
+        }
         // Depending on the type, replace the corresponding old value with the new one
         val totalQuizCorrect = if (currentExerciseType == ExerciseType.QUIZ) newCorrectAnswer else currentQuizCorrect
         val totalTrueFalseCorrect = if (currentExerciseType == ExerciseType.TRUE_FALSE) newCorrectAnswer else currentTrueFalseCorrect
         val totalPuzzleCorrect = if (currentExerciseType == ExerciseType.PUZZLES) newCorrectAnswer else currentPuzzleCorrect
 
         // Sum up all correct answers across all exercise types
-        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect
+        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect + newImageQuizCorrect
+
     }
 
 

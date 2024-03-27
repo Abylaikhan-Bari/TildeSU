@@ -3,15 +3,15 @@ package com.ashim_bari.tildesu.view.screens.exercise
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import com.ashim_bari.tildesu.view.screens.exercise.content.DictionaryCardsContent
+import com.ashim_bari.tildesu.view.screens.exercise.content.ImageQuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.PuzzlesContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.QuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.TrueFalseContent
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 @Composable
 fun SpecificExerciseScreen(
     navController: NavController,
-    exerciseViewModelFactory: ExerciseViewModelFactory,
     level: String,
     type: String
 ) {
@@ -22,11 +22,14 @@ fun SpecificExerciseScreen(
         ExerciseType.QUIZ // Default to QUIZ or handle error as appropriate
     }
 
+
+
     // Based on exerciseType, decide which content to show
     when (exerciseType) {
-        ExerciseType.QUIZ -> QuizContent(navController, level, ExerciseType.QUIZ, exerciseViewModelFactory)
-        ExerciseType.PUZZLES -> PuzzlesContent(navController, level, exerciseViewModelFactory)
-        ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, ExerciseType.TRUE_FALSE,exerciseViewModelFactory)
+        ExerciseType.QUIZ -> QuizContent(navController, level, exerciseType)
+        ExerciseType.PUZZLES -> PuzzlesContent(navController, level)
+        ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, exerciseType)
+        ExerciseType.IMAGE_QUIZZES -> ImageQuizContent(navController, level)
+        ExerciseType.DICTIONARY_CARDS -> DictionaryCardsContent(level, exerciseType)
     }
-
 }

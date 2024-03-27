@@ -50,6 +50,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
@@ -64,10 +65,10 @@ import kotlinx.coroutines.launch
 fun RegisterPage(
     navController: NavHostController,
     onNavigate: (AuthScreens) -> Unit,
-    viewModel: AuthenticationViewModel,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 ) {
+    val viewModel: AuthenticationViewModel = hiltViewModel()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
 

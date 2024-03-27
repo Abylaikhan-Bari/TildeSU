@@ -31,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
-fun DashboardPage(mainViewModel: MainViewModel) {
+fun DashboardPage() {
+    val mainViewModel: MainViewModel = hiltViewModel()
     val progressData by mainViewModel.progressData.observeAsState(mapOf())
 
     Surface(
@@ -54,7 +56,8 @@ fun DashboardPage(mainViewModel: MainViewModel) {
                         overallProgress = userProgress.overallProgress,
                         puzzleProgress = userProgress.puzzleProgress,
                         quizProgress = userProgress.quizProgress,
-                        trueFalseProgress = userProgress.trueFalseProgress
+                        trueFalseProgress = userProgress.trueFalseProgress,
+                        imageQuizProgress = userProgress.imageQuizProgress
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -79,7 +82,8 @@ fun ExpandableProgressBar(
     overallProgress: Float,
     puzzleProgress: Float,
     quizProgress: Float,
-    trueFalseProgress: Float
+    trueFalseProgress: Float,
+    imageQuizProgress: Float
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -111,6 +115,12 @@ fun ExpandableProgressBar(
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
                 ProgressBar(progress = trueFalseProgress)
+            }
+            if(imageQuizProgress > 0) {
+                Text(text = stringResource(id = R.string.image_quiz),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                ProgressBar(progress = imageQuizProgress)
             }
         }
     }
