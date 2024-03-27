@@ -7,8 +7,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ExerciseRepository {
+@Singleton
+class ExerciseRepository @Inject constructor(){
     //private val db = FirebaseFirestore.getInstance()
 
     @OptIn(UnstableApi::class)
