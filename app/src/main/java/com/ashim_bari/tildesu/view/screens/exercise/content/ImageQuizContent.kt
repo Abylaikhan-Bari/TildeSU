@@ -3,17 +3,23 @@ package com.ashim_bari.tildesu.view.screens.exercise.content
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.ashim_bari.tildesu.R
-import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
@@ -90,88 +95,135 @@ fun ImageQuizContent(
                     verticalArrangement = Arrangement.Top
                 ) {
                     if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
-                        ImageQuizCard(
-                            quiz = exercises[currentQuestionIndex],
-                            selectedOption = selectedOption,
-                            onSelectOption = { selectedOption = it }
-                        )
+                        if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
+                            val exercise = exercises[currentQuestionIndex]
+                            LinearProgressIndicator(
+                                progress = { currentQuestionIndex.toFloat() / exercises.size },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                            )
+                            Text(
+                                text = exercise.question ?: "",
+                                style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
 
-                        Button(
-                            onClick = {
-                                if (selectedOption != -1) {
-                                    exerciseViewModel.submitQuizAnswer(selectedOption)
-                                    selectedOption = -1
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(top = 16.dp)
-                                .align(Alignment.CenterHorizontally),
-                            enabled = selectedOption != -1
-                        ) {
-                            Text(stringResource(id = R.string.button_next))
+                            // Exercise Image
+                            Image(
+                                painter = rememberImagePainter(exercise.imageUrl),
+                                contentDescription = "Quiz Image",
+                                modifier = Modifier
+                                    .height(180.dp)
+                                    .fillMaxWidth()
+                            )
+
+                            Spacer(Modifier.height(24.dp))
+
+                            OptionsGrid(
+                                options = exercise.imageOptions ?: emptyList(),
+                                selectedOption = selectedOption,
+                                onSelectOption = { selectedOption = it }
+                            )
+
+                            Spacer(Modifier.height(32.dp))
+                            Button(
+                                onClick = {
+                                    if (selectedOption != -1) {
+                                        exerciseViewModel.submitQuizAnswer(selectedOption)
+                                        selectedOption = -1
+                                    }
+                                },
+                                modifier = Modifier
+                                    .padding(top = 16.dp)
+                                    .align(Alignment.CenterHorizontally),
+                                enabled = selectedOption != -1
+                            ) {
+                                Text(stringResource(id = R.string.button_next))
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    // Confirmation Dialog
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(stringResource(id = R.string.exit_exercise_dialog_title)) },
-            text = { Text(stringResource(id = R.string.exit_exercise_dialog_content)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDialog = false
-                        navController.popBackStack()
+        // Confirmation Dialog
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(stringResource(id = R.string.exit_exercise_dialog_title)) },
+                text = { Text(stringResource(id = R.string.exit_exercise_dialog_content)) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showDialog = false
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Text(stringResource(id = R.string.exit_dialog_yes))
                     }
-                ) {
-                    Text(stringResource(id = R.string.exit_dialog_yes))
+                },
+                dismissButton = {
+                    Button(
+                        onClick = { showDialog = false }
+                    ) {
+                        Text(stringResource(id = R.string.exit_dialog_no))
+                    }
                 }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { showDialog = false }
-                ) {
-                    Text(stringResource(id = R.string.exit_dialog_no))
-                }
-            }
-        )
+            )
+        }
     }
 }
-
 @Composable
-fun ImageQuizCard(
-    quiz: Exercise,
+fun OptionsGrid(
+    options: List<String>,
     selectedOption: Int,
     onSelectOption: (Int) -> Unit
 ) {
-    Card(
+    // Use a Row with wrapContent to allow the cards to size themselves
+    // Adjust padding to control space between cards
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        Column {
-            Image(
-                painter = rememberImagePainter(quiz.imageUrl),
-                contentDescription = "Quiz Image",
-                modifier = Modifier.height(180.dp)
+        options.forEachIndexed { index, option ->
+            ImageOptionCard(
+                option = option,
+                isSelected = selectedOption == index,
+                onSelect = { onSelectOption(index) },
+                modifier = Modifier.weight(1f) // This will divide the space equally among options
             )
-            Spacer(Modifier.height(8.dp))
-            quiz.imageOptions?.let { options ->
-                options.forEachIndexed { index, option ->
-                    OptionCard(
-                        option = option,
-                        isSelected = selectedOption == index,
-                        onSelect = { onSelectOption(index) }
-                    )
-                }
-            }
         }
     }
 }
 
+@Composable
+fun ImageOptionCard(
+    option: String,
+    isSelected: Boolean,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .padding(4.dp) // Reduced padding to make cards smaller
+            .aspectRatio(2.5f), // Adjusted aspect ratio for smaller width
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        onClick = onSelect
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = option,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}

@@ -31,6 +31,7 @@ data class Exercise(
     // Image Quiz specific properties
     var imageUrl: String? = null,
     var imageOptions: List<String>? = null,
+    var imageQuestion: String? = null,
     var correctImageOptionIndex: Int? = null
 
 )

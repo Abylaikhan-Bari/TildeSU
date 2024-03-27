@@ -28,6 +28,9 @@ class ExerciseViewModel @Inject constructor(
     private val _quizScore = MutableLiveData(0)
     val quizScore: LiveData<Int> = _quizScore
     private val _trueFalseScore = MutableLiveData(0)
+    private val _imageQuizScore = MutableLiveData(0)
+    val imageQuizScore: LiveData<Int> = _imageQuizScore
+
     val trueFalseScore: LiveData<Int> = _trueFalseScore
     private val _puzzleScore = MutableLiveData(0)
     val puzzleScore: LiveData<Int> = _puzzleScore
@@ -52,6 +55,10 @@ class ExerciseViewModel @Inject constructor(
         _quizScore.value = value
         Log.d(TAG, "Quiz Score Updated to: $value")
     }
+    private fun setImageQuizScore(value: Int) {
+        _imageQuizScore.value = value
+        Log.d(TAG, "Image Quiz Score Updated to: $value")
+    }
 
     private fun setTrueFalseScore(value: Int) {
         _trueFalseScore.value = value
@@ -69,6 +76,10 @@ class ExerciseViewModel @Inject constructor(
     }
 
     private fun setQuizPassed(value: Boolean?) {
+        _quizPassed.value = value
+        Log.d(TAG, "Quiz Passed: $value")
+    }
+    private fun setImageQuizPassed(value: Boolean?) {
         _quizPassed.value = value
         Log.d(TAG, "Quiz Passed: $value")
     }
@@ -96,19 +107,24 @@ class ExerciseViewModel @Inject constructor(
 
 
     fun submitQuizAnswer(selectedOption: Int) {
-        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
-        currentExercise?.let { exercise ->
-            if (exercise.type == ExerciseType.QUIZ) {
-                val isCorrect = selectedOption == exercise.correctOptionIndex
-                if (isCorrect) {
-                    // Make sure not to exceed the total number of exercises
-                    val newScore = min((_quizScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
+        val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0) ?: return
+
+        when (currentExercise.type) {
+            ExerciseType.QUIZ -> {
+                if (selectedOption == currentExercise.correctOptionIndex) {
+                    val newScore = (_quizScore.value ?: 0) + 1
                     setQuizScore(newScore)
                 }
                 moveToNextQuiz()
-            } else {
-                Log.d(TAG, "Non-Quiz exercise attempted in Quiz method. Exercise type: ${exercise.type}")
             }
+            ExerciseType.IMAGE_QUIZZES -> {
+                if (selectedOption == currentExercise.correctImageOptionIndex) {
+                    val newImageQuizScore = (_imageQuizScore.value ?: 0) + 1
+                    setImageQuizScore(newImageQuizScore)
+                }
+                moveToNextImageQuiz()
+            }
+            else -> Log.d(TAG, "Attempted to submit answer for non-supported exercise type.")
         }
     }
 
@@ -119,6 +135,17 @@ class ExerciseViewModel @Inject constructor(
                 Log.d(TAG, "Moved to next question: index ${_currentExerciseIndex.value}")
             } else {
                 setQuizPassed(true)
+                completeExercise()
+            }
+        }
+    }
+    fun moveToNextImageQuiz() {
+        _currentExerciseIndex.value?.let { currentIndex ->
+            if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
+                _currentExerciseIndex.value = currentIndex + 1
+                Log.d(TAG, "Moved to next image question: index ${_currentExerciseIndex.value}")
+            } else {
+                setImageQuizPassed(true)
                 completeExercise()
             }
         }
@@ -195,6 +222,10 @@ class ExerciseViewModel @Inject constructor(
                                 "puzzleCorrect" to min(_puzzleScore.value ?: 0, _exercises.value?.size ?: 0),
                                 "puzzleTotal" to (_exercises.value?.size ?: 0)
                             )
+                            ExerciseType.IMAGE_QUIZZES -> mapOf(
+                                "imageQuizCorrect" to min(_imageQuizScore.value ?: 0, _exercises.value?.size ?: 0),
+                                "imageQuizTotal" to (_exercises.value?.size ?: 0)
+                            )
                             else -> emptyMap()
                         }
 
@@ -226,8 +257,9 @@ class ExerciseViewModel @Inject constructor(
         val quizTotal = (updatedData["quizTotal"] as? Number ?: currentProgress["quizTotal"] as? Number ?: 0).toInt()
         val trueFalseTotal = (updatedData["trueFalseTotal"] as? Number ?: currentProgress["trueFalseTotal"] as? Number ?: 0).toInt()
         val puzzleTotal = (updatedData["puzzleTotal"] as? Number ?: currentProgress["puzzleTotal"] as? Number ?: 0).toInt()
+        val imageQuizTotal = (updatedData["imageQuizTotal"] as? Number ?: currentProgress["imageQuizTotal"] as? Number ?: 0).toInt()
 
-        return quizTotal + trueFalseTotal + puzzleTotal
+        return quizTotal + trueFalseTotal + puzzleTotal + imageQuizTotal
     }
 
     private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
@@ -243,14 +275,19 @@ class ExerciseViewModel @Inject constructor(
             ExerciseType.PUZZLES -> (updatedData["puzzleCorrect"] as? Number ?: currentPuzzleCorrect).toInt()
             else -> 0
         }
-
+        val currentImageQuizCorrect = (currentProgress["imageQuizCorrect"] as? Number ?: 0).toInt()
+        val newImageQuizCorrect = when (currentExerciseType) {
+            ExerciseType.IMAGE_QUIZZES -> (updatedData["imageQuizCorrect"] as? Number ?: currentImageQuizCorrect).toInt()
+            else -> currentImageQuizCorrect
+        }
         // Depending on the type, replace the corresponding old value with the new one
         val totalQuizCorrect = if (currentExerciseType == ExerciseType.QUIZ) newCorrectAnswer else currentQuizCorrect
         val totalTrueFalseCorrect = if (currentExerciseType == ExerciseType.TRUE_FALSE) newCorrectAnswer else currentTrueFalseCorrect
         val totalPuzzleCorrect = if (currentExerciseType == ExerciseType.PUZZLES) newCorrectAnswer else currentPuzzleCorrect
 
         // Sum up all correct answers across all exercise types
-        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect
+        return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect + newImageQuizCorrect
+
     }
 
 
