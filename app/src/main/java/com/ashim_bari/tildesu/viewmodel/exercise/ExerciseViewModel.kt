@@ -43,11 +43,13 @@ class ExerciseViewModel @Inject constructor(
 
     private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
+    private val _imageQuizPassed = MutableLiveData<Boolean?>(null)
+    val imageQuizPassed: LiveData<Boolean?> = _imageQuizPassed
 
     private val TAG = "ExerciseViewModel"
     init {
         // Add logging for initial values
-        Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}")
+        Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}, ImageQuizPassed=${_imageQuizPassed.value}")
     }
 
     // Setter functions with logging
@@ -80,8 +82,8 @@ class ExerciseViewModel @Inject constructor(
         Log.d(TAG, "Quiz Passed: $value")
     }
     private fun setImageQuizPassed(value: Boolean?) {
-        _quizPassed.value = value
-        Log.d(TAG, "Quiz Passed: $value")
+        _imageQuizPassed.value = value
+        Log.d(TAG, "Image Quiz Passed: $value")
     }
 
     fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {

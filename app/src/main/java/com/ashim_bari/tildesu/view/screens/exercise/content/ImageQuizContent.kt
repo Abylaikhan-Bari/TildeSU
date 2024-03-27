@@ -64,16 +64,16 @@ fun ImageQuizContent(
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentExercisesIndex.observeAsState(0)
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
-    val quizPassed by exerciseViewModel.quizPassed.observeAsState()
+    val imageQuizPassed by exerciseViewModel.imageQuizPassed.observeAsState()
 
     BackHandler {
         showConfirmationDialog()
     }
 
     if (exerciseCompleted) {
-        quizPassed?.let { passed ->
+        imageQuizPassed?.let { passed ->
             if (passed) {
-                SuccessScreen(navController, exerciseViewModel.quizScore.value ?: 0)
+                SuccessScreen(navController, exerciseViewModel.imageQuizScore.value ?: 0)
             } else {
                 FailureScreen(navController) {
                     exerciseViewModel.resetExercise()
@@ -104,7 +104,7 @@ fun ImageQuizContent(
                                     .padding(vertical = 8.dp),
                             )
                             Text(
-                                text = exercise.question ?: "",
+                                text = exercise.imageQuestion ?: "",
                                 style = MaterialTheme.typography.headlineMedium,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
