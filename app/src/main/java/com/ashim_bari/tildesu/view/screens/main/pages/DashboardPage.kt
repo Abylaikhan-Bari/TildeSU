@@ -56,7 +56,8 @@ fun DashboardPage() {
                         overallProgress = userProgress.overallProgress,
                         puzzleProgress = userProgress.puzzleProgress,
                         quizProgress = userProgress.quizProgress,
-                        trueFalseProgress = userProgress.trueFalseProgress
+                        trueFalseProgress = userProgress.trueFalseProgress,
+                        imageQuizProgress = userProgress.imageQuizProgress
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -81,7 +82,8 @@ fun ExpandableProgressBar(
     overallProgress: Float,
     puzzleProgress: Float,
     quizProgress: Float,
-    trueFalseProgress: Float
+    trueFalseProgress: Float,
+    imageQuizProgress: Float
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -113,6 +115,12 @@ fun ExpandableProgressBar(
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
                 ProgressBar(progress = trueFalseProgress)
+            }
+            if(imageQuizProgress > 0) {
+                Text(text = stringResource(id = R.string.image_quiz),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                ProgressBar(progress = imageQuizProgress)
             }
         }
     }
