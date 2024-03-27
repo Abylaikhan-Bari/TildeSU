@@ -14,10 +14,14 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class UserRepository {
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+class UserRepository @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) {
+//    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+//    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun isLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null

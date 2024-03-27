@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
@@ -53,7 +54,7 @@ private const val TAG = "MainScreen"
 fun MainScreen(navController: NavHostController) {
     Log.d(TAG, "MainScreen: Started")
     var currentMainScreen by rememberSaveable { mutableStateOf(MainScreens.Home) }
-    val mainViewModel: MainViewModel = viewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val isLoggedIn by mainViewModel.isLoggedIn.observeAsState()
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
@@ -177,7 +178,7 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
 
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
-        MainScreens.Dashboard -> DashboardPage(mainViewModel)
+        MainScreens.Dashboard -> DashboardPage()
         MainScreens.Useful -> UsefulPage(navController) {}
         MainScreens.Profile -> ProfilePage(navController)
     }

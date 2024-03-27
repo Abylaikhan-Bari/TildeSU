@@ -56,6 +56,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
@@ -77,10 +78,10 @@ import kotlinx.coroutines.launch
 fun LoginPage(
     navController: NavHostController,
     onNavigate: (AuthScreens) -> Unit,
-    viewModel: AuthenticationViewModel,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 ) {
+    val viewModel: AuthenticationViewModel = hiltViewModel()
     val context = LocalContext.current
     val languageViewModel: LanguageViewModel = viewModel()
     // Additional state to track email availability

@@ -31,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
-fun DashboardPage(mainViewModel: MainViewModel) {
+fun DashboardPage() {
+    val mainViewModel: MainViewModel = hiltViewModel()
     val progressData by mainViewModel.progressData.observeAsState(mapOf())
 
     Surface(

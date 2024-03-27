@@ -38,22 +38,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizContent(navController: NavController, level: String, type: ExerciseType, exerciseViewModelFactory: ExerciseViewModelFactory) {
-    val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
+fun QuizContent(navController: NavController, level: String, type: ExerciseType ) {
+    val exerciseViewModel: ExerciseViewModel = hiltViewModel()
     val currentLevel by rememberSaveable { mutableStateOf(level) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
 

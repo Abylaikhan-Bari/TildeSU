@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
@@ -53,10 +54,10 @@ import kotlinx.coroutines.launch
 fun ResetPasswordPage(
     navController: NavHostController,
     onNavigate: (AuthScreens) -> Unit,
-    viewModel: AuthenticationViewModel,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope
 ) {
+    val viewModel: AuthenticationViewModel = hiltViewModel()
     var email by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
     val keyboardController = LocalSoftwareKeyboardController.current

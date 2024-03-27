@@ -10,10 +10,15 @@ import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.math.min
 
-class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
+@HiltViewModel
+class ExerciseViewModel @Inject constructor(
+    private val repository: ExerciseRepository
+) : ViewModel()  {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
     val exercises: LiveData<List<Exercise>> = _exercises
 

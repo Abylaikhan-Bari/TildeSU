@@ -31,14 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.exercise.Exercise
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModelFactory
 import kotlinx.coroutines.delay
 import kotlin.math.sign
 
@@ -46,9 +45,9 @@ import kotlin.math.sign
 fun PuzzlesContent(
     navController: NavController,
     level: String,
-    exerciseViewModelFactory: ExerciseViewModelFactory
 ) {
-    val exerciseViewModel: ExerciseViewModel = viewModel(factory = exerciseViewModelFactory)
+    val exerciseViewModel: ExerciseViewModel = hiltViewModel()
+
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }

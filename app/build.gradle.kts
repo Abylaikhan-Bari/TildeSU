@@ -66,8 +66,12 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //Dagger-Hilt DI
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-compiler:2.51")
+//    implementation("com.google.dagger:dagger:2.44")
+//    kapt("com.google.dagger:dagger-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 
     // Compose dependencies
     implementation("androidx.compose.foundation:foundation:1.6.1")
@@ -109,4 +113,8 @@ dependencies {
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
+}
+hilt {
+    enableAggregatingTask = true
+    enableTransformForLocalTests = true
 }

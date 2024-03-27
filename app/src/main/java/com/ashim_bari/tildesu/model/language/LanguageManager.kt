@@ -3,7 +3,7 @@ package com.ashim_bari.tildesu.model.language
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import java.util.*
+import java.util.Locale
 
 object LanguageManager {
     private const val LANGUAGE_KEY = "language_key"

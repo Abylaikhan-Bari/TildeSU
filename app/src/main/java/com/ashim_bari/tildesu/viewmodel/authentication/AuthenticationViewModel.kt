@@ -3,9 +3,14 @@ package com.ashim_bari.tildesu.viewmodel.authentication
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.ashim_bari.tildesu.model.user.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AuthenticationViewModel : ViewModel() {
-    private val userRepository = UserRepository()
+@HiltViewModel
+class AuthenticationViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+    //private val userRepository = UserRepository()
 
     suspend fun login(email: String, password: String): Boolean {
         return try {

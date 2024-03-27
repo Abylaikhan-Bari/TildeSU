@@ -4,11 +4,15 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class ExerciseRepository {
+class ExerciseRepository @Inject constructor(
+    private val firestore: FirebaseFirestore
+) {
     //private val db = FirebaseFirestore.getInstance()
 
     @OptIn(UnstableApi::class)
