@@ -30,7 +30,8 @@ class ExerciseViewModel @Inject constructor(
     private val _trueFalseScore = MutableLiveData(0)
     private val _imageQuizScore = MutableLiveData(0)
     val imageQuizScore: LiveData<Int> = _imageQuizScore
-
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
     val trueFalseScore: LiveData<Int> = _trueFalseScore
     private val _puzzleScore = MutableLiveData(0)
     val puzzleScore: LiveData<Int> = _puzzleScore
@@ -89,6 +90,7 @@ class ExerciseViewModel @Inject constructor(
     fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
         currentLevelId = level
         currentExerciseType = type
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val exercisesList = repository.getExercisesByLevelAndType(level, type)
@@ -102,6 +104,9 @@ class ExerciseViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading exercises for level $level and type $type", e)
+            }
+            finally {
+                _isLoading.value = false
             }
         }
     }

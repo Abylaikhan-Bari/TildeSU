@@ -35,5 +35,5 @@ data class Exercise(
     var correctImageOptionIndex: Int? = null
 
 )
-    // Optional: Additional logic or helper methods can be added here
+
 

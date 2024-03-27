@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.ashim_bari.tildesu"
-        minSdk = 21
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.wear.compose:compose-material:1.3.0")
     // Core library desugaring enabled
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 

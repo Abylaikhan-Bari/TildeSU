@@ -1,7 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.exercise
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
 import com.ashim_bari.tildesu.view.screens.exercise.content.DictionaryCardsContent
@@ -9,7 +8,6 @@ import com.ashim_bari.tildesu.view.screens.exercise.content.ImageQuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.PuzzlesContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.QuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.TrueFalseContent
-import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 
 @Composable
 fun SpecificExerciseScreen(
@@ -24,8 +22,7 @@ fun SpecificExerciseScreen(
         ExerciseType.QUIZ // Default to QUIZ or handle error as appropriate
     }
 
-    // Retrieve the ExerciseViewModel from Hilt
-    val exerciseViewModel: ExerciseViewModel = hiltViewModel()
+
 
     // Based on exerciseType, decide which content to show
     when (exerciseType) {
@@ -33,6 +30,6 @@ fun SpecificExerciseScreen(
         ExerciseType.PUZZLES -> PuzzlesContent(navController, level)
         ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, exerciseType)
         ExerciseType.IMAGE_QUIZZES -> ImageQuizContent(navController, level)
-        ExerciseType.DICTIONARY_CARDS -> DictionaryCardsContent()
+        ExerciseType.DICTIONARY_CARDS -> DictionaryCardsContent(level, exerciseType)
     }
 }
