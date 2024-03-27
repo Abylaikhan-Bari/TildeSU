@@ -78,7 +78,7 @@ dependencies {
     implementation("androidx.autofill:autofill:1.1.0")
     //implementation("com.google.firebase:firebase-appcheck-playintegrity:17.1.2")
     implementation("com.google.firebase:firebase-firestore:24.10.2")
-    implementation("androidx.media3:media3-common:1.2.1")dd
+    implementation("androidx.media3:media3-common:1.2.1")
     implementation("com.google.firebase:firebase-appcheck-debug:17.1.2")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation("com.google.firebase:firebase-appcheck-debug")
