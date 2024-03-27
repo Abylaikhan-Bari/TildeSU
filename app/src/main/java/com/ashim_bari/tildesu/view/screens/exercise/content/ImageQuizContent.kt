@@ -16,7 +16,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,7 +41,6 @@ import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageQuizContent(
     navController: NavController,
@@ -70,6 +68,7 @@ fun ImageQuizContent(
     }
 
     if (exerciseCompleted) {
+        // Handle quiz completion
         imageQuizPassed?.let { passed ->
             if (passed) {
                 val score = exerciseViewModel.imageQuizScore.value ?: 0
@@ -100,53 +99,57 @@ fun ImageQuizContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
-                        if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
-                            val exercise = exercises[currentQuestionIndex]
-                            LinearProgressIndicator(
-                                progress = { currentQuestionIndex.toFloat() / exercises.size },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                            )
-                            Text(
-                                text = exercise.imageQuestion ?: "",
-                                style = MaterialTheme.typography.headlineMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                    if (exercises.isEmpty()) {
+                        // Display message if no image quizzes found
+                        Text(
+                            text = "No Image quizzes for this level found.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    } else if (currentQuestionIndex < exercises.size) {
+                        val exercise = exercises[currentQuestionIndex]
+                        LinearProgressIndicator(
+                            progress = { currentQuestionIndex.toFloat() / exercises.size },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                        )
+                        Text(
+                            text = exercise.imageQuestion ?: "",
+                            style = MaterialTheme.typography.headlineMedium,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
 
-                            // Exercise Image
-                            Image(
-                                painter = rememberImagePainter(exercise.imageUrl),
-                                contentDescription = "Quiz Image",
-                                modifier = Modifier
-                                    .height(180.dp)
-                                    .fillMaxWidth()
-                            )
+                        // Exercise Image
+                        Image(
+                            painter = rememberImagePainter(exercise.imageUrl),
+                            contentDescription = "Quiz Image",
+                            modifier = Modifier
+                                .height(180.dp)
+                                .fillMaxWidth()
+                        )
 
-                            Spacer(Modifier.height(24.dp))
+                        Spacer(Modifier.height(24.dp))
 
-                            OptionsGrid(
-                                options = exercise.imageOptions ?: emptyList(),
-                                selectedOption = selectedOption,
-                                onSelectOption = { selectedOption = it }
-                            )
+                        OptionsGrid(
+                            options = exercise.imageOptions ?: emptyList(),
+                            selectedOption = selectedOption,
+                            onSelectOption = { selectedOption = it }
+                        )
 
-                            Spacer(Modifier.height(32.dp))
-                            Button(
-                                onClick = {
-                                    if (selectedOption != -1) {
-                                        exerciseViewModel.submitQuizAnswer(selectedOption)
-                                        selectedOption = -1
-                                    }
-                                },
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .align(Alignment.CenterHorizontally),
-                                enabled = selectedOption != -1
-                            ) {
-                                Text(stringResource(id = R.string.button_next))
-                            }
+                        Spacer(Modifier.height(32.dp))
+                        Button(
+                            onClick = {
+                                if (selectedOption != -1) {
+                                    exerciseViewModel.submitQuizAnswer(selectedOption)
+                                    selectedOption = -1
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .align(Alignment.CenterHorizontally),
+                            enabled = selectedOption != -1
+                        ) {
+                            Text(stringResource(id = R.string.button_next))
                         }
                     }
                 }
@@ -180,6 +183,7 @@ fun ImageQuizContent(
         }
     }
 }
+
 @Composable
 fun OptionsGrid(
     options: List<String>,
