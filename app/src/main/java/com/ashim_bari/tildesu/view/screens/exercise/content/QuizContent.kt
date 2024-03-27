@@ -35,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -205,14 +204,6 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
 
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, onSelect: () -> Unit) {
-    // Assign distinct colors to each option
-    val backgroundColor = when (option) {
-        "1" -> Color(0xFFFFCDD2) // Example color - replace with actual colors you want
-        "2" -> Color(0xFFC8E6C9)
-        "3" -> Color(0xFFFFECB3)
-        "4" -> Color(0xFFB3E5FC)
-        else -> MaterialTheme.colorScheme.surfaceVariant
-    }
 
     Card(
         onClick = onSelect,

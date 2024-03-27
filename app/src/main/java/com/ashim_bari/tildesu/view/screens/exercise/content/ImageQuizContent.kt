@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -73,7 +72,14 @@ fun ImageQuizContent(
     if (exerciseCompleted) {
         imageQuizPassed?.let { passed ->
             if (passed) {
-                SuccessScreen(navController, exerciseViewModel.imageQuizScore.value ?: 0)
+                val score = exerciseViewModel.imageQuizScore.value ?: 0
+                if (score > 0) {
+                    SuccessScreen(navController, score)
+                } else {
+                    FailureScreen(navController) {
+                        exerciseViewModel.resetExercise()
+                    }
+                }
             } else {
                 FailureScreen(navController) {
                     exerciseViewModel.resetExercise()
@@ -180,22 +186,30 @@ fun OptionsGrid(
     selectedOption: Int,
     onSelectOption: (Int) -> Unit
 ) {
-    // Use a Row with wrapContent to allow the cards to size themselves
-    // Adjust padding to control space between cards
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.Top,
+    // Create a grid layout using a Column and Rows.
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        options.forEachIndexed { index, option ->
-            ImageOptionCard(
-                option = option,
-                isSelected = selectedOption == index,
-                onSelect = { onSelectOption(index) },
-                modifier = Modifier.weight(1f) // This will divide the space equally among options
-            )
+        // We create rows for each pair of options.
+        options.chunked(2).forEachIndexed { rowIndex, pair ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                pair.forEachIndexed { index, option ->
+                    // Calculate the actual index based on row and column
+                    val actualIndex = rowIndex * 2 + index
+                    ImageOptionCard(
+                        option = option,
+                        isSelected = selectedOption == actualIndex,
+                        onSelect = { onSelectOption(actualIndex) },
+                        modifier = Modifier.weight(1f) // Divide space equally
+                    )
+                }
+            }
         }
     }
 }
@@ -209,8 +223,10 @@ fun ImageOptionCard(
 ) {
     Card(
         modifier = modifier
-            .padding(4.dp) // Reduced padding to make cards smaller
-            .aspectRatio(2.5f), // Adjusted aspect ratio for smaller width
+            .padding(8.dp) // Adjust padding if needed
+            .height(56.dp) // Suggested height for visibility
+            // Remove aspectRatio if setting height, or adjust aspectRatio accordingly
+            .fillMaxWidth(), // Remove if you want to set a specific width
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
@@ -222,7 +238,7 @@ fun ImageOptionCard(
             Text(
                 text = option,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp) // Adjust padding if needed
             )
         }
     }
