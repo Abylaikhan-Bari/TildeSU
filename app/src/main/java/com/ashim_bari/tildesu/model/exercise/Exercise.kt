@@ -29,7 +29,7 @@ data class Exercise(
     var wordKazakh: String? = null,
     var wordRussian: String? = null,
     // Image Quiz specific properties
-    var imageUri: String? = null,
+    var imageUrl: String? = null,
     var imageOptions: List<String>? = null,
     var correctImageOptionIndex: Int? = null
 

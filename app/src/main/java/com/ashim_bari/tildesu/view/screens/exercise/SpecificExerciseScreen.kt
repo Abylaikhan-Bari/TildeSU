@@ -32,7 +32,7 @@ fun SpecificExerciseScreen(
         ExerciseType.QUIZ -> QuizContent(navController, level, exerciseType)
         ExerciseType.PUZZLES -> PuzzlesContent(navController, level)
         ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, exerciseType)
-        ExerciseType.IMAGE_QUIZZES -> ImageQuizContent()
+        ExerciseType.IMAGE_QUIZZES -> ImageQuizContent(navController, level)
         ExerciseType.DICTIONARY_CARDS -> DictionaryCardsContent()
     }
 }
