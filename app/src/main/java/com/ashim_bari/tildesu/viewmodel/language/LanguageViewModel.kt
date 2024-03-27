@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    private val languageManager: LanguageManager
+
 ) : ViewModel() {
     private val _language = MutableStateFlow(LanguageManager.DEFAULT_LANGUAGE)
     val language: StateFlow<String> = _language
