@@ -95,12 +95,25 @@ class MainViewModel: ViewModel() {
 
     private fun fetchProfileImageUrl() {
         viewModelScope.launch {
-            val imageUrl = userRepository.getUserImage()
-            _profileImageUrl.value = imageUrl
-            // Log profile image URL retrieval
-            println("Profile image URL fetched: $imageUrl")
+            try {
+                val imageUrl = userRepository.getUserImage()
+                // Directly assign the imageUrl to _profileImageUrl, which can be null
+                _profileImageUrl.value = imageUrl
+                if (imageUrl == null) {
+                    println("Default profile image will be used.")
+                } else {
+                    println("Profile image URL fetched: $imageUrl")
+                }
+            } catch (e: Exception) {
+                println("Failed to fetch profile image URL: ${e.message}")
+                // Since your UI already handles a null imageUrl, no need to set a default URL here.
+                // Just log the error. The UI will display the default profile image from resources.
+            }
         }
     }
+
+
+
 
     fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {

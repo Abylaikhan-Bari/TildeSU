@@ -186,21 +186,21 @@ class UserRepository {
             Log.d("UserRepository", "User image fetched successfully: $imageUrl")
             imageUrl // Return the image URL if successful
         } catch (e: StorageException) {
-            if (e.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
-                // If the image does not exist, log the information and return null
-                Log.i("UserRepository", "User image does not exist at location: profileImages/$userId/profilePic.jpg")
-                null
-            } else {
-                // If another error occurred, log the exception and return null
-                Log.e("UserRepository", "User image fetch failed", e)
-                null
+            // Log based on the specific error code
+            when (e.errorCode) {
+                StorageException.ERROR_OBJECT_NOT_FOUND -> {
+                    Log.i("UserRepository", "User image does not exist at location: profileImages/$userId/profilePic.jpg")
+                }
+                else -> Log.e("UserRepository", "User image fetch failed due to a storage exception", e)
             }
+            null // Return null for any StorageException
         } catch (e: Exception) {
-            // Catch any other exceptions that might occur and return null
+            // Handle any other unexpected exceptions
             Log.e("UserRepository", "Unexpected error fetching user image", e)
-            null
+            null // Return null for any other exceptions
         }
     }
+
 
 
 
