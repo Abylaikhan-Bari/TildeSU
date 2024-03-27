@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ashim_bari.tildesu.model.exercise.ExerciseType
+import com.ashim_bari.tildesu.view.screens.exercise.content.DictionaryCardsContent
+import com.ashim_bari.tildesu.view.screens.exercise.content.ImageQuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.PuzzlesContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.QuizContent
 import com.ashim_bari.tildesu.view.screens.exercise.content.TrueFalseContent
@@ -30,5 +32,7 @@ fun SpecificExerciseScreen(
         ExerciseType.QUIZ -> QuizContent(navController, level, exerciseType)
         ExerciseType.PUZZLES -> PuzzlesContent(navController, level)
         ExerciseType.TRUE_FALSE -> TrueFalseContent(navController, level, exerciseType)
+        ExerciseType.IMAGE_QUIZZES -> ImageQuizContent()
+        ExerciseType.DICTIONARY_CARDS -> DictionaryCardsContent()
     }
 }

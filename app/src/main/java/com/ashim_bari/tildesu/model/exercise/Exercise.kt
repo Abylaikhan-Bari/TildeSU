@@ -4,8 +4,9 @@ import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
 
 enum class ExerciseType {
-    QUIZ, PUZZLES, TRUE_FALSE
+    QUIZ, PUZZLES, TRUE_FALSE, DICTIONARY_CARDS, IMAGE_QUIZZES
 }
+
 
 data class Exercise(
     @Exclude @set:Exclude @get:Exclude
@@ -21,7 +22,17 @@ data class Exercise(
     @get:PropertyName("isTrue") @set:PropertyName("isTrue")
     var isTrue: Boolean? = null, // Specific to TRUE_FALSE, make sure Firestore property matches
     var sentenceParts: List<String>? = null, // Specific to PUZZLES
-    var correctOrder: List<Int>? = null // Specific to PUZZLES
-) {
+    var correctOrder: List<Int>? = null, // Specific to PUZZLES
+
+    // Dictionary Card specific properties
+    var wordEnglish: String? = null,
+    var wordKazakh: String? = null,
+    var wordRussian: String? = null,
+    // Image Quiz specific properties
+    var imageUri: String? = null,
+    var imageOptions: List<String>? = null,
+    var correctImageOptionIndex: Int? = null
+
+)
     // Optional: Additional logic or helper methods can be added here
-}
+

@@ -117,4 +117,6 @@
     <string name="no_puzzles_found">No puzzles found for this level ...</string>
     <string name="arrange_words">Arrange the words into a sentence</string>
     <string name="submit_button">Submit</string>
+    <string name="image_quiz">Image quiz</string>
+    <string name="dictionary_cards">Dictionary cards</string>
 </resources>

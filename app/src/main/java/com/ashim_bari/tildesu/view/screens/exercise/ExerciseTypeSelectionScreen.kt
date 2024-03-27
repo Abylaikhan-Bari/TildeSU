@@ -128,6 +128,8 @@ fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
         ExerciseType.QUIZ -> stringResource(id = R.string.quiz)
         ExerciseType.PUZZLES -> stringResource(id = R.string.puzzle)
         ExerciseType.TRUE_FALSE -> stringResource(id = R.string.true_false)
+        ExerciseType.IMAGE_QUIZZES -> stringResource(id = R.string.image_quiz)
+        ExerciseType.DICTIONARY_CARDS -> stringResource(id = R.string.dictionary_cards)
 
     }
 

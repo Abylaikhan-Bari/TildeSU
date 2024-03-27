@@ -24,6 +24,8 @@ class ExerciseRepository @Inject constructor(
             ExerciseType.QUIZ -> "quizzes"
             ExerciseType.PUZZLES -> "puzzles"
             ExerciseType.TRUE_FALSE -> "trueOrFalse"
+            ExerciseType.DICTIONARY_CARDS -> "dictionaryCards"
+            ExerciseType.IMAGE_QUIZZES -> "imageQuizzes"
         }
 
         return try {
