@@ -119,4 +119,13 @@
     <string name="submit_button">Submit</string>
     <string name="image_quiz">Image quiz</string>
     <string name="dictionary_cards">Dictionary cards</string>
+    <string name="notification_title">Exercise time!</string>
+    <string name="notification_content">Don\'t forget to exercise in Kazakh language.</string>
+    <string name="notification_channel_name">Channel 1</string>
+    <string name="notification_channel_description">Channdel 1 description</string>
+    <string name="notifications_disabled_title">Enable Notifications</string>
+    <string name="notifications_disabled_message">Notifications are currently disabled for this app. Please enable them to receive reminders.</string>
+    <string name="settings">Settings</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

@@ -119,5 +119,14 @@
     <string name="submit_button">Растау</string>
     <string name="image_quiz">Сурет куиз</string>
     <string name="dictionary_cards">Сөздік карточкалар</string>
+    <string name="notification_title">Жаттығу уақыты!</string>
+    <string name="notification_content">Қазақ тілінде жаттығуды ұмытпаңыз.</string>
+    <string name="notification_channel_name">Channel 1</string>
+    <string name="notification_channel_description">Channdel 1 description</string>
+    <string name="notifications_disabled_title">Хабарландыруларды қосу</string>
+    <string name="notifications_disabled_message">Қазіргі уақытта бұл қолданба үшін хабарландырулар өшірілген. Хабарландыруларды алу үшін оларды қосыңыз.</string>
+    <string name="settings">Баптау</string>
+    <string name="cancel">Бас тарту</string>
+
 
 </resources>

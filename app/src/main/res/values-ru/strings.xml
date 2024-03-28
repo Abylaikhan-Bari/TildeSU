@@ -128,5 +128,12 @@
     <string name="submit_button">Подтвердить</string>
     <string name="image_quiz">Куиз изображение</string>
     <string name="dictionary_cards">Словарные карточки</string>
-
+    <string name="notification_title">Время упражнении!</string>
+    <string name="notification_content">Не забудьте занятся Казахским языком.</string>
+    <string name="notification_channel_name">Channel 1</string>
+    <string name="notification_channel_description">Channdel 1 description</string>
+    <string name="notifications_disabled_title">Включить уведомления</string>
+    <string name="notifications_disabled_message">Уведомления в настоящее время отключены для этого приложения. Пожалуйста, включите для них возможность получать напоминания.</string>
+    <string name="settings">Настройки</string>
+    <string name="cancel">Отменить</string>
 </resources>

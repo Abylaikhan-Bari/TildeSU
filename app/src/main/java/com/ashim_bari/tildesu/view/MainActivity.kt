@@ -1,8 +1,14 @@
 package com.ashim_bari.tildesu.view
 
+import android.app.AlarmManager
+import android.app.AlertDialog
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.language.LanguageManager
+import com.ashim_bari.tildesu.receivers.NotificationBroadcastReceiver
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
 import com.ashim_bari.tildesu.view.ui.theme.TildeSUTheme
@@ -36,7 +43,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Initialize Firebase before setting the content view
         initializeFirebase()
-
+        checkAndRequestNotificationPermission()
+        scheduleNotification()
         // Apply language change here or determine the initial screen based on some condition
         applyLanguageChange()
 
@@ -60,7 +68,59 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun checkAndRequestNotificationPermission() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !notificationManager.areNotificationsEnabled()) {
+            // Notifications are not enabled
+            // Show a dialog and redirect user to app's notification settings
+            showDialogToEnableNotifications()
+        }
+    }
 
+    private fun showDialogToEnableNotifications() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.notifications_disabled_title)
+            .setMessage(R.string.notifications_disabled_message)
+            .setPositiveButton(R.string.settings) { dialog, which ->
+                // Intent to open the app's notification settings
+                val intent = Intent().apply {
+                    when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+                        }
+                        else -> {
+                            action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                            putExtra("app_package", packageName)
+                            putExtra("app_uid", applicationInfo.uid)
+                        }
+                    }
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.cancel) { dialog, which ->
+                dialog.dismiss()
+            }
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show()
+    }
+
+    private fun scheduleNotification() {
+        // Use the AlarmManager to schedule the notification
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, NotificationBroadcastReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val repeatInterval = AlarmManager.INTERVAL_DAY * 3
+        val firstTriggerTime = System.currentTimeMillis() + repeatInterval
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            firstTriggerTime,
+            repeatInterval,
+            pendingIntent
+        )
+    }
 
 private fun determineInitialScreen(): String {
     // Implement logic to determine which screen to show first
