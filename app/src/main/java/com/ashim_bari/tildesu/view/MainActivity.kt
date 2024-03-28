@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
         val pendingIntent = PendingIntent.getBroadcast(
             this, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val repeatInterval = AlarmManager.INTERVAL_HALF_HOUR
+        val repeatInterval = AlarmManager.INTERVAL_DAY * 3
         val firstTriggerTime = System.currentTimeMillis() + repeatInterval
         alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
