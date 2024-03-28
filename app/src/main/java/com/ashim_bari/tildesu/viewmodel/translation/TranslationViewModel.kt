@@ -30,7 +30,8 @@ class TranslationViewModel @Inject constructor(
             errorMessage.value = ""
             try {
                 val result = translationRepository.translateText(sourceText, sourceLang, targetLang)
-                _translationResult.value = result  // Correctly updating the MutableStateFlow
+                _translationResult.value =
+                    result.toString()  // Correctly updating the MutableStateFlow
             } catch (e: Exception) {
                 errorMessage.value = "Failed to translate text. Please try again."
             } finally {

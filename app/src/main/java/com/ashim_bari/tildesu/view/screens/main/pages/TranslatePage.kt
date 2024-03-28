@@ -40,7 +40,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     // Example language options
-    val languages = listOf("en", "es", "fr", "de")
+    val languages = listOf("kk_KZ", "en_US", "ru_RU")
     var sourceLanguage by remember { mutableStateOf(languages.first()) }
     var targetLanguage by remember { mutableStateOf(languages[1]) }
 

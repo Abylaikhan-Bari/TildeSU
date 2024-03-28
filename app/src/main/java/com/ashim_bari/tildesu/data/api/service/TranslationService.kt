@@ -9,7 +9,7 @@ class TranslationService {
     private val apiKey = "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF"
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.lingvanex.com/")
+        .baseUrl("https://api-b2b.backenster.com/b1/api/v3/translate")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
