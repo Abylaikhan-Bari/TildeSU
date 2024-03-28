@@ -127,7 +127,12 @@
     <string name="notifications_disabled_message">Қазіргі уақытта бұл қолданба үшін хабарландырулар өшірілген. Хабарландыруларды алу үшін оларды қосыңыз.</string>
     <string name="settings">Баптау</string>
     <string name="cancel">Бас тарту</string>
-    <string name="bottom_nav_translate">Translate</string>
-
+    <string name="bottom_nav_translate">Аудару</string>
+    <string name="translate_header">Аудару</string>
+    <string name="enter_text_placeholder">Мәтін енгізу</string>
+    <string name="translate_button">Аудару</string>
+    <string name="no_translation_found">Аудармасы табылмады</string>
+    <string name="source_language_label">Осы тілден аудару</string>
+    <string name="target_language_label">Осы тілге аудару</string>
 
 </resources>

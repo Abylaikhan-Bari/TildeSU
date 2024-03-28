@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.translation.TranslationViewModel
 
 @Composable
@@ -38,6 +40,10 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
     val translationResult by viewModel.translationResult.collectAsState(initial = "")
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val translateHeaderText = stringResource(id = R.string.translate_header)
+    val enterTextPlaceholder = stringResource(id = R.string.enter_text_placeholder)
+    val translateButtonText = stringResource(id = R.string.translate_button)
+    val noTranslationFoundMessage = stringResource(id = R.string.no_translation_found)
 
     // Language options
     val languagesMap = mapOf(
@@ -58,7 +64,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Translate",
+            text = translateHeaderText,
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -69,20 +75,20 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 options = languageOptions,
                 selectedOption = sourceLanguage,
                 onOptionSelected = { sourceLanguage = it },
-                label = "Source Language"
+                label = stringResource(id = R.string.source_language_label)
             )
             DropdownMenu(
                 options = languageOptions.filter { it != sourceLanguage },
                 selectedOption = targetLanguage,
                 onOptionSelected = { targetLanguage = it },
-                label = "Target Language"
+                label = stringResource(id = R.string.target_language_label)
             )
         }
 
         OutlinedTextField(
             value = sourceText,
             onValueChange = { sourceText = it },
-            label = { Text("Enter text") },
+            label = { Text(enterTextPlaceholder) }, // Use placeholder text for accessibility
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
@@ -97,7 +103,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 .align(Alignment.CenterHorizontally),
             enabled = !isLoading
         ) {
-            Text("Translate")
+            Text(translateButtonText)
         }
 
         if (isLoading) {
@@ -107,7 +113,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         // Display translation result or a pending message
         if (translationResult?.isNotEmpty() == true) {
             Text(
-                text = translationResult ?: "No translation available", // Provide a default value
+                text = translationResult ?: noTranslationFoundMessage, // Provide a default value
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
@@ -120,7 +126,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         else if (!isLoading && sourceText.isNotEmpty()) {
             // Optionally show a message when there's no result but the source text is not empty
             Text(
-                text = "No translation found.",
+                text = noTranslationFoundMessage,
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
