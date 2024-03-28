@@ -39,10 +39,16 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
-    // Example language options
-    val languages = listOf("kk_KZ", "en_US", "ru_RU")
-    var sourceLanguage by remember { mutableStateOf(languages.first()) }
-    var targetLanguage by remember { mutableStateOf(languages[1]) }
+    // Language options
+    val languagesMap = mapOf(
+        "Kazakh" to "kk_KZ",
+        "English" to "en_US",
+        "Russian" to "ru_RU"
+    )
+    val languageOptions = languagesMap.keys.toList()
+
+    var sourceLanguage by remember { mutableStateOf(languageOptions.first()) }
+    var targetLanguage by remember { mutableStateOf(languageOptions[1]) }
 
     Column(
         modifier = Modifier
@@ -60,13 +66,13 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         // Language selection
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
             DropdownMenu(
-                options = languages,
+                options = languageOptions,
                 selectedOption = sourceLanguage,
                 onOptionSelected = { sourceLanguage = it },
                 label = "Source Language"
             )
             DropdownMenu(
-                options = languages,
+                options = languageOptions,
                 selectedOption = targetLanguage,
                 onOptionSelected = { targetLanguage = it },
                 label = "Target Language"
@@ -85,7 +91,8 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         )
 
         Button(
-            onClick = { viewModel.translateText(sourceText, sourceLanguage, targetLanguage) },
+            onClick = { viewModel.translateText(sourceText, languagesMap[sourceLanguage]!!,
+                languagesMap[targetLanguage]!!) },
             modifier = Modifier
                 .padding(top = 8.dp)
                 .align(Alignment.CenterHorizontally),
