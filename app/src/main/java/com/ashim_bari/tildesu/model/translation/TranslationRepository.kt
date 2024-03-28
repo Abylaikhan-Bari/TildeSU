@@ -36,9 +36,6 @@ class TranslationRepository @Inject constructor(
                     jsonResponse?.let {
                         val jsonObject = JSONObject(it)
                         if (jsonObject.isNull("err")) {
-                            // Update this to match the actual JSON structure.
-                            // For example, if the response is directly the translated text,
-                            // you might not need to extract it from a JSON object:
                             Result.success(jsonObject.getString("result"))
                         } else {
                             Result.failure(Exception("Error in translation: ${jsonObject.getString("err")}"))
