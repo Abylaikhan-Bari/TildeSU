@@ -136,5 +136,11 @@
     <string name="notifications_disabled_message">Уведомления в настоящее время отключены для этого приложения. Пожалуйста, включите для них возможность получать напоминания.</string>
     <string name="settings">Настройки</string>
     <string name="cancel">Отменить</string>
-    <string name="bottom_nav_translate">Translate</string>
+    <string name="bottom_nav_translate">Перевести</string>
+    <string name="translate_header">Перевести</string>
+    <string name="enter_text_placeholder">Ввод текста</string>
+    <string name="translate_button">Перевести</string>
+    <string name="no_translation_found">Перевод не найден</string>
+    <string name="source_language_label">Перевести с этого языка</string>
+    <string name="target_language_label">На этот язык</string>
 </resources>
