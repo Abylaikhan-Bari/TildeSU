@@ -33,25 +33,23 @@ class TranslationRepository @Inject constructor(
             client.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
                     val jsonResponse = response.body?.string()
-                    // Parse the JSON response
                     jsonResponse?.let {
                         val jsonObject = JSONObject(it)
-                        // Check if the "err" key is present and null
                         if (jsonObject.isNull("err")) {
-                            // Directly extract the "result" key's value
-                            val translatedText = jsonObject.getString("result")
-                            Result.success(translatedText)
+                            // Update this to match the actual JSON structure.
+                            // For example, if the response is directly the translated text,
+                            // you might not need to extract it from a JSON object:
+                            Result.success(jsonObject.getString("result"))
                         } else {
                             Result.failure(Exception("Error in translation: ${jsonObject.getString("err")}"))
                         }
                     } ?: Result.failure(Exception("No response from the server"))
                 } else {
-                    Result.failure(Exception("Error: ${response.message}"))
+                    Result.failure(Exception("Server responded with error: ${response.message}"))
                 }
             }
-
         } catch (e: Exception) {
-            Result.failure(Exception("Translation error: ${e.message}", e))
+            Result.failure(Exception("Translation error: ${e.localizedMessage}", e))
         }
     }
 }

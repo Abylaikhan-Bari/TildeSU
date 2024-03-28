@@ -35,7 +35,7 @@
     <string name="exit_dialog_no">No</string>
     <string name="exit_dialog_yes">Yes</string>
     <string name="bottom_nav_home">Home</string>
-    <string name="bottom_nav_dashboard">Dashboard</string>
+    <string name="bottom_nav_dashboard">Progress</string>
     <string name="bottom_nav_useful">Useful</string>
     <string name="bottom_nav_profile">Profile</string>
     <string name="exercise_completed">Exercise Completed!</string>

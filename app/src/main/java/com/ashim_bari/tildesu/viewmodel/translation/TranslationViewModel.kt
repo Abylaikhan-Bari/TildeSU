@@ -24,20 +24,25 @@ class TranslationViewModel @Inject constructor(
     val isLoading = MutableStateFlow(false)
     val errorMessage = MutableStateFlow("")
 
+    // Inside TranslationViewModel
+
     fun translateText(sourceText: String, sourceLang: String, targetLang: String) {
         viewModelScope.launch {
             isLoading.value = true
             errorMessage.value = ""
             try {
+                // This will call the repository to get the translation
                 val result = translationRepository.translateText(sourceText, sourceLang, targetLang)
-                _translationResult.value =
-                    result.toString()  // Correctly updating the MutableStateFlow
-            } catch (e: Exception) {
-                errorMessage.value = "Failed to translate text. Please try again."
+                // Unwrap the Result object and update _translationResult.value with the text only
+                _translationResult.value = result.getOrNull()
+                // In case of error, you can update an error message
+                result.onFailure { throwable ->
+                    errorMessage.value = throwable.message ?: "Unknown translation error"
+                }
             } finally {
                 isLoading.value = false
             }
         }
-
     }
+
 }
