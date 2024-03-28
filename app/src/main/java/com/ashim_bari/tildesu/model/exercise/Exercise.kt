@@ -8,24 +8,22 @@ enum class ExerciseType {
 }
 data class Exercise(
     @Exclude @set:Exclude @get:Exclude
-    var id: String = "", // Exclude id from Firestore serialization/deserialization
+    var id: String = "",
     var level: String = "",
-    var type: ExerciseType? = null, // Make nullable to handle setting post-instantiation
-    var question: String? = null, // Make nullable if not all types have questions
-    var options: List<String>? = emptyList(), // Specific to QUIZ, nullable if not applicable
-    var correctOptionIndex: Int? = null, // Specific to QUIZ
+    var type: ExerciseType? = null,
+    var question: String? = null,
+    var options: List<String>? = emptyList(),
+    var correctOptionIndex: Int? = null,
     @Exclude @set:Exclude @get:Exclude
-    var userSelectedOptionIndex: Int? = null, // User's selection, not stored in Firestore
-    val statement: String? = null, // Consider merging with question if they serve the same purpose
+    var userSelectedOptionIndex: Int? = null,
+    val statement: String? = null,
     @get:PropertyName("isTrue") @set:PropertyName("isTrue")
-    var isTrue: Boolean? = null, // Specific to TRUE_FALSE, make sure Firestore property matches
-    var sentenceParts: List<String>? = null, // Specific to PUZZLES
-    var correctOrder: List<Int>? = null, // Specific to PUZZLES
-    // Dictionary Card specific properties
+    var isTrue: Boolean? = null,
+    var sentenceParts: List<String>? = null,
+    var correctOrder: List<Int>? = null,
     var wordEnglish: String? = null,
     var wordKazakh: String? = null,
     var wordRussian: String? = null,
-    // Image Quiz specific properties
     var imageUrl: String? = null,
     var imageOptions: List<String>? = null,
     var imageQuestion: String? = null,

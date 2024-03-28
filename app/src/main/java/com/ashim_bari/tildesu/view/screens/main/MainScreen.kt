@@ -49,7 +49,6 @@ import com.ashim_bari.tildesu.view.screens.main.pages.TranslatePage
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 private const val TAG = "MainScreen"
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
