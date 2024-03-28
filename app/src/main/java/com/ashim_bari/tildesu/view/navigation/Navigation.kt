@@ -32,12 +32,8 @@ class Navigation {
 
     }
 }
-
 @Composable
 fun NavigationGraph(navController: NavHostController, initialScreen: String) {
-//    val exerciseRepository = ExerciseRepository() // Replace with actual repository initialization if needed
-//    val exerciseViewModelFactory = ExerciseViewModelFactory(exerciseRepository)
-
     NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {
         composable(Navigation.AUTHENTICATION_ROUTE) {
             // Obtain ViewModel scoped to the NavHostController using hiltViewModel
@@ -57,8 +53,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             val score = backStackEntry.arguments?.getInt("score") ?: 0
             SuccessScreen(navController = navController, score = score)
         }
-
-
         composable(Navigation.FAILURE) {
             FailureScreen(navController = navController) {
                 // Define what happens when the restart button is clicked. For example:
@@ -75,8 +69,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             val score = backStackEntry.arguments?.getInt("score") ?: 0
             TrueFalseSuccessScreen(navController = navController, score = score)
         }
-
-
         composable(Navigation.TRUE_FALSE_FAILURE) {
             TrueFalseFailureScreen(navController = navController) {
                 // Define what happens when the restart button is clicked. For example:
@@ -86,8 +78,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
                 }
             }
         }
-
-
         composable(
             route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,
             arguments = listOf(navArgument("level") { type = NavType.StringType })
@@ -95,7 +85,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             val level = backStackEntry.arguments?.getString("level") ?: "A1"
             ExerciseTypeSelectionScreen(navController, level)
         }
-
         composable(
             route = Navigation.SPECIFIC_EXERCISE_ROUTE,
             arguments = listOf(

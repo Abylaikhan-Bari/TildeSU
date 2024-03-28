@@ -10,8 +10,6 @@ import javax.inject.Inject
 class AuthenticationViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
-    //private val userRepository = UserRepository()
-
     suspend fun login(email: String, password: String): Boolean {
         return try {
             val result = userRepository.loginUser(email, password)
@@ -29,7 +27,6 @@ class AuthenticationViewModel @Inject constructor(
     suspend fun isEmailRegistered(email: String): Boolean {
         return userRepository.isEmailRegistered(email)
     }
-
     suspend fun register(email: String, password: String): Boolean {
         return try {
             val result = userRepository.registerUser(email, password)
@@ -44,7 +41,6 @@ class AuthenticationViewModel @Inject constructor(
             false
         }
     }
-
     suspend fun resetPassword(email: String): Boolean {
         return try {
             val result = userRepository.resetPassword(email)
@@ -60,4 +56,3 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 }
-

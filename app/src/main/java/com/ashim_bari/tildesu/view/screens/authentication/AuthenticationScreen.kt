@@ -36,7 +36,6 @@ import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AuthenticationScreen(navController: NavHostController, viewModel: AuthenticationViewModel) {
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val padding = if (isLandscape) 32.dp else 16.dp
@@ -59,7 +58,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                 Log.d("AuthenticationScreen", "Back button pressed")
                 showExitConfirmation = true
             }
-
             if (showExitConfirmation) {
                 ExitConfirmationDialog(
                     showExitConfirmation = showExitConfirmation,
@@ -70,7 +68,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }
                 )
             }
-
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
@@ -78,7 +75,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(padding))
-
                 Image(
                     painter = painterResource(R.drawable.logoauthscreen),
                     contentDescription = "App Logo",
@@ -86,9 +82,7 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                         .size(200.dp) // Adjust the logo size for a modern look
                         .align(Alignment.CenterHorizontally)
                 )
-
                 Spacer(modifier = Modifier.height(padding))
-
                 AnimatedContent(
                     targetState = currentScreen,
                     transitionSpec = {
@@ -105,7 +99,6 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
         }
     }
 }
-
 @Composable
 fun ExitConfirmationDialog(showExitConfirmation: Boolean,
                            onDismiss: () -> Unit, // Added an onDismiss lambda parameter
@@ -128,7 +121,6 @@ fun ExitConfirmationDialog(showExitConfirmation: Boolean,
         )
     }
 }
-
 enum class AuthScreens {
     Login,
     Register,

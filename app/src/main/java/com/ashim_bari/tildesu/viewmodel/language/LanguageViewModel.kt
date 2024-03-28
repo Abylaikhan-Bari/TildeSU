@@ -12,11 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-
 ) : ViewModel() {
     private val _language = MutableStateFlow(LanguageManager.DEFAULT_LANGUAGE)
     val language: StateFlow<String> = _language
-
     fun setLanguage(context: Context, language: String) {
         if (_language.value != language) {
             _language.value = language
@@ -24,7 +22,6 @@ class LanguageViewModel @Inject constructor(
             // No need to manually update Locale here as com.ashim_bari.tildesu.model.language.LanguageManager already handles it
         }
     }
-
     private fun updateLocale(context: Context, language: String) {
         val locale = Locale(language)
         Locale.setDefault(locale)
@@ -33,5 +30,3 @@ class LanguageViewModel @Inject constructor(
         context.createConfigurationContext(config)
     }
 }
-
-

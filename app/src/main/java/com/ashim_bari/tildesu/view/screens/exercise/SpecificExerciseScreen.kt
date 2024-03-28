@@ -21,9 +21,6 @@ fun SpecificExerciseScreen(
     } catch (e: IllegalArgumentException) {
         ExerciseType.QUIZ // Default to QUIZ or handle error as appropriate
     }
-
-
-
     // Based on exerciseType, decide which content to show
     when (exerciseType) {
         ExerciseType.QUIZ -> QuizContent(navController, level, exerciseType)

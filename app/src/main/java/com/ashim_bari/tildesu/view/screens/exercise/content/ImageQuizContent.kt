@@ -49,24 +49,19 @@ fun ImageQuizContent(
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var selectedOption by rememberSaveable { mutableStateOf(-1) }
-
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.IMAGE_QUIZZES)
     }
-
     fun showConfirmationDialog() {
         showDialog = true
     }
-
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentExercisesIndex.observeAsState(0)
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val imageQuizPassed by exerciseViewModel.imageQuizPassed.observeAsState()
-
     BackHandler {
         showConfirmationDialog()
     }
-
     if (exerciseCompleted) {
         // Handle quiz completion
         imageQuizPassed?.let { passed ->
@@ -118,7 +113,6 @@ fun ImageQuizContent(
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-
                         // Exercise Image
                         Image(
                             painter = rememberImagePainter(exercise.imageUrl),
@@ -127,15 +121,12 @@ fun ImageQuizContent(
                                 .height(180.dp)
                                 .fillMaxWidth()
                         )
-
                         Spacer(Modifier.height(24.dp))
-
                         OptionsGrid(
                             options = exercise.imageOptions ?: emptyList(),
                             selectedOption = selectedOption,
                             onSelectOption = { selectedOption = it }
                         )
-
                         Spacer(Modifier.height(32.dp))
                         Button(
                             onClick = {
@@ -155,7 +146,6 @@ fun ImageQuizContent(
                 }
             }
         }
-
         // Confirmation Dialog
         if (showDialog) {
             AlertDialog(
@@ -183,7 +173,6 @@ fun ImageQuizContent(
         }
     }
 }
-
 @Composable
 fun OptionsGrid(
     options: List<String>,
@@ -217,7 +206,6 @@ fun OptionsGrid(
         }
     }
 }
-
 @Composable
 fun ImageOptionCard(
     option: String,

@@ -21,10 +21,8 @@ class ExerciseViewModel @Inject constructor(
 ) : ViewModel()  {
     private val _exercises = MutableLiveData<List<Exercise>>(emptyList())
     val exercises: LiveData<List<Exercise>> = _exercises
-
     private val _currentExerciseIndex = MutableLiveData<Int>(0)
     val currentExercisesIndex: LiveData<Int> = _currentExerciseIndex
-
     private val _quizScore = MutableLiveData(0)
     val quizScore: LiveData<Int> = _quizScore
     private val _trueFalseScore = MutableLiveData(0)
@@ -35,25 +33,20 @@ class ExerciseViewModel @Inject constructor(
     val trueFalseScore: LiveData<Int> = _trueFalseScore
     private val _puzzleScore = MutableLiveData(0)
     val puzzleScore: LiveData<Int> = _puzzleScore
-
     private val _exerciseCompleted = MutableLiveData<Boolean>(false)
     val exerciseCompleted: LiveData<Boolean> = _exerciseCompleted
-
     private var currentLevelId: String? = null
     private var currentExerciseType: ExerciseType? = null
-
     private val _quizPassed = MutableLiveData<Boolean?>(null)
     val quizPassed: LiveData<Boolean?> = _quizPassed
     private val _imageQuizPassed = MutableLiveData<Boolean?>(null)
     val imageQuizPassed: LiveData<Boolean?> = _imageQuizPassed
-
     private val TAG = "ExerciseViewModel"
     init {
-        // Add logging for initial values
+        // Logging for initial values
         Log.d(TAG, "Initial values: quizScore=${_quizScore.value}, trueFalseScore=${_trueFalseScore.value}, puzzleScore=${_puzzleScore.value}, exerciseCompleted=${_exerciseCompleted.value}, quizPassed=${_quizPassed.value}, ImageQuizPassed=${_imageQuizPassed.value}")
     }
-
-    // Setter functions with logging
+    // Setter functions
     private fun setQuizScore(value: Int) {
         _quizScore.value = value
         Log.d(TAG, "Quiz Score Updated to: $value")
@@ -62,22 +55,18 @@ class ExerciseViewModel @Inject constructor(
         _imageQuizScore.value = value
         Log.d(TAG, "Image Quiz Score Updated to: $value")
     }
-
     private fun setTrueFalseScore(value: Int) {
         _trueFalseScore.value = value
         Log.d(TAG, "True False Score Updated to: $value")
     }
-
     private fun setPuzzleScore(value: Int) {
         _puzzleScore.value = value
         Log.d(TAG, "Puzzle Score Updated to: $value")
     }
-
     private fun setExerciseCompleted(value: Boolean) {
         _exerciseCompleted.value = value
         Log.d(TAG, "Exercise Completed: $value")
     }
-
     private fun setQuizPassed(value: Boolean?) {
         _quizPassed.value = value
         Log.d(TAG, "Quiz Passed: $value")
@@ -86,7 +75,6 @@ class ExerciseViewModel @Inject constructor(
         _imageQuizPassed.value = value
         Log.d(TAG, "Image Quiz Passed: $value")
     }
-
     fun loadExercisesForLevelAndType(level: String, type: ExerciseType) {
         currentLevelId = level
         currentExerciseType = type
@@ -110,12 +98,8 @@ class ExerciseViewModel @Inject constructor(
             }
         }
     }
-
-
-
     fun submitQuizAnswer(selectedOption: Int) {
         val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0) ?: return
-
         when (currentExercise.type) {
             ExerciseType.QUIZ -> {
                 if (selectedOption == currentExercise.correctOptionIndex) {
@@ -134,7 +118,6 @@ class ExerciseViewModel @Inject constructor(
             else -> Log.d(TAG, "Attempted to submit answer for non-supported exercise type.")
         }
     }
-
     fun moveToNextQuiz() {
         _currentExerciseIndex.value?.let { currentIndex ->
             if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
@@ -157,16 +140,13 @@ class ExerciseViewModel @Inject constructor(
             }
         }
     }
-
     fun submitTrueFalseAnswer(userAnswer: Boolean) {
         val currentExercise = _exercises.value?.get(_currentExerciseIndex.value ?: 0)
         Log.d(TAG, "Attempting True/False answer. Current type: ${currentExercise?.type}, Index: ${_currentExerciseIndex.value}")
-
         if (currentExercise?.type != ExerciseType.TRUE_FALSE) {
             Log.d(TAG, "Non-True/False exercise attempted in True/False method. Exercise type: ${currentExercise?.type}")
             return
         }
-
         val isCorrect = userAnswer == currentExercise.isTrue
         if (isCorrect) {
             // Make sure not to exceed the total number of exercises
@@ -174,10 +154,7 @@ class ExerciseViewModel @Inject constructor(
             setTrueFalseScore(newScore)
             updateProgress()
         }
-
-
     }
-
     fun moveToNextTrueFalse() {
         val nextIndex = (_currentExerciseIndex.value ?: 0) + 1
         if (nextIndex < (_exercises.value?.size ?: 0)) {
@@ -186,7 +163,6 @@ class ExerciseViewModel @Inject constructor(
             completeExercise()
         }
     }
-
     fun submitPuzzleAnswer(userOrder: List<Int>, puzzle: Exercise) {
         val isCorrect = userOrder == puzzle.correctOrder
         if (isCorrect) {
@@ -194,10 +170,7 @@ class ExerciseViewModel @Inject constructor(
             val newScore = min((_puzzleScore.value ?: 0) + 1, _exercises.value?.size ?: 0)
             setPuzzleScore(newScore)
         }
-
-
     }
-
     fun moveToNextPuzzle() {
         val currentIndex = _currentExerciseIndex.value ?: return
         if (currentIndex + 1 < (_exercises.value?.size ?: 0)) {
@@ -206,7 +179,6 @@ class ExerciseViewModel @Inject constructor(
             completeExercise()
         }
     }
-
     private fun updateProgress() {
         FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
             currentLevelId?.let { levelId ->
@@ -214,7 +186,6 @@ class ExerciseViewModel @Inject constructor(
                     try {
                         // Fetch the current progress for the level
                         val currentProgress = repository.fetchUserProgress(userId, levelId)
-
                         // Prepare the updated data based on the exercise type
                         val updatedData = when (currentExerciseType) {
                             ExerciseType.QUIZ -> mapOf(
@@ -235,19 +206,12 @@ class ExerciseViewModel @Inject constructor(
                             )
                             else -> emptyMap()
                         }
-
-
-                        // Ensure there's something to update
                         if (updatedData.isNotEmpty()) {
-                            // Include common fields that should always be updated
-                            // Inside your updateProgress method
                             val commonData = mapOf(
                                 "overallTotal" to calculateOverallTotalQuestions(currentProgress, updatedData),
                                 "overallCorrect" to calculateOverallCorrectAnswers(currentProgress, updatedData),
                                 "completedOn" to FieldValue.serverTimestamp()
                             )
-
-
                             repository.updateUserProgress(userId, levelId, updatedData + commonData)
                             Log.d(TAG, "Progress updated for user: $userId, level: $levelId with data: $updatedData")
                         }
@@ -258,23 +222,18 @@ class ExerciseViewModel @Inject constructor(
             }
         }
     }
-
     private fun calculateOverallTotalQuestions(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
-        // Ensure values are Int and handle nullability
         val quizTotal = (updatedData["quizTotal"] as? Number ?: currentProgress["quizTotal"] as? Number ?: 0).toInt()
         val trueFalseTotal = (updatedData["trueFalseTotal"] as? Number ?: currentProgress["trueFalseTotal"] as? Number ?: 0).toInt()
         val puzzleTotal = (updatedData["puzzleTotal"] as? Number ?: currentProgress["puzzleTotal"] as? Number ?: 0).toInt()
         val imageQuizTotal = (updatedData["imageQuizTotal"] as? Number ?: currentProgress["imageQuizTotal"] as? Number ?: 0).toInt()
-
         return quizTotal + trueFalseTotal + puzzleTotal + imageQuizTotal
     }
-
     private fun calculateOverallCorrectAnswers(currentProgress: Map<String, Any>, updatedData: Map<String, Any>): Int {
         // Fetch current correct answers for all types from the progress
         val currentQuizCorrect = (currentProgress["quizCorrect"] as? Number ?: 0).toInt()
         val currentTrueFalseCorrect = (currentProgress["trueFalseCorrect"] as? Number ?: 0).toInt()
         val currentPuzzleCorrect = (currentProgress["puzzleCorrect"] as? Number ?: 0).toInt()
-
         // Fetch the new correct answer for the current exercise type only
         val newCorrectAnswer = when (currentExerciseType) {
             ExerciseType.QUIZ -> (updatedData["quizCorrect"] as? Number ?: currentQuizCorrect).toInt()
@@ -294,20 +253,11 @@ class ExerciseViewModel @Inject constructor(
 
         // Sum up all correct answers across all exercise types
         return totalQuizCorrect + totalTrueFalseCorrect + totalPuzzleCorrect + newImageQuizCorrect
-
     }
-
-
-
-
-
-
     fun completeExercise() {
         setExerciseCompleted(true)
-
         updateProgress()
     }
-
     fun resetExercise() {
         _currentExerciseIndex.value = 0
         setExerciseCompleted(false)

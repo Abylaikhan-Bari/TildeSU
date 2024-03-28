@@ -88,7 +88,6 @@ fun ProfilePage(navController: NavHostController) {
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var showEditProfileDialog by rememberSaveable { mutableStateOf(false) }
-
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.uploadProfileImage(it) }
     }
@@ -107,11 +106,6 @@ fun ProfilePage(navController: NavHostController) {
     LaunchedEffect(Unit) {
         viewModel.fetchUserProfile()
     }
-
-//    LaunchedEffect(Unit) {
-//        viewModel.getUserEmail()
-//        // viewModel.getUserProfileImageUrl() // Uncomment if fetching profile image URL
-//    }
     if (showEditProfileDialog) {
         // The userProfile from viewModel might be null initially, handle nullability
         EditProfileDialog(
@@ -133,19 +127,12 @@ fun ProfilePage(navController: NavHostController) {
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(16.dp)
             ) {
-//                ProfilePicture(profileImageUrl) {
-//                    launcher.launch("image/*")
-//                }
-
                 Spacer(modifier = Modifier.height(16.dp))
                 userProfile?.let { profile ->
-
                         ProfilePicture(profileImageUrl) {
                             launcher.launch("image/*")
                         }
-
                     Spacer(modifier = Modifier.height(16.dp))
-
                         Row(modifier = Modifier.padding(top = 8.dp)) {
                             Text(
                                 text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
@@ -153,25 +140,12 @@ fun ProfilePage(navController: NavHostController) {
                                 modifier = Modifier.align(Alignment.CenterVertically)
                             )
                         }
-
                     Spacer(modifier = Modifier.height(16.dp))
-                    // Animate the rest of the user information
-
                         UserInfoCard(profile)
                     }
-
-
-
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
-
-
-// Buttons for actions (Edit Profile, Update Password, Logout, etc.)
-
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-
                     ActionCard(
                         text = stringResource(id = R.string.edit_profile_button),
                         icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
@@ -181,11 +155,7 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.outlineVariant
                     )
-
-
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                     ActionCard(
                         text = stringResource(id = R.string.update_password_button),
                         icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
@@ -195,10 +165,6 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.primaryContainer
                     )
-
-
-
-
                 LanguageChangeDialog(
                     showDialog = showLanguageDialog,
                     onDismiss = { showLanguageDialog = false },
@@ -209,8 +175,6 @@ fun ProfilePage(navController: NavHostController) {
                         // You might want to trigger some state change or call a function to apply the language change.
                     }
                 )
-
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                     ActionCard(
@@ -222,9 +186,6 @@ fun ProfilePage(navController: NavHostController) {
                             .fillMaxWidth(),
                         backgroundColor = MaterialTheme.colorScheme.errorContainer
                     )
-
-
-
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
                         viewModel = viewModel,
@@ -236,7 +197,6 @@ fun ProfilePage(navController: NavHostController) {
                     )
                 }
                 val updatePasswordSuccessfulMessage = stringResource(id = R.string.update_password_successful)
-
                 LaunchedEffect(passwordUpdatedSuccessfully) {
                     if (passwordUpdatedSuccessfully) {
                         snackbarHostState.showSnackbar(
@@ -273,7 +233,6 @@ fun ProfilePage(navController: NavHostController) {
                 }
             }
         }
-
         // Correct placement of SnackbarHost within Box layout using 'align'
         SnackbarHost(
             hostState = snackbarHostState,
@@ -281,15 +240,12 @@ fun ProfilePage(navController: NavHostController) {
         )
     }
 }
-
 @Composable
 fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
     var isVisible by remember { mutableStateOf(false) }
-
     LaunchedEffect(showContent) {
         isVisible = showContent
     }
-
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn() + slideInVertically(),
@@ -298,7 +254,6 @@ fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
         content()
     }
 }
-
 @Composable
 fun UserInfoCard(profile: UserProfile) {
     Card(
@@ -319,7 +274,6 @@ fun UserInfoCard(profile: UserProfile) {
             UserInfoItem(label = stringResource(id = R.string.specialty), value = profile.specialty ?: stringResource(R.string.not_set))
         }
     }
-
 }
 @Composable
 fun getGenderString(gender: Int?): String {
@@ -337,9 +291,6 @@ fun UserInfoItem(label: String, value: String) {
         Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
     }
 }
-
-
-
 @Composable
 fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (UserProfile) -> Unit) {
     var name by remember { mutableStateOf(profile?.name ?: "") }
@@ -354,7 +305,6 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
     val ageFocusRequester = remember { FocusRequester() }
     val specialtyFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = { Text(stringResource(id = R.string.edit_profile_button)) },
@@ -402,8 +352,6 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
                     keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
                 )
             }
-
-
         },
         confirmButton = {
             Button(onClick = {
@@ -431,7 +379,6 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
         }
     )
 }
-
 @Composable
 fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
     Column {
@@ -445,9 +392,7 @@ fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
                 stringResource(id = R.string.gender_male), modifier = Modifier
                     .clickable(onClick = { onGenderSelected(1) })
                     .padding(start = 4.dp))
-
             Spacer(modifier = Modifier.width(8.dp))
-
             RadioButton(
                 selected = selectedGender == 2,
                 onClick = { onGenderSelected(2) }
@@ -459,8 +404,6 @@ fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
         }
     }
 }
-
-
 @Composable
 fun ActionCard(
     text: String,
@@ -473,7 +416,6 @@ fun ActionCard(
     LaunchedEffect(key1 = true) {
         visible = true
     }
-
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + slideInVertically(),
@@ -504,10 +446,6 @@ fun ActionCard(
         }
     }
 }
-
-
-
-
 @Composable
 fun UpdatePasswordDialog(
     viewModel: MainViewModel,
@@ -525,7 +463,6 @@ fun UpdatePasswordDialog(
     val currentPasswordFocusRequester = remember { FocusRequester() }
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     //var isDonePressed by remember { mutableStateOf(false) }
-
     var showSnackbar by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
     val updatePasswordFailedMessage = stringResource(id = R.string.update_password_failed)
@@ -534,8 +471,6 @@ fun UpdatePasswordDialog(
     val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
     val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
     val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
-
-
     LaunchedEffect(showSnackbar) {
         if (showSnackbar) {
             snackbarHostState.showSnackbar(
@@ -555,7 +490,6 @@ fun UpdatePasswordDialog(
             showSnackbar = false // Reset the flag after showing the snackbar
         }
     }
-
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text(stringResource(id = R.string.update_password_dialog_title)) },
@@ -572,7 +506,6 @@ fun UpdatePasswordDialog(
                         .fillMaxWidth()
                         .focusRequester(currentPasswordFocusRequester)
                 )
-
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
@@ -599,7 +532,6 @@ fun UpdatePasswordDialog(
                 }
             }
         },
-
         confirmButton = {
             Button(
                 onClick = {
@@ -633,7 +565,6 @@ fun UpdatePasswordDialog(
             ) {
                 Text(stringResource(id = R.string.update_button))
             }
-
         },
         dismissButton = {
             keyboardController?.hide()
@@ -644,7 +575,6 @@ fun UpdatePasswordDialog(
         }
     )
 }
-
 @Composable
 fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageSelected: (String) -> Unit) {
     if (showDialog) {
@@ -669,10 +599,6 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
         )
     }
 }
-
-
-
-
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
@@ -690,4 +616,3 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
         )
     }
 }
-

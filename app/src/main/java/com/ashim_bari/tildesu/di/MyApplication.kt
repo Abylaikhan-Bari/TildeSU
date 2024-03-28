@@ -13,12 +13,10 @@ class MyApplication : Application() {
     companion object {
         const val CHANNEL_ID = "exercise_reminder"
     }
-
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
     }
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.notification_channel_name)

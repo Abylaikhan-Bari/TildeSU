@@ -21,10 +21,8 @@ import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 fun LoadingScreen(navController: NavHostController) {
     val mainViewModel: MainViewModel = viewModel()
     val isLoggedIn by mainViewModel.isLoggedIn.observeAsState()
-
     // Define a TAG for logging
     val TAG = "LoadingScreen"
-
     LaunchedEffect(isLoggedIn) {
         Log.d(TAG, "LaunchedEffect: isLoggedIn changed to $isLoggedIn")
         when (isLoggedIn) {
@@ -50,7 +48,6 @@ fun LoadingScreen(navController: NavHostController) {
             }
         }
     }
-
     if (isLoggedIn == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(modifier = Modifier.size(50.dp))

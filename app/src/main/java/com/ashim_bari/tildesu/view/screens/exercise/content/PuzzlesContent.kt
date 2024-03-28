@@ -47,14 +47,12 @@ fun PuzzlesContent(
     level: String,
 ) {
     val exerciseViewModel: ExerciseViewModel = hiltViewModel()
-
     val puzzles by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentExerciseIndex by exerciseViewModel.currentExercisesIndex.observeAsState()
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
     val feedbackCorrect = stringResource(id = R.string.feedback_correct)
     val feedbackIncorrect = stringResource(id = R.string.feedback_incorrect)
-
     // Observe the puzzle score here
     val puzzleScore by exerciseViewModel.puzzleScore.observeAsState(0)
     Log.d(TAG, "Current score observed: $puzzleScore")
@@ -63,12 +61,10 @@ fun PuzzlesContent(
     fun showConfirmationDialog() {
         showDialog = true
     }
-
     LaunchedEffect(level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.PUZZLES)
         Log.d(TAG, "Exercises loaded for level: $level")
     }
-
     LaunchedEffect(feedbackMessage) {
         if (feedbackMessage == feedbackCorrect) {
             delay(1500)
@@ -86,13 +82,10 @@ fun PuzzlesContent(
             }
         }
     }
-
     BackHandler {
         showConfirmationDialog()
         Log.d(TAG, "BackHandler triggered")
     }
-
-
     Column {
         Column(modifier = Modifier.padding(16.dp)) {
 
@@ -106,8 +99,6 @@ fun PuzzlesContent(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
             )
-
-
             Spacer(modifier = Modifier.height(16.dp)) // Add space between progress bar and instruction text
 
             feedbackMessage?.let {
@@ -115,8 +106,6 @@ fun PuzzlesContent(
             }
             if (puzzles.isNotEmpty() && currentExerciseIndex != null) {
                 val currentPuzzle = puzzles[currentExerciseIndex!!]
-
-
                 DraggableWordPuzzle(
                     puzzle = currentPuzzle,
                     onPuzzleSolved = { correct ->
@@ -164,8 +153,6 @@ fun PuzzlesContent(
         }
     }
 }
-
-
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
@@ -178,9 +165,7 @@ fun DraggableWordPuzzle(
     var words by remember(currentPuzzleIndex) { mutableStateOf(puzzle.sentenceParts!!.shuffled()) }
     var draggedIndex by remember { mutableStateOf(-1) }
     var targetIndex by remember { mutableStateOf(-1) }
-
     Column(modifier = Modifier.padding(16.dp)) {
-
         Text(
             stringResource(id = R.string.arrange_words),
             style = MaterialTheme.typography.headlineMedium, // Adjust typography to match the design
@@ -208,7 +193,6 @@ fun DraggableWordPuzzle(
                 index = index
             )
         }
-
         Button(modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
                 // This maps the current order of words back to their original indices
@@ -226,7 +210,6 @@ fun DraggableWordPuzzle(
         }
     }
 }
-
 @Composable
 fun DraggableCard(
     word: String,
@@ -262,5 +245,3 @@ fun DraggableCard(
         }
     }
 }
-
-

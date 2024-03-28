@@ -15,7 +15,6 @@ class Mapper {
             gender = this.gender,
             specialty = this.specialty
         )
-
         // Convert UserProfile to UserEntity
         fun UserProfile.toUserEntity(userId: String) = UserEntity(
             uid = userId,

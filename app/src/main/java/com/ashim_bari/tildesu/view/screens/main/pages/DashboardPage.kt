@@ -39,7 +39,6 @@ import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 fun DashboardPage() {
     val mainViewModel: MainViewModel = hiltViewModel()
     val progressData by mainViewModel.progressData.observeAsState(mapOf())
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -70,12 +69,10 @@ fun DashboardPage() {
             }
         }
     }
-
     LaunchedEffect(key1 = Unit) {
         mainViewModel.loadUserProgress()
     }
 }
-
 @Composable
 fun ExpandableProgressBar(
     level: String,
@@ -86,9 +83,7 @@ fun ExpandableProgressBar(
     imageQuizProgress: Float
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-
     LanguageLevelProgressBar(level = level, progress = overallProgress, onBarClick = { isExpanded = !isExpanded })
-
     AnimatedVisibility(
         visible = isExpanded,
         enter = fadeIn() + expandVertically(),
@@ -102,14 +97,12 @@ fun ExpandableProgressBar(
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
                 ProgressBar(progress = puzzleProgress)
             }
-
             if(quizProgress > 0) {
                 Text(text = stringResource(id = R.string.quiz),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
                 ProgressBar(progress = quizProgress)
             }
-
             if(trueFalseProgress > 0) {
                 Text(text = stringResource(id = R.string.true_false),
                     style = MaterialTheme.typography.bodyLarge,
@@ -125,8 +118,6 @@ fun ExpandableProgressBar(
         }
     }
 }
-
-
 @Composable
 fun ProgressBar(progress: Float) {
     // Using SafeLinearProgressIndicator instead of LinearProgressIndicator directly
@@ -140,20 +131,12 @@ fun ProgressBar(progress: Float) {
         trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
     )
 }
-
-
-
-
-
-
-
 @Composable
 fun LanguageLevelProgressBar(level: String, progress: Float, onBarClick: () -> Unit) {
     val animatedProgress by animateFloatAsState(
         targetValue = if (progress.isNaN()) 0.0f else progress.coerceIn(0f, 1f),
         animationSpec = tween(durationMillis = 1000, delayMillis = 500), label = ""
     )
-
     Column {
         Text(
             text = level,

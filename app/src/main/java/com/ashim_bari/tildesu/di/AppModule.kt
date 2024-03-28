@@ -17,15 +17,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
-
     @Singleton
     @Provides
     fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
-
     @Singleton
     @Provides
     fun provideUserRepository(
@@ -33,18 +30,12 @@ object AppModule {
         firestore: FirebaseFirestore,
         userDao: UserDao
     ): UserRepository = UserRepository(firebaseAuth, firestore, userDao)
-
     @Singleton
     @Provides
     fun provideExerciseRepository(firebaseFirestore: FirebaseFirestore): ExerciseRepository =
         ExerciseRepository(firebaseFirestore)
-
-
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-
-
-
 }

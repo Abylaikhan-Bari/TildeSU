@@ -10,20 +10,17 @@ import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.MainActivity
 
 class NotificationBroadcastReceiver : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         try {
             val notificationIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
-
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
                 notificationIntent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-
             val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle(context.getString(R.string.notification_title))
@@ -38,7 +35,6 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             // Handle the SecurityException by logging it or taking other appropriate actions
         }
     }
-
     companion object {
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "exercise_reminder"

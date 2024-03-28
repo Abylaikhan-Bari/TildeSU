@@ -40,13 +40,11 @@ fun SuccessScreen(navController: NavController, score: Int) {
             contentDescription = "Trophy",
             modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
         )
-
         Text(
             text = stringResource(id = R.string.you_scored_points, score),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
-
         Card(
             onClick = { navController.navigate("main") },
             modifier = Modifier
@@ -65,8 +63,6 @@ fun SuccessScreen(navController: NavController, score: Int) {
 
     }
 }
-
-
 @Composable
 fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
     Column(
@@ -84,13 +80,11 @@ fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
             contentDescription = "Trophy",
             modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
         )
-
         Text(
             text = stringResource(id = R.string.you_scored_points, score),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
         )
-
         Card(
             onClick = { navController.navigate("main") },
             modifier = Modifier
@@ -106,4 +100,3 @@ fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
         }
     }
 }
-

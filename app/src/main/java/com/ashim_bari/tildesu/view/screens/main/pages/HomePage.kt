@@ -47,7 +47,6 @@ fun HomePage(navController: NavHostController) {
                 "A1", "A2", "B1", "B2", "C1", "C2"
             )
             val routes = listOf("exercise/A1", "exercise/A2", "exercise/B1", "exercise/B2", "exercise/C1", "exercise/C2")
-
             levels.zip(routes).forEachIndexed { index, (level, route) ->
                 if (index % 2 == 0) {
                     // Align to start
@@ -58,7 +57,6 @@ fun HomePage(navController: NavHostController) {
                         horizontalArrangement = Arrangement.Start
                     ) {
                         CardComponent(level = level, navController = navController, index = index)
-
                     }
                 } else {
                     // Align to end
@@ -76,19 +74,15 @@ fun HomePage(navController: NavHostController) {
         }
     }
 }
-
-
 @Composable
 fun CardComponent(level: String, navController: NavHostController, index: Int) {
     var visible by rememberSaveable { mutableStateOf(false) }
     var animatedOnce by rememberSaveable { mutableStateOf(false) }
-
     LaunchedEffect(key1 = "init") {
         delay(100L * index)
         visible = true
         animatedOnce = true
     }
-
     // Determine the string resource ID based on the level
     val levelResId = when (level) {
         "A1" -> R.string.level_a1
@@ -99,7 +93,6 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
         "C2" -> R.string.level_c2
         else -> R.string.level_a1 // Default case or error handling
     }
-
     if (animatedOnce) {
         AnimatedVisibility(
             visible = visible,

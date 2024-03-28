@@ -18,12 +18,10 @@ class ExerciseRepository @Inject constructor(
     //private val db = FirebaseFirestore.getInstance()
     private val _exercises = MutableLiveData<List<Exercise>>()
     val exercises: LiveData<List<Exercise>> = _exercises
-
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
     @OptIn(UnstableApi::class)
     private val db = Firebase.firestore
-
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
         val collectionName = when (type) {
@@ -33,7 +31,6 @@ class ExerciseRepository @Inject constructor(
             ExerciseType.DICTIONARY_CARDS -> "dictionaryCards"
             ExerciseType.IMAGE_QUIZZES -> "imageQuizzes"
         }
-
         return try {
             val exercisesSnapshot = db.collection("levels")
                 .document(level)
@@ -64,7 +61,6 @@ class ExerciseRepository @Inject constructor(
             emptyList()
         }
     }
-
     @OptIn(UnstableApi::class)
     suspend fun fetchUserProgress(userId: String, levelId: String): Map<String, Any> {
         // Placeholder implementation. Adjust according to your Firestore structure.
@@ -82,8 +78,6 @@ class ExerciseRepository @Inject constructor(
             emptyMap()
         }
     }
-
-
     @OptIn(UnstableApi::class)
     suspend fun updateUserProgress(userId: String, levelId: String, updateData: Map<String, Any>) {
         val progressRef = db.collection("users").document(userId).collection("progress").document(levelId)
@@ -97,5 +91,4 @@ class ExerciseRepository @Inject constructor(
             }
         }.await()
     }
-
 }

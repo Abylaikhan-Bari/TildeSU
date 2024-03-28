@@ -67,7 +67,6 @@ fun MainScreen(navController: NavHostController) {
         @Suppress("DEPRECATION")
         context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
-
     LaunchedEffect(isLoggedIn) {
         Log.d(TAG, "LaunchedEffect: isLoggedIn changed to $isLoggedIn")
         if (isLoggedIn == false) {
@@ -78,16 +77,13 @@ fun MainScreen(navController: NavHostController) {
             }
         }
     }
-
     val bottomItems = listOf(
         BottomNavItem(stringResource(id = R.string.bottom_nav_home), Icons.Filled.Home, MainScreens.Home),
         BottomNavItem(stringResource(id = R.string.bottom_nav_dashboard), Icons.Filled.Assessment, MainScreens.Dashboard),
         BottomNavItem(stringResource(id = R.string.bottom_nav_useful), Icons.Filled.Star, MainScreens.Useful),
         BottomNavItem(stringResource(id = R.string.bottom_nav_translate), Icons.Filled.Translate, MainScreens.Translate),
         BottomNavItem(stringResource(id = R.string.bottom_nav_profile), Icons.Filled.Person, MainScreens.Profile)
-
     )
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -97,8 +93,6 @@ fun MainScreen(navController: NavHostController) {
                 )
             )
         },
-
-
         bottomBar = {
             NavigationBar {
                 bottomItems.forEach { item ->
@@ -121,12 +115,6 @@ fun MainScreen(navController: NavHostController) {
                         onClick = {
                             Log.d(TAG, "NavigationBarItem: ${item.title} clicked")
                             currentMainScreen = item.screen
-//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-//                            } else {
-//                                @Suppress("DEPRECATION")
-//                                vibrator.vibrate(50)
-//                            }
                         }
                     )
                 }
@@ -137,7 +125,6 @@ fun MainScreen(navController: NavHostController) {
             Log.d(TAG, "BackHandler: Back button pressed")
             showExitConfirmation = true
         }
-
         if (showExitConfirmation) {
             AlertDialog(
                 onDismissRequest = {
@@ -165,7 +152,6 @@ fun MainScreen(navController: NavHostController) {
                 }
             )
         }
-
         LazyColumn(contentPadding = innerPadding) {
             item {
                 MainScreenContent(currentMainScreen, navController)
@@ -174,11 +160,8 @@ fun MainScreen(navController: NavHostController) {
     }
     Log.d(TAG, "MainScreen: Ended")
 }
-
 @Composable
 fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
-
-
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage()
@@ -187,13 +170,11 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
         MainScreens.Translate -> TranslatePage(navController)
     }
 }
-
 data class BottomNavItem(
     val title: String,
     val icon: ImageVector,
     val screen: MainScreens
 )
-
 enum class MainScreens {
     Home,
     Dashboard,

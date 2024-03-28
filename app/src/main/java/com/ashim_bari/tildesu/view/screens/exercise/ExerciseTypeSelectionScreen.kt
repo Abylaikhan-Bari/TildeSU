@@ -62,7 +62,6 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             )
-
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     stringResource(id = R.string.select_exercise_type),
@@ -70,7 +69,6 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
                 ExerciseType.values().forEachIndexed { index, exerciseType ->
                     AnimatedExerciseTypeCard(index, exerciseType) {
                         // Ensure your navigation route here matches the NavGraph definition
@@ -81,7 +79,6 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
         }
     }
 }
-
 @Composable
 fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: () -> Unit) {
     var visible by rememberSaveable { mutableStateOf(false) }
@@ -89,7 +86,6 @@ fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: ()
         delay(100L * index)
         visible = true
     }
-
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(animationSpec = tween(300)) + expandIn(animationSpec = tween(300)),
@@ -98,30 +94,6 @@ fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: ()
         ExerciseTypeCard(exerciseType, onClick)
     }
 }
-
-//@Composable
-//fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(vertical = 8.dp)
-//            .clickable(onClick = onClick),
-//        shape = RoundedCornerShape(16.dp),
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-//            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-//        ),
-//        elevation = CardDefaults.cardElevation(4.dp)
-//    ) {
-//        Text(
-//            text = exerciseType.name.replace('_', ' ')
-//                .lowercase(Locale.getDefault())
-//                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-//            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-//            modifier = Modifier.padding(16.dp)
-//        )
-//    }
-//}
 @Composable
 fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
     val exerciseTypeName = when (exerciseType) {
@@ -132,7 +104,6 @@ fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
         ExerciseType.DICTIONARY_CARDS -> stringResource(id = R.string.dictionary_cards)
 
     }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()

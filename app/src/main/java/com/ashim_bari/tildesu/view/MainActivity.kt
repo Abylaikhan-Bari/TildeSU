@@ -37,8 +37,6 @@ import dagger.hilt.android.AndroidEntryPoint
 //import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Initialize Firebase before setting the content view
@@ -47,9 +45,7 @@ class MainActivity : ComponentActivity() {
         scheduleNotification()
         // Apply language change here or determine the initial screen based on some condition
         applyLanguageChange()
-
         val initialScreen = determineInitialScreen()
-
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
             val currentLanguageCode by languageViewModel.language.collectAsState()
@@ -67,7 +63,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
     private fun checkAndRequestNotificationPermission() {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !notificationManager.areNotificationsEnabled()) {
@@ -76,7 +71,6 @@ class MainActivity : ComponentActivity() {
             showDialogToEnableNotifications()
         }
     }
-
     private fun showDialogToEnableNotifications() {
         AlertDialog.Builder(this)
             .setTitle(R.string.notifications_disabled_title)
@@ -104,7 +98,6 @@ class MainActivity : ComponentActivity() {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()
     }
-
     private fun scheduleNotification() {
         // Use the AlarmManager to schedule the notification
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -121,7 +114,6 @@ class MainActivity : ComponentActivity() {
             pendingIntent
         )
     }
-
 private fun determineInitialScreen(): String {
     // Implement logic to determine which screen to show first
     // This could be based on authentication status, user preferences, etc.
@@ -132,12 +124,10 @@ private fun determineInitialScreen(): String {
         Firebase.initialize(context = this)
         Firebase.appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
     }
-
     private fun applyLanguageChange() {
         val languageCode = LanguageManager.getLanguagePreference(this)
         LanguageManager.setLocale(this, languageCode)
     }
-
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LanguageManager.setLocale(newBase, LanguageManager.getLanguagePreference(newBase)))
     }
@@ -148,9 +138,4 @@ private fun determineInitialScreen(): String {
         // Use the custom animations for a more pleasant effect
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
-
-
-
 }
-
-
