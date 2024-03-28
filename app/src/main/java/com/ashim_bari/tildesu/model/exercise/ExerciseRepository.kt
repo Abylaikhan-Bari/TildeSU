@@ -15,7 +15,6 @@ import javax.inject.Inject
 class ExerciseRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
-    //private val db = FirebaseFirestore.getInstance()
     private val _exercises = MutableLiveData<List<Exercise>>()
     val exercises: LiveData<List<Exercise>> = _exercises
     private val _isLoading = MutableLiveData<Boolean>()
