@@ -10,7 +10,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object LanguageModule {
-
     @Singleton
     @Provides
     fun provideLanguageManager(): LanguageManager = LanguageManager

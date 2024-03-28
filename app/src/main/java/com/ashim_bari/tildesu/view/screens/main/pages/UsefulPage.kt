@@ -39,24 +39,6 @@ fun UsefulPage(navController: NavHostController, function: () -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-
-        // Example of grammar tips
-        val grammarTips1 = listOf(
-            "Word Order: Kazakh generally follows a Subject-Object-Verb (SOV) word order. However, like in many languages, word order can be flexible based on emphasis or context.",
-            "Cases: Kazakh is an agglutinative language, meaning that suffixes and prefixes are added to the root words to indicate grammatical relationships. Kazakh has six cases: nominative, genitive, dative, accusative, locative, and ablative. Each case indicates different relationships between nouns and other parts of the sentence.",
-            "Conjugation: Verbs in Kazakh change their forms based on tense, aspect, mood, person, and number. Regular verbs follow predictable patterns, but there are irregular verbs as well.",
-            "Pluralization: Nouns in Kazakh are pluralized by adding suffixes to the end of the word. The suffixes can vary depending on the noun's stem and its grammatical characteristics.",
-            "Possession: Possession is often indicated using possessive suffixes attached to the possessed noun. These suffixes agree with the possessor in terms of person, number, and case.",
-            "Verb Aspect: Kazakh verbs often convey aspectual information, indicating whether an action is completed or ongoing. There are two primary aspects: perfective (completed action) and imperfective (ongoing or habitual action).",
-            "Honorifics: Like many languages, Kazakh has formal and informal registers. The choice of vocabulary and verb forms may vary based on the level of formality and respect toward the listener or subject.",
-
-            "Word Stress: In Kazakh, stress usually falls on the last syllable of the word. However, there are exceptions, especially in loanwords from other languages.",
-            "Vowel Harmony: Kazakh exhibits vowel harmony, meaning that vowels within a word must harmonize or agree in terms of front/back and roundedness features. This affects suffixes and verb conjugations.",
-            "Sentence Structure: Kazakh sentences often use postpositions instead of prepositions. Additionally, subordinate clauses typically precede main clauses.",
-            // Add more grammar tips here
-        )
-
         val grammarTips = listOf(
             stringResource(id = R.string.grammar_tip_1),
             stringResource(id = R.string.grammar_tip_2),
@@ -70,17 +52,14 @@ fun UsefulPage(navController: NavHostController, function: () -> Unit) {
             stringResource(id = R.string.grammar_tip_10)
             // Add more stringResource calls for other grammar tips
         )
-
         grammarTips.forEach { tip ->
             GrammarTipCard(tip)
         }
     }
 }
-
 @Composable
 fun GrammarTipCard(tip: String) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,7 +104,6 @@ fun GrammarTipCard(tip: String) {
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun UsefulPagePreview() {

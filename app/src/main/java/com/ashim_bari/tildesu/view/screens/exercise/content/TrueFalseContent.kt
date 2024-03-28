@@ -49,22 +49,17 @@ fun TrueFalseContent(
 
 ) {
     val exerciseViewModel: ExerciseViewModel = hiltViewModel()
-
-
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
     }
-
     val exercises by exerciseViewModel.exercises.observeAsState(emptyList())
     var exerciseCompleted by rememberSaveable { mutableStateOf(false) }
     var trueFalseScore by rememberSaveable { mutableStateOf(0) }
     var showFeedback by rememberSaveable { mutableStateOf(false) }
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
-
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
     // Observe exercise completion state
     val progress = (currentQuestionIndex.toFloat()) / (exercises.size.toFloat())
-
     val lifecycleOwner = LocalLifecycleOwner.current
     val restartTrueFalseExercise: () -> Unit = {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
@@ -86,7 +81,6 @@ fun TrueFalseContent(
         showConfirmationDialog()
         Log.d("ExerciseScreen", "BackHandler triggered")
     }
-
     if (exerciseCompleted) {
         // Check if at least one answer is correct
         val atLeastOneCorrect = trueFalseScore > 0
@@ -129,7 +123,6 @@ fun TrueFalseContent(
             }
         )
     }
-
     Column {
         LinearProgressIndicator(
             progress = { progress },
@@ -137,7 +130,6 @@ fun TrueFalseContent(
                 .fillMaxWidth()
                 .padding(8.dp),
         )
-
         Spacer(modifier = Modifier.height(16.dp))
         if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
             val currentExercise = exercises[currentQuestionIndex]
@@ -184,12 +176,7 @@ fun TrueFalseContent(
 
         }
     }
-
-
 }
-
-
-
 @Composable
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
     Log.d("AnswerFeedbackScreen", "Correct: $correct")
@@ -211,8 +198,6 @@ fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
         }
     }
 }
-
-
 @Composable
 fun TrueFalseQuestion(
     statement: String,
@@ -233,7 +218,6 @@ fun TrueFalseQuestion(
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 24.dp)
         )
-
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -244,7 +228,6 @@ fun TrueFalseQuestion(
         }
     }
 }
-
 @Composable
 fun TrueFalseOptionCard(
     optionText: String,
@@ -263,8 +246,3 @@ fun TrueFalseOptionCard(
         Text(optionText, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
     }
 }
-
-
-
-
-

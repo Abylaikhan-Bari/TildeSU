@@ -32,13 +32,11 @@ fun DictionaryCardsContent(
     exerciseType: ExerciseType = ExerciseType.DICTIONARY_CARDS, // Defaulting to DICTIONARY_CARDS
     exerciseViewModel: ExerciseViewModel = hiltViewModel()
 ) {
-    // Use LaunchedEffect to load dictionary cards for a specific level and type
+    // Using LaunchedEffect to load dictionary cards for a specific level and type
     LaunchedEffect(key1 = level, key2 = exerciseType) {
         exerciseViewModel.loadExercisesForLevelAndType(level, exerciseType)
     }
-
     val dictionaryCards by exerciseViewModel.exercises.observeAsState(initial = emptyList())
-
     // Display a loading indicator while waiting for the data to load
     if (exerciseViewModel.isLoading.observeAsState(initial = true).value) {
         CircularProgressIndicator(
@@ -68,10 +66,6 @@ fun DictionaryCardsContent(
         }
     }
 }
-
-
-
-
 @Composable
 fun DictionaryCard(card: Exercise, isExpanded: Boolean, onClick: () -> Unit) {
     Card(
@@ -92,4 +86,3 @@ fun DictionaryCard(card: Exercise, isExpanded: Boolean, onClick: () -> Unit) {
         }
     }
 }
-

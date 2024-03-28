@@ -71,7 +71,6 @@ import com.google.firebase.FirebaseNetworkException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
@@ -86,7 +85,6 @@ fun LoginPage(
     val languageViewModel: LanguageViewModel = viewModel()
     // Additional state to track email availability
     var isEmailAvailable by remember { mutableStateOf(true) }
-
     // Modify username and password state initialization to trim input
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -163,37 +161,12 @@ fun LoginPage(
             }
         }
     }
-
-
-// Email validation including check if taken
-//    val validateEmail: () -> Unit = {
-//        coroutineScope.launch {
-//            isEmailAvailable = viewModel.isEmailTaken(username).not()
-//            authMessage = when {
-//                username.isEmpty() -> usernameRequiredMessage
-//                !username.matches(emailPattern) -> invalidEmail
-//                !isEmailAvailable -> emailTaken
-//                else -> null
-//            }
-//        }
-//    }
-
-
-    // Update username/password with trimmed values to remove leading/trailing spaces
-
-
     LaunchedEffect(currentLanguageCode) {
         currentLanguage = getLanguageName(currentLanguageCode)
     }
-
     LaunchedEffect(key1 = currentLanguageCode) {
         Log.d("LanguageChange", "Recomposing due to language change: $currentLanguageCode")
-        // Additional actions if needed
     }
-//    LaunchedEffect(username) {
-//        validateEmail()
-//    }
-
     val validate: () -> Unit = {
         authMessage = when {
             username.isEmpty() -> usernameRequiredMessage
@@ -203,20 +176,12 @@ fun LoginPage(
         }
 
     }
-//    // Adjusted LaunchedEffect for username, password
-//    LaunchedEffect(username, password) {
-//
-//    }
-
 // Update authMessage when the user enters valid credentials
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
             authMessage = null
         }
     }
-
-
-
     Surface (
         modifier = Modifier
             .fillMaxWidth()
@@ -240,13 +205,11 @@ fun LoginPage(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(id = R.string.login),
                     style = MaterialTheme.typography.headlineSmall
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = username,
@@ -259,7 +222,6 @@ fun LoginPage(
                         .fillMaxWidth()
 
                 )
-
                 OutlinedTextField(
                     value = password,
                     onValueChange = updatePassword,
@@ -309,7 +271,6 @@ fun LoginPage(
                     Crossfade(targetState = isLoading || isSuccess, label = "Login") {
                         val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
                         val loginFailedMessage = stringResource(id = R.string.login_failed)
-
                         when {
                             isLoading -> CircularProgressIndicator(color = BluePrimary)
                             isSuccess -> Icon(
@@ -317,7 +278,6 @@ fun LoginPage(
                                 contentDescription = "Success",
                                 tint = BluePrimary
                             )
-
                             else -> {
                                 Button(
                                     onClick = {
@@ -362,9 +322,6 @@ fun LoginPage(
                         }
                     }
                 }
-
-
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -462,7 +419,6 @@ fun LoginPage(
         }
     }
 }
-
 fun getLanguageName(languageCode: String): String {
     return when (languageCode) {
         "en" -> "English"

@@ -45,29 +45,23 @@ import com.ashim_bari.tildesu.view.screens.FailureScreen
 import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizContent(navController: NavController, level: String, type: ExerciseType ) {
     val exerciseViewModel: ExerciseViewModel = hiltViewModel()
     val currentLevel by rememberSaveable { mutableStateOf(level) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
-
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.QUIZ)
     }
     fun showConfirmationDialog() {
         showDialog = true
     }
-
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState().value ?: 0
     var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
     val exerciseCompleted = exerciseViewModel.exerciseCompleted.observeAsState().value ?: false
     val quizPassed = exerciseViewModel.quizPassed.observeAsState()
-
     if (exerciseCompleted) {
         quizPassed.value?.let { passed ->
             if (passed) {
@@ -110,9 +104,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
                     )
-
                     Spacer(modifier = Modifier.height(16.dp))
-
                     if (exercises.isNotEmpty() && currentQuestionIndex < exercises.size) {
                         val currentExercise = exercises[currentQuestionIndex]
                         Text(
@@ -139,7 +131,6 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
                                 }
                             }
                         }
-
                         Button(
                             onClick = {
                                 if (selectedOption >= 0) {
@@ -160,8 +151,6 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
                             Text(stringResource(id = R.string.button_next))
 
                         }
-
-
                     } else {
                         Text(stringResource(id = R.string.no_quiz_questions_found))
                     }
@@ -169,7 +158,6 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
             }
         }
     }
-
     // Confirmation Dialog
     if (showDialog) {
         AlertDialog(
@@ -196,15 +184,8 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
         )
     }
 }
-
-
-
-
-
-
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, onSelect: () -> Unit) {
-
     Card(
         onClick = onSelect,
         modifier = Modifier
@@ -223,4 +204,3 @@ fun OptionCard(option: String, isSelected: Boolean, onSelect: () -> Unit) {
         }
     }
 }
-

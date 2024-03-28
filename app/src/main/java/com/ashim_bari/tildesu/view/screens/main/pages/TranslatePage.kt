@@ -43,7 +43,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
     val enterTextPlaceholder = stringResource(id = R.string.enter_text_placeholder)
     val translateButtonText = stringResource(id = R.string.translate_button)
     val noTranslationFoundMessage = stringResource(id = R.string.no_translation_found)
-
     // Language options
     val languagesMap = mapOf(
         "Kazakh" to "kk_KZ",
@@ -51,10 +50,8 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         "Russian" to "ru_RU"
     )
     val languageOptions = languagesMap.keys.toList()
-
     var sourceLanguage by remember { mutableStateOf(languageOptions.first()) }
     var targetLanguage by remember { mutableStateOf(languageOptions[1]) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,8 +59,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-
         // Language selection
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
             DropdownMenu(
@@ -79,7 +74,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 label = stringResource(id = R.string.target_language_label)
             )
         }
-
         OutlinedTextField(
             value = sourceText,
             onValueChange = { sourceText = it },
@@ -90,7 +84,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
             singleLine = false,
             maxLines = 5
         )
-
         Button(
             onClick = { viewModel.translateText(sourceText, languagesMap[sourceLanguage]!!, languagesMap[targetLanguage]!!) },
             modifier = Modifier
@@ -100,11 +93,9 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         ) {
             Text(translateButtonText)
         }
-
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         }
-
         // Display translation result or a pending message
         if (translationResult?.isNotEmpty() == true) {
             Text(
@@ -117,7 +108,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-
         else if (!isLoading && sourceText.isNotEmpty()) {
             // Optionally show a message when there's no result but the source text is not empty
             Text(
@@ -130,7 +120,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -140,8 +129,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         }
     }
 }
-
-
 @Composable
 fun DropdownMenu(
     options: List<String>,

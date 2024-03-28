@@ -20,27 +20,19 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
-
-    //private val userRepository = UserRepository()
-
     private val _userEmail = MutableLiveData<String?>()
     val userEmail: LiveData<String?> get() = _userEmail
-
     private val _profileImageUrl = MutableLiveData<String?>()
     val profileImageUrl: LiveData<String?> = _profileImageUrl
-
     private val _isLoggedIn = MutableLiveData<Boolean>()
     val isLoggedIn: LiveData<Boolean> = _isLoggedIn
-
     private val _progressData = MutableLiveData<Map<String, UserRepository.UserProgress>>()
     val progressData: LiveData<Map<String, UserRepository.UserProgress>> = _progressData
-
     private val _userProfile = MutableLiveData<UserProfile?>()
     val userProfile: LiveData<UserProfile?> = _userProfile
     init {
         checkUserLoggedIn()
     }
-
     private fun checkUserLoggedIn() {
         _isLoggedIn.value = userRepository.isLoggedIn()
         // Log user login status
@@ -50,8 +42,6 @@ class MainViewModel @Inject constructor(
             println("User is not logged in.")
         }
     }
-
-
     fun fetchUserProfile() {
         userRepository.getUserProfile { userProfile ->
             _userProfile.postValue(userProfile)
@@ -64,9 +54,6 @@ class MainViewModel @Inject constructor(
             fetchUserProfile() // Re-fetch the updated profile to update the UI
         }
     }
-
-
-
     fun logout(navController: NavHostController) {
         viewModelScope.launch {
             // Call the log out function from the UserRepository
@@ -82,11 +69,9 @@ class MainViewModel @Inject constructor(
             navController.navigate(Navigation.AUTHENTICATION_ROUTE)
         }
     }
-
     init {
         loadUserProgress()
     }
-
     fun loadUserProgress() {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
@@ -94,11 +79,9 @@ class MainViewModel @Inject constructor(
             _progressData.value = progress
         }
     }
-
     init {
         fetchProfileImageUrl()
     }
-
     private fun fetchProfileImageUrl() {
         viewModelScope.launch {
             try {
@@ -117,10 +100,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
     fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {
             val imageUrl = userRepository.uploadUserImage(uri)
@@ -138,9 +117,7 @@ class MainViewModel @Inject constructor(
     fun reAuthenticate(currentPassword: String, onComplete: (Boolean) -> Unit) {
         val user = FirebaseAuth.getInstance().currentUser
         val email = user?.email ?: return onComplete(false)
-
         val credential = EmailAuthProvider.getCredential(email, currentPassword)
-
         viewModelScope.launch {
             try {
                 user.reauthenticate(credential).await()
@@ -152,7 +129,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
     fun updatePassword(newPassword: String, currentPassword: String? = null, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             val success = userRepository.updatePassword(newPassword, currentPassword)

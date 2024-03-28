@@ -14,18 +14,12 @@ import javax.inject.Inject
 class TranslationViewModel @Inject constructor(
     private val translationRepository: TranslationRepository
 ) : ViewModel() {
-
     // Backing property to avoid exposing a mutable flow
     private val _translationResult = MutableStateFlow<String?>(null)
-
     // The UI collects from this StateFlow to get updates
     val translationResult: StateFlow<String?> = _translationResult.asStateFlow()
-
     val isLoading = MutableStateFlow(false)
     val errorMessage = MutableStateFlow("")
-
-    // Inside TranslationViewModel
-
     fun translateText(sourceText: String, sourceLang: String, targetLang: String) {
         viewModelScope.launch {
             isLoading.value = true
@@ -44,5 +38,4 @@ class TranslationViewModel @Inject constructor(
             }
         }
     }
-
 }

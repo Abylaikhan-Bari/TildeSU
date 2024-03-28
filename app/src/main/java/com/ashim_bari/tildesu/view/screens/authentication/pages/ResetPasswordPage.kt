@@ -105,7 +105,6 @@ fun ResetPasswordPage(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -115,7 +114,6 @@ fun ResetPasswordPage(
                 ) {
                     var isLoading by rememberSaveable { mutableStateOf(false) }
                     var isSuccess by rememberSaveable { mutableStateOf(false) }
-
                     Crossfade(targetState = isLoading || isSuccess, label = "Reset Password") {
                         val resetSuccessfulMessage = stringResource(id = R.string.reset_successful)
                         val resetFailedMessage = stringResource(id = R.string.reset_failed)
@@ -126,7 +124,6 @@ fun ResetPasswordPage(
                                 contentDescription = "Success",
                                 tint = BluePrimary
                             )
-
                             else -> Button(
                                 onClick = {
                                     keyboardController?.hide()
@@ -158,9 +155,6 @@ fun ResetPasswordPage(
                         }
                     }
                 }
-
-
-
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()

@@ -71,7 +71,6 @@ fun RegisterPage(
     val viewModel: AuthenticationViewModel = hiltViewModel()
     var isLoading by rememberSaveable { mutableStateOf(false) }
     var isSuccess by rememberSaveable { mutableStateOf(false) }
-
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
@@ -83,11 +82,9 @@ fun RegisterPage(
     // Remember FocusRequester for the confirmPassword field to request focus programmatically
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
     val  usernameRequiredMessage= stringResource(R.string.username_required)
     val passwordRequiredMessage = stringResource(R.string.password_required)
     val passwordsNotMatch = stringResource(R.string.password_mismatch)
-
     LaunchedEffect(email, password, confirmPassword) {
         if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank() && password == confirmPassword) {
             authMessage = null
@@ -104,15 +101,12 @@ fun RegisterPage(
             }
         }
     }
-
-
 // Update authMessage when the user enters valid credentials
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
             authMessage = null
         }
     }
-
     Surface (
         modifier = Modifier
             .fillMaxWidth()
@@ -136,7 +130,6 @@ fun RegisterPage(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(id = R.string.register),
@@ -152,7 +145,6 @@ fun RegisterPage(
                     keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
                     modifier = Modifier.fillMaxWidth()
                 )
-
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -173,7 +165,6 @@ fun RegisterPage(
                         .fillMaxWidth()
                         .focusRequester(passwordFocusRequester) // Ensure you have declared and initialized passwordFocusRequester
                 )
-
                 // Confirm Password TextField with focus management and keyboard actions
                 OutlinedTextField(
                     value = confirmPassword,
@@ -208,7 +199,6 @@ fun RegisterPage(
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -256,10 +246,7 @@ fun RegisterPage(
                         }
                     }
                 }
-
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
