@@ -6,6 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -31,12 +32,24 @@ class TranslationRepository @Inject constructor(
         return@withContext try {
             client.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
-                    // Assuming the response body can be directly converted to a String
-                    Result.success(response.body?.string() ?: "Translation failed.")
+                    val jsonResponse = response.body?.string()
+                    // Parse the JSON response
+                    jsonResponse?.let {
+                        val jsonObject = JSONObject(it)
+                        // Check if the "err" key is present and null
+                        if (jsonObject.isNull("err")) {
+                            // Directly extract the "result" key's value
+                            val translatedText = jsonObject.getString("result")
+                            Result.success(translatedText)
+                        } else {
+                            Result.failure(Exception("Error in translation: ${jsonObject.getString("err")}"))
+                        }
+                    } ?: Result.failure(Exception("No response from the server"))
                 } else {
                     Result.failure(Exception("Error: ${response.message}"))
                 }
             }
+
         } catch (e: Exception) {
             Result.failure(Exception("Translation error: ${e.message}", e))
         }
