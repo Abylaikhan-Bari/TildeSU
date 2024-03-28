@@ -72,7 +72,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                 label = "Source Language"
             )
             DropdownMenu(
-                options = languageOptions,
+                options = languageOptions.filter { it != sourceLanguage },
                 selectedOption = targetLanguage,
                 onOptionSelected = { targetLanguage = it },
                 label = "Target Language"
@@ -91,8 +91,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         )
 
         Button(
-            onClick = { viewModel.translateText(sourceText, languagesMap[sourceLanguage]!!,
-                languagesMap[targetLanguage]!!) },
+            onClick = { viewModel.translateText(sourceText, languagesMap[sourceLanguage]!!, languagesMap[targetLanguage]!!) },
             modifier = Modifier
                 .padding(top = 8.dp)
                 .align(Alignment.CenterHorizontally),
