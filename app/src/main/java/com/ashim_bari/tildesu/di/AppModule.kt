@@ -2,6 +2,7 @@ package com.ashim_bari.tildesu.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.ashim_bari.tildesu.db.dao.UserDao
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.user.UserRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -29,8 +30,9 @@ object AppModule {
     @Provides
     fun provideUserRepository(
         firebaseAuth: FirebaseAuth,
-        firestore: FirebaseFirestore
-    ): UserRepository = UserRepository(firebaseAuth, firestore)
+        firestore: FirebaseFirestore,
+        userDao: UserDao
+    ): UserRepository = UserRepository(firebaseAuth, firestore, userDao)
 
     @Singleton
     @Provides

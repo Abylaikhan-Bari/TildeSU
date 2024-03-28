@@ -2,6 +2,10 @@ package com.ashim_bari.tildesu.model.user
 
 import android.net.Uri
 import android.util.Log
+import com.ashim_bari.tildesu.db.dao.UserDao
+import com.ashim_bari.tildesu.db.entities.UserEntity
+import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserEntity
+import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserProfile
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.EmailAuthProvider
@@ -13,12 +17,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val userDao: UserDao
 ) {
 //    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 //    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -31,14 +40,19 @@ class UserRepository @Inject constructor(
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: throw IllegalStateException("User ID cannot be null")
-            createUserProfile(userId, email)
-            Log.d("UserRepository", "User registered successfully")
+            val newUserProfile = UserProfile(email = email) // Initialize with minimum required data
+            createUserProfile(userId, newUserProfile)
+            // Insert into the Room database
+            val newUserEntity = newUserProfile.toUserEntity(userId)
+            userDao.insertUser(newUserEntity)
+            Log.d("UserRepository", "User registered and saved locally successfully")
             true
         } catch (e: Exception) {
             Log.e("UserRepository", "Registration failed", e)
             false
         }
     }
+
     suspend fun isEmailRegistered(email: String): Boolean {
         return try {
             val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
@@ -68,38 +82,79 @@ class UserRepository @Inject constructor(
 
 
 
-    private suspend fun createUserProfile(userId: String, email: String) {
-        val user = mapOf(
-            "email" to email,
-            "name" to "",
-            "surname" to "",
-            "city" to "",
-            "age" to "",
-            "gender" to 0,
-            "specialty" to ""
-        )
-        firestore.collection("users").document(userId).set(user).await()
-        Log.d("UserRepository", "User profile created successfully")
+    private suspend fun createUserProfile(userId: String, userProfile: UserProfile) {
+        val userMap = userProfile.let {
+            mapOf(
+                "email" to it.email,
+                "name" to (it.name ?: ""), // Default to an empty string if null
+                "surname" to (it.surname ?: ""),
+                "city" to (it.city ?: ""),
+                "age" to (it.age ?: ""),
+                "gender" to (it.gender ?: 0), // Default to '0' if null
+                "specialty" to (it.specialty ?: "")
+            )
+        }
+        firestore.collection("users").document(userId).set(userMap).await()
+        Log.d("UserRepository", "User profile created successfully in Firestore")
     }
     suspend fun updateUserProfile(userId: String, userProfile: UserProfile) {
+        // Update Firebase
         firestore.collection("users").document(userId).set(userProfile, SetOptions.merge()).await()
+
+        // Update local DB
+        val userEntity = UserEntity(
+            uid = userId,
+            email = userProfile.email // Include other fields here
+        )
+        userDao.updateUserProfile(userEntity)
+
         Log.d("UserRepository", "User profile updated successfully")
     }
 
     fun getUserProfile(onComplete: (UserProfile?) -> Unit) {
         val userId = firebaseAuth.currentUser?.uid
-        if (userId != null) {
-            firestore.collection("users").document(userId).get().addOnSuccessListener { document ->
-                val userProfile = document.toObject(UserProfile::class.java)
-                onComplete(userProfile)
-            }.addOnFailureListener { exception ->
-                Log.e("UserRepository", "Error getting user profile", exception)
-                onComplete(null)
-            }
-        } else {
+        if (userId == null) {
             onComplete(null)
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // First, try to get the user profile from the local database.
+                val localUserProfile = userDao.getUserProfile(userId)
+                if (localUserProfile != null) {
+                    // If found, map it to UserProfile and complete.
+                    withContext(Dispatchers.Main) {
+                        onComplete(localUserProfile.toUserProfile())
+                    }
+                    return@launch
+                }
+
+                // If not found in the local DB, fetch from Firestore.
+                val documentSnapshot = firestore.collection("users").document(userId).get().await()
+                val firestoreUserProfile = documentSnapshot.toObject(UserProfile::class.java)
+                if (firestoreUserProfile != null) {
+                    // Insert the fetched profile into the local database.
+                    userDao.insertUser(firestoreUserProfile.toUserEntity(userId))
+                    withContext(Dispatchers.Main) {
+                        onComplete(firestoreUserProfile)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onComplete(null)
+                    }
+                }
+            } catch (exception: Exception) {
+                Log.e("UserRepository", "Error getting user profile", exception)
+                withContext(Dispatchers.Main) {
+                    onComplete(null)
+                }
+            }
         }
     }
+
+
+
 
     suspend fun loginUser(email: String, password: String): Boolean {
         return try {
