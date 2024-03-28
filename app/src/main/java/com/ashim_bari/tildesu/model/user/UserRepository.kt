@@ -3,7 +3,6 @@ package com.ashim_bari.tildesu.model.user
 import android.net.Uri
 import android.util.Log
 import com.ashim_bari.tildesu.db.dao.UserDao
-import com.ashim_bari.tildesu.db.entities.UserEntity
 import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserEntity
 import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserProfile
 import com.google.firebase.Firebase
@@ -102,14 +101,13 @@ class UserRepository @Inject constructor(
         firestore.collection("users").document(userId).set(userProfile, SetOptions.merge()).await()
 
         // Update local DB
-        val userEntity = UserEntity(
-            uid = userId,
-            email = userProfile.email // Include other fields here
-        )
+        val userEntity = userProfile.toUserEntity(userId)
         userDao.updateUserProfile(userEntity)
 
+        // Log for debugging
         Log.d("UserRepository", "User profile updated successfully")
     }
+
 
     fun getUserProfile(onComplete: (UserProfile?) -> Unit) {
         val userId = firebaseAuth.currentUser?.uid
