@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,7 @@ import com.ashim_bari.tildesu.viewmodel.translation.TranslationViewModel
 @Composable
 fun TranslatePage(navController: NavHostController, viewModel: TranslationViewModel = hiltViewModel()) {
     var sourceText by remember { mutableStateOf("") }
-    val translationResult by viewModel.translationResult.collectAsState()
+    val translationResult by viewModel.translationResult.collectAsState(initial = "")
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
@@ -59,7 +58,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         )
 
         // Language selection
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
             DropdownMenu(
                 options = languages,
                 selectedOption = sourceLanguage,
@@ -99,9 +98,23 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         }
 
-        translationResult?.let {
+        // Display translation result or a pending message
+        if (translationResult?.isNotEmpty() == true) {
             Text(
-                text = it,
+                text = translationResult ?: "No translation available", // Provide a default value
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(16.dp),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+
+        else if (!isLoading && sourceText.isNotEmpty()) {
+            // Optionally show a message when there's no result but the source text is not empty
+            Text(
+                text = "No translation found.",
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
@@ -120,6 +133,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         }
     }
 }
+
 
 @Composable
 fun DropdownMenu(
