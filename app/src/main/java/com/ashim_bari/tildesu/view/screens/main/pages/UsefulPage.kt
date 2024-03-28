@@ -39,13 +39,7 @@ fun UsefulPage(navController: NavHostController, function: () -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = stringResource(id = R.string.useful_tips),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground, // Use theme's onBackground color for text
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+
 
         // Example of grammar tips
         val grammarTips1 = listOf(

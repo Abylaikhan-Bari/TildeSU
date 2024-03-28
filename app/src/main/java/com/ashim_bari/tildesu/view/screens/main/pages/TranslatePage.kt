@@ -40,7 +40,6 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
     val translationResult by viewModel.translationResult.collectAsState(initial = "")
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val translateHeaderText = stringResource(id = R.string.translate_header)
     val enterTextPlaceholder = stringResource(id = R.string.enter_text_placeholder)
     val translateButtonText = stringResource(id = R.string.translate_button)
     val noTranslationFoundMessage = stringResource(id = R.string.no_translation_found)
@@ -63,11 +62,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = translateHeaderText,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+
 
         // Language selection
         Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceBetween) {
