@@ -53,7 +53,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.wear.compose:compose-material:1.3.0")
+
+    implementation("androidx.room:room-common:2.6.1")
     // Core library desugaring enabled
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -65,7 +66,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.media3:media3-common:1.2.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-
+    //Room database
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version") // Correct for Kotlin
+    implementation ("androidx.room:room-ktx:$room_version")
     //Dagger-Hilt DI
     implementation("com.google.dagger:hilt-android:2.51")
     kapt("com.google.dagger:hilt-compiler:2.51")
@@ -86,6 +91,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation("androidx.wear.compose:compose-material:1.3.0")
 
     // Firebase dependencies
     implementation("com.google.firebase:firebase-auth:22.3.1")

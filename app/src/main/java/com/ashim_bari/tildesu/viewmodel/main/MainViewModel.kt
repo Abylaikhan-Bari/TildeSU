@@ -61,9 +61,10 @@ class MainViewModel @Inject constructor(
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         viewModelScope.launch {
             userRepository.updateUserProfile(userId, userProfile)
-            _userProfile.postValue(userProfile) // Update LiveData to reflect changes immediately
+            fetchUserProfile() // Re-fetch the updated profile to update the UI
         }
     }
+
 
 
     fun logout(navController: NavHostController) {
