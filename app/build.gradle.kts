@@ -55,6 +55,7 @@ android {
 dependencies {
 
     implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.security:security-crypto-ktx:1.0.0")
     // Core library desugaring enabled
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
@@ -77,8 +78,14 @@ dependencies {
 //    implementation("com.google.dagger:dagger:2.44")
 //    kapt("com.google.dagger:dagger-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    //Security
+    implementation ("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
-
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    //OKHTTP
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
     // Compose dependencies
     implementation("androidx.compose.foundation:foundation:1.6.1")
     implementation("androidx.compose.material:material-icons-extended:1.6.1")

@@ -1,6 +1,6 @@
 package com.ashim_bari.tildesu.utils
 
-import com.ashim_bari.tildesu.db.entities.UserEntity
+import com.ashim_bari.tildesu.data.db.entities.UserEntity
 import com.ashim_bari.tildesu.model.user.UserProfile
 
 class Mapper {

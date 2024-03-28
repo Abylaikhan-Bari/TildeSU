@@ -2,7 +2,8 @@ package com.ashim_bari.tildesu.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.ashim_bari.tildesu.db.dao.UserDao
+import com.ashim_bari.tildesu.data.api.service.TranslationService
+import com.ashim_bari.tildesu.data.db.dao.UserDao
 import com.ashim_bari.tildesu.model.exercise.ExerciseRepository
 import com.ashim_bari.tildesu.model.user.UserRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -39,10 +40,14 @@ object AppModule {
     fun provideExerciseRepository(firebaseFirestore: FirebaseFirestore): ExerciseRepository =
         ExerciseRepository(firebaseFirestore)
 
+
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
+    @Provides
+    fun provideTranslationService(): TranslationService = TranslationService()
 
 //    @Singleton
 //    @Provides

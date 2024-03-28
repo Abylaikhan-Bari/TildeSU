@@ -1,16 +1,27 @@
 package com.ashim_bari.tildesu.view.screens.main.pages
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,20 +29,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.viewmodel.translation.TranslationViewModel
 
 @Composable
-fun TranslatePage(navController: NavHostController) {
+fun TranslatePage(navController: NavHostController, viewModel: TranslationViewModel = hiltViewModel()) {
     var sourceText by remember { mutableStateOf("") }
-    var translatedText by remember { mutableStateOf("") }
+    val translationResult by viewModel.translationResult.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
+    // Example language options
+    val languages = listOf("en", "es", "fr", "de")
+    var sourceLanguage by remember { mutableStateOf(languages.first()) }
+    var targetLanguage by remember { mutableStateOf(languages[1]) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // Use theme's background color
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Translate",
@@ -39,36 +58,105 @@ fun TranslatePage(navController: NavHostController) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+        // Language selection
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            DropdownMenu(
+                options = languages,
+                selectedOption = sourceLanguage,
+                onOptionSelected = { sourceLanguage = it },
+                label = "Source Language"
+            )
+            DropdownMenu(
+                options = languages,
+                selectedOption = targetLanguage,
+                onOptionSelected = { targetLanguage = it },
+                label = "Target Language"
+            )
+        }
+
         OutlinedTextField(
             value = sourceText,
             onValueChange = { sourceText = it },
             label = { Text("Enter text") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             singleLine = false,
             maxLines = 5
         )
 
         Button(
-            onClick = {
-                // Call your translation function here and update `translatedText`
-            },
+            onClick = { viewModel.translateText(sourceText, sourceLanguage, targetLanguage) },
             modifier = Modifier
-                .padding(top = 16.dp)
-                .align(Alignment.CenterHorizontally)
+                .padding(top = 8.dp)
+                .align(Alignment.CenterHorizontally),
+            enabled = !isLoading
         ) {
             Text("Translate")
         }
 
-        if (translatedText.isNotEmpty()) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        }
+
+        translationResult?.let {
             Text(
-                text = translatedText,
+                text = it,
                 modifier = Modifier
-                    .padding(top = 32.dp)
+                    .padding(top = 16.dp)
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(16.dp),
                 style = MaterialTheme.typography.bodyLarge
             )
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun DropdownMenu(
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
+    label: String
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.padding(8.dp)) {
+        OutlinedTextField(
+            value = selectedOption,
+            onValueChange = { },
+            label = { Text(label) },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(Icons.Default.ArrowDropDown, "dropdown")
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }

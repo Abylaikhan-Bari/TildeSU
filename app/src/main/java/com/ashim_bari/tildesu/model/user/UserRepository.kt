@@ -2,7 +2,7 @@ package com.ashim_bari.tildesu.model.user
 
 import android.net.Uri
 import android.util.Log
-import com.ashim_bari.tildesu.db.dao.UserDao
+import com.ashim_bari.tildesu.data.db.dao.UserDao
 import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserEntity
 import com.ashim_bari.tildesu.utils.Mapper.Companion.toUserProfile
 import com.google.firebase.Firebase
