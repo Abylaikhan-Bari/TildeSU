@@ -2,8 +2,8 @@ package com.ashim_bari.tildesu.di
 
 import android.content.Context
 import androidx.room.Room
-import com.ashim_bari.tildesu.db.AppDatabase
-import com.ashim_bari.tildesu.db.dao.UserDao
+import com.ashim_bari.tildesu.data.db.AppDatabase
+import com.ashim_bari.tildesu.data.db.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

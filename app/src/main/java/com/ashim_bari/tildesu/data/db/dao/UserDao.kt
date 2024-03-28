@@ -1,11 +1,11 @@
-package com.ashim_bari.tildesu.db.dao
+package com.ashim_bari.tildesu.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.ashim_bari.tildesu.db.entities.UserEntity
+import com.ashim_bari.tildesu.data.db.entities.UserEntity
 
 @Dao
 interface UserDao {

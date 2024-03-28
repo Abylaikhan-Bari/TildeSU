@@ -127,6 +127,7 @@
     <string name="notifications_disabled_message">Қазіргі уақытта бұл қолданба үшін хабарландырулар өшірілген. Хабарландыруларды алу үшін оларды қосыңыз.</string>
     <string name="settings">Баптау</string>
     <string name="cancel">Бас тарту</string>
+    <string name="bottom_nav_translate">Translate</string>
 
 
 </resources>

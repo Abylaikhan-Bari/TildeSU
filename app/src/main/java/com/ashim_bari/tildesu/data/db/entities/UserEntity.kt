@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.db.entities
+package com.ashim_bari.tildesu.data.db.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

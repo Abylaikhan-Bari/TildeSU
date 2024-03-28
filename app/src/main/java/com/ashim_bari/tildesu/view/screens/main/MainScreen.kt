@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,12 +40,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.main.pages.HomePage
 import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
+import com.ashim_bari.tildesu.view.screens.main.pages.TranslatePage
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 private const val TAG = "MainScreen"
@@ -82,7 +83,9 @@ fun MainScreen(navController: NavHostController) {
         BottomNavItem(stringResource(id = R.string.bottom_nav_home), Icons.Filled.Home, MainScreens.Home),
         BottomNavItem(stringResource(id = R.string.bottom_nav_dashboard), Icons.Filled.Assessment, MainScreens.Dashboard),
         BottomNavItem(stringResource(id = R.string.bottom_nav_useful), Icons.Filled.Star, MainScreens.Useful),
+        BottomNavItem(stringResource(id = R.string.bottom_nav_translate), Icons.Filled.Translate, MainScreens.Translate),
         BottomNavItem(stringResource(id = R.string.bottom_nav_profile), Icons.Filled.Person, MainScreens.Profile)
+
     )
 
     Scaffold(
@@ -174,13 +177,14 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
-    val mainViewModel: MainViewModel = viewModel()
+
 
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage()
         MainScreens.Useful -> UsefulPage(navController) {}
         MainScreens.Profile -> ProfilePage(navController)
+        MainScreens.Translate -> TranslatePage(navController)
     }
 }
 
@@ -194,5 +198,6 @@ enum class MainScreens {
     Home,
     Dashboard,
     Useful,
-    Profile
+    Profile,
+    Translate
 }

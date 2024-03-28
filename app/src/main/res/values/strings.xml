@@ -127,5 +127,6 @@
     <string name="notifications_disabled_message">Notifications are currently disabled for this app. Please enable them to receive reminders.</string>
     <string name="settings">Settings</string>
     <string name="cancel">Cancel</string>
+    <string name="bottom_nav_translate">Translate</string>
 
 </resources>
