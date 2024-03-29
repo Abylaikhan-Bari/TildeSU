@@ -59,7 +59,7 @@ fun TrueFalseContent(
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
     // Observe exercise completion state
-    val progress = (currentQuestionIndex.toFloat()) / (exercises.size.toFloat())
+    val progress = if (exercises.isNotEmpty()) currentQuestionIndex.toFloat() / exercises.size.toFloat() else 0f
     val lifecycleOwner = LocalLifecycleOwner.current
     val restartTrueFalseExercise: () -> Unit = {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
