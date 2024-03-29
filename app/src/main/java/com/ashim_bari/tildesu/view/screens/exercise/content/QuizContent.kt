@@ -99,7 +99,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
                     verticalArrangement = Arrangement.Top
                 ) {
                     LinearProgressIndicator(
-                        progress = { currentQuestionIndex.toFloat() / exercises.size },
+                        progress = if (exercises.isNotEmpty()) currentQuestionIndex.toFloat() / exercises.size else 0f,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
