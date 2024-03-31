@@ -11,8 +11,10 @@ import com.ashim_bari.tildesu.data.db.entities.UserEntity
 interface UserDao {
     @Query("SELECT * FROM users WHERE uid = :userId")
     suspend fun getUserProfile(userId: String): UserEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity)
+
     @Update
     suspend fun updateUserProfile(user: UserEntity)
 }

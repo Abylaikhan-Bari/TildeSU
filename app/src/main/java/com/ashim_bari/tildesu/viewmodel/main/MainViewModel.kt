@@ -30,9 +30,11 @@ class MainViewModel @Inject constructor(
     val progressData: LiveData<Map<String, UserRepository.UserProgress>> = _progressData
     private val _userProfile = MutableLiveData<UserProfile?>()
     val userProfile: LiveData<UserProfile?> = _userProfile
+
     init {
         checkUserLoggedIn()
     }
+
     private fun checkUserLoggedIn() {
         _isLoggedIn.value = userRepository.isLoggedIn()
         // Log user login status
@@ -42,11 +44,13 @@ class MainViewModel @Inject constructor(
             println("User is not logged in.")
         }
     }
+
     fun fetchUserProfile() {
         userRepository.getUserProfile { userProfile ->
             _userProfile.postValue(userProfile)
         }
     }
+
     fun updateUserProfile(userProfile: UserProfile) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         viewModelScope.launch {
@@ -54,6 +58,7 @@ class MainViewModel @Inject constructor(
             fetchUserProfile() // Re-fetch the updated profile to update the UI
         }
     }
+
     fun logout(navController: NavHostController) {
         viewModelScope.launch {
             // Call the log out function from the UserRepository
@@ -69,9 +74,11 @@ class MainViewModel @Inject constructor(
             navController.navigate(Navigation.AUTHENTICATION_ROUTE)
         }
     }
+
     init {
         loadUserProgress()
     }
+
     fun loadUserProgress() {
         viewModelScope.launch {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
@@ -79,9 +86,11 @@ class MainViewModel @Inject constructor(
             _progressData.value = progress
         }
     }
+
     init {
         fetchProfileImageUrl()
     }
+
     private fun fetchProfileImageUrl() {
         viewModelScope.launch {
             try {
@@ -100,6 +109,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
     fun uploadProfileImage(uri: Uri) {
         viewModelScope.launch {
             val imageUrl = userRepository.uploadUserImage(uri)
@@ -114,6 +124,7 @@ class MainViewModel @Inject constructor(
             fetchProfileImageUrl()
         }
     }
+
     fun reAuthenticate(currentPassword: String, onComplete: (Boolean) -> Unit) {
         val user = FirebaseAuth.getInstance().currentUser
         val email = user?.email ?: return onComplete(false)
@@ -129,7 +140,12 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-    fun updatePassword(newPassword: String, currentPassword: String? = null, onComplete: (Boolean) -> Unit) {
+
+    fun updatePassword(
+        newPassword: String,
+        currentPassword: String? = null,
+        onComplete: (Boolean) -> Unit
+    ) {
         viewModelScope.launch {
             val success = userRepository.updatePassword(newPassword, currentPassword)
             onComplete(success)

@@ -1,4 +1,3 @@
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -73,6 +72,7 @@ fun DashboardPage() {
         mainViewModel.loadUserProgress()
     }
 }
+
 @Composable
 fun ExpandableProgressBar(
     level: String,
@@ -83,7 +83,10 @@ fun ExpandableProgressBar(
     imageQuizProgress: Float
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
-    LanguageLevelProgressBar(level = level, progress = overallProgress, onBarClick = { isExpanded = !isExpanded })
+    LanguageLevelProgressBar(
+        level = level,
+        progress = overallProgress,
+        onBarClick = { isExpanded = !isExpanded })
     AnimatedVisibility(
         visible = isExpanded,
         enter = fadeIn() + expandVertically(),
@@ -91,33 +94,42 @@ fun ExpandableProgressBar(
     ) {
         Column(modifier = Modifier.padding(start = 16.dp)) {
             // Your sub-progress bars here, unchanged
-            if(puzzleProgress > 0) {
-                Text(text = stringResource(id = R.string.puzzle),
+            if (puzzleProgress > 0) {
+                Text(
+                    text = stringResource(id = R.string.puzzle),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                )
                 ProgressBar(progress = puzzleProgress)
             }
-            if(quizProgress > 0) {
-                Text(text = stringResource(id = R.string.quiz),
+            if (quizProgress > 0) {
+                Text(
+                    text = stringResource(id = R.string.quiz),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                )
                 ProgressBar(progress = quizProgress)
             }
-            if(trueFalseProgress > 0) {
-                Text(text = stringResource(id = R.string.true_false),
+            if (trueFalseProgress > 0) {
+                Text(
+                    text = stringResource(id = R.string.true_false),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                )
                 ProgressBar(progress = trueFalseProgress)
             }
-            if(imageQuizProgress > 0) {
-                Text(text = stringResource(id = R.string.image_quiz),
+            if (imageQuizProgress > 0) {
+                Text(
+                    text = stringResource(id = R.string.image_quiz),
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                )
                 ProgressBar(progress = imageQuizProgress)
             }
         }
     }
 }
+
 @Composable
 fun ProgressBar(progress: Float) {
     // Using SafeLinearProgressIndicator instead of LinearProgressIndicator directly
@@ -131,6 +143,7 @@ fun ProgressBar(progress: Float) {
         trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
     )
 }
+
 @Composable
 fun LanguageLevelProgressBar(level: String, progress: Float, onBarClick: () -> Unit) {
     val animatedProgress by animateFloatAsState(

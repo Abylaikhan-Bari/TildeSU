@@ -18,7 +18,7 @@ object ApiKeyModule {
     @Singleton
     @Named("LingvanexApiKey")
     fun provideLingvanexApiKey(@ApplicationContext context: Context): String {
-         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
         val sharedPreferences = EncryptedSharedPreferences.create(
             "secure_prefs",
             masterKeyAlias,
@@ -27,6 +27,9 @@ object ApiKeyModule {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
         // Return the API key stored securely; for example purposes only
-        return sharedPreferences.getString("a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF", "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF") ?: "your_default_api_key"
+        return sharedPreferences.getString(
+            "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF",
+            "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF"
+        ) ?: "your_default_api_key"
     }
 }

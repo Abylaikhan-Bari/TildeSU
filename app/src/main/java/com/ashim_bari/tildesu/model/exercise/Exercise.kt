@@ -6,6 +6,7 @@ import com.google.firebase.firestore.PropertyName
 enum class ExerciseType {
     QUIZ, PUZZLES, TRUE_FALSE, DICTIONARY_CARDS, IMAGE_QUIZZES
 }
+
 data class Exercise(
     @Exclude @set:Exclude @get:Exclude
     var id: String = "",

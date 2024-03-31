@@ -61,7 +61,9 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
             if (showExitConfirmation) {
                 ExitConfirmationDialog(
                     showExitConfirmation = showExitConfirmation,
-                    onDismiss = { showExitConfirmation = false }, // Pass a lambda to update the state
+                    onDismiss = {
+                        showExitConfirmation = false
+                    }, // Pass a lambda to update the state
                     onConfirm = {
                         Log.d("AuthenticationScreen", "App exited")
                         activity?.finish()
@@ -90,19 +92,39 @@ fun AuthenticationScreen(navController: NavHostController, viewModel: Authentica
                     }, label = ""
                 ) { targetScreen ->
                     when (targetScreen) {
-                        AuthScreens.Login -> LoginPage(navController, { currentScreen = it },  snackbarHostState, coroutineScope)
-                        AuthScreens.Register -> RegisterPage(navController, { currentScreen = it },  snackbarHostState, coroutineScope)
-                        AuthScreens.ResetPassword -> ResetPasswordPage(navController, { currentScreen = it },  snackbarHostState, coroutineScope)
+                        AuthScreens.Login -> LoginPage(
+                            navController,
+                            { currentScreen = it },
+                            snackbarHostState,
+                            coroutineScope
+                        )
+
+                        AuthScreens.Register -> RegisterPage(
+                            navController,
+                            { currentScreen = it },
+                            snackbarHostState,
+                            coroutineScope
+                        )
+
+                        AuthScreens.ResetPassword -> ResetPasswordPage(
+                            navController,
+                            { currentScreen = it },
+                            snackbarHostState,
+                            coroutineScope
+                        )
                     }
                 }
             }
         }
     }
 }
+
 @Composable
-fun ExitConfirmationDialog(showExitConfirmation: Boolean,
-                           onDismiss: () -> Unit, // Added an onDismiss lambda parameter
-                           onConfirm: () -> Unit) {
+fun ExitConfirmationDialog(
+    showExitConfirmation: Boolean,
+    onDismiss: () -> Unit, // Added an onDismiss lambda parameter
+    onConfirm: () -> Unit
+) {
     if (showExitConfirmation) {
         AlertDialog(
             onDismissRequest = { /* Do nothing to prevent dismiss on outside click */ },
@@ -121,6 +143,7 @@ fun ExitConfirmationDialog(showExitConfirmation: Boolean,
         )
     }
 }
+
 enum class AuthScreens {
     Login,
     Register,

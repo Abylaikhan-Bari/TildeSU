@@ -34,6 +34,7 @@ fun LoadingScreen(navController: NavHostController) {
                     launchSingleTop = true
                 }
             }
+
             false -> {
                 Log.d(TAG, "User not logged in, navigating to AuthenticationScreen")
                 navController.navigate(Navigation.AUTHENTICATION_ROUTE) {
@@ -41,6 +42,7 @@ fun LoadingScreen(navController: NavHostController) {
                     launchSingleTop = true
                 }
             }
+
             null -> {
                 // Handle null case here
                 Log.d(TAG, "Determining login status...")

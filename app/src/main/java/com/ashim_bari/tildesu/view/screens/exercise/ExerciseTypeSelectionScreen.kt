@@ -49,7 +49,7 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
         Column {
             // Adding the top app bar
             SmallTopAppBar(
-                title = { Text(text = level,color = Color.White) } ,
+                title = { Text(text = level, color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -72,13 +72,20 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
                 ExerciseType.values().forEachIndexed { index, exerciseType ->
                     AnimatedExerciseTypeCard(index, exerciseType) {
                         // Ensure your navigation route here matches the NavGraph definition
-                        navController.navigate("specificExercise/$level/${exerciseType.name.lowercase(Locale.getDefault())}")
+                        navController.navigate(
+                            "specificExercise/$level/${
+                                exerciseType.name.lowercase(
+                                    Locale.getDefault()
+                                )
+                            }"
+                        )
                     }
                 }
             }
         }
     }
 }
+
 @Composable
 fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: () -> Unit) {
     var visible by rememberSaveable { mutableStateOf(false) }
@@ -94,6 +101,7 @@ fun AnimatedExerciseTypeCard(index: Int, exerciseType: ExerciseType, onClick: ()
         ExerciseTypeCard(exerciseType, onClick)
     }
 }
+
 @Composable
 fun ExerciseTypeCard(exerciseType: ExerciseType, onClick: () -> Unit) {
     val exerciseTypeName = when (exerciseType) {

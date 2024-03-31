@@ -35,7 +35,10 @@ import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.translation.TranslationViewModel
 
 @Composable
-fun TranslatePage(navController: NavHostController, viewModel: TranslationViewModel = hiltViewModel()) {
+fun TranslatePage(
+    navController: NavHostController,
+    viewModel: TranslationViewModel = hiltViewModel()
+) {
     var sourceText by remember { mutableStateOf("") }
     val translationResult by viewModel.translationResult.collectAsState(initial = "")
     val isLoading by viewModel.isLoading.collectAsState()
@@ -85,7 +88,13 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
             maxLines = 5
         )
         Button(
-            onClick = { viewModel.translateText(sourceText, languagesMap[sourceLanguage]!!, languagesMap[targetLanguage]!!) },
+            onClick = {
+                viewModel.translateText(
+                    sourceText,
+                    languagesMap[sourceLanguage]!!,
+                    languagesMap[targetLanguage]!!
+                )
+            },
             modifier = Modifier
                 .padding(top = 8.dp)
                 .align(Alignment.CenterHorizontally),
@@ -107,8 +116,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
                     .padding(16.dp),
                 style = MaterialTheme.typography.bodyLarge
             )
-        }
-        else if (!isLoading && sourceText.isNotEmpty()) {
+        } else if (!isLoading && sourceText.isNotEmpty()) {
             // Optionally show a message when there's no result but the source text is not empty
             Text(
                 text = noTranslationFoundMessage,
@@ -129,6 +137,7 @@ fun TranslatePage(navController: NavHostController, viewModel: TranslationViewMo
         }
     }
 }
+
 @Composable
 fun DropdownMenu(
     options: List<String>,

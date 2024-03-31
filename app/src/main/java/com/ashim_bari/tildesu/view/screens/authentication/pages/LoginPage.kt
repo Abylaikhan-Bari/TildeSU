@@ -104,7 +104,7 @@ fun LoginPage(
     val updateUsername: (String) -> Unit = { value -> username = value.trim() }
     val updatePassword: (String) -> Unit = { value -> password = value.trim() }
     val invalidCredentialsMessage = stringResource(R.string.invalid_credentials)
-    val  usernameRequiredMessage= stringResource(R.string.username_required)
+    val usernameRequiredMessage = stringResource(R.string.username_required)
     val passwordRequiredMessage = stringResource(R.string.password_required)
     val invalidEmail = stringResource(R.string.invalid_email)
     val loginSuccessfulMessage = stringResource(id = R.string.login_successful)
@@ -182,7 +182,7 @@ fun LoginPage(
             authMessage = null
         }
     }
-    Surface (
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline
@@ -278,6 +278,7 @@ fun LoginPage(
                                 contentDescription = "Success",
                                 tint = BluePrimary
                             )
+
                             else -> {
                                 Button(
                                     onClick = {
@@ -419,6 +420,7 @@ fun LoginPage(
         }
     }
 }
+
 fun getLanguageName(languageCode: String): String {
     return when (languageCode) {
         "en" -> "English"

@@ -63,14 +63,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     private fun checkAndRequestNotificationPermission() {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !notificationManager.areNotificationsEnabled()) {
             // Notifications are not enabled
             // Show a dialog and redirect user to app's notification settings
             showDialogToEnableNotifications()
         }
     }
+
     private fun showDialogToEnableNotifications() {
         AlertDialog.Builder(this)
             .setTitle(R.string.notifications_disabled_title)
@@ -83,6 +86,7 @@ class MainActivity : ComponentActivity() {
                             action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
                             putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
                         }
+
                         else -> {
                             action = "android.settings.APP_NOTIFICATION_SETTINGS"
                             putExtra("app_package", packageName)
@@ -98,6 +102,7 @@ class MainActivity : ComponentActivity() {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show()
     }
+
     private fun scheduleNotification() {
         // Use the AlarmManager to schedule the notification
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -114,23 +119,33 @@ class MainActivity : ComponentActivity() {
             pendingIntent
         )
     }
-private fun determineInitialScreen(): String {
-    // Implement logic to determine which screen to show first
-    // This could be based on authentication status, user preferences, etc.
-    // For example, return Navigation.AUTHENTICATION_ROUTE or Navigation.MAIN_ROUTE
-    return Navigation.AUTHENTICATION_ROUTE // or some logic to choose the screen
-}
+
+    private fun determineInitialScreen(): String {
+        // Implement logic to determine which screen to show first
+        // This could be based on authentication status, user preferences, etc.
+        // For example, return Navigation.AUTHENTICATION_ROUTE or Navigation.MAIN_ROUTE
+        return Navigation.AUTHENTICATION_ROUTE // or some logic to choose the screen
+    }
+
     private fun initializeFirebase() {
         Firebase.initialize(context = this)
         Firebase.appCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance())
     }
+
     private fun applyLanguageChange() {
         val languageCode = LanguageManager.getLanguagePreference(this)
         LanguageManager.setLocale(this, languageCode)
     }
+
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LanguageManager.setLocale(newBase, LanguageManager.getLanguagePreference(newBase)))
+        super.attachBaseContext(
+            LanguageManager.setLocale(
+                newBase,
+                LanguageManager.getLanguagePreference(newBase)
+            )
+        )
     }
+
     fun restartActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

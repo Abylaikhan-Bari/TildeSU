@@ -28,22 +28,30 @@ fun SuccessScreen(navController: NavController, score: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
             text = stringResource(id = R.string.congratulations),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.EmojiEvents,
             contentDescription = "Trophy",
-            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp)
         )
         Text(
             text = stringResource(id = R.string.you_scored_points, score),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Card(
             onClick = { navController.navigate("main") },
@@ -57,33 +65,48 @@ fun SuccessScreen(navController: NavController, score: Int) {
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(
-                    Alignment.CenterHorizontally))
+                stringResource(id = R.string.go_home_card),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(
+                        Alignment.CenterHorizontally
+                    )
+            )
         }
 
     }
 }
+
 @Composable
 fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Text(
             text = stringResource(id = R.string.congratulations),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.EmojiEvents,
             contentDescription = "Trophy",
-            modifier = Modifier.size(100.dp).padding(bottom = 16.dp)
+            modifier = Modifier
+                .size(100.dp)
+                .padding(bottom = 16.dp)
         )
         Text(
             text = stringResource(id = R.string.you_scored_points, score),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Card(
             onClick = { navController.navigate("main") },
@@ -96,7 +119,13 @@ fun TrueFalseSuccessScreen(navController: NavController, score: Int) {
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Text(stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally))
+            Text(
+                stringResource(id = R.string.go_home_card),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
         }
     }
 }

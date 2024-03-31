@@ -16,6 +16,7 @@ class TranslationViewModel @Inject constructor(
 ) : ViewModel() {
     // Backing property to avoid exposing a mutable flow
     private val _translationResult = MutableStateFlow<String?>(null)
+
     // The UI collects from this StateFlow to get updates
     val translationResult: StateFlow<String?> = _translationResult.asStateFlow()
     val isLoading = MutableStateFlow(false)

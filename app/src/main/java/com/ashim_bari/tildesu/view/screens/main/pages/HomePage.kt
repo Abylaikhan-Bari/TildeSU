@@ -1,4 +1,5 @@
 package com.ashim_bari.tildesu.view.screens.main.pages
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -46,7 +47,14 @@ fun HomePage(navController: NavHostController) {
             val levels = listOf(
                 "A1", "A2", "B1", "B2", "C1", "C2"
             )
-            val routes = listOf("exercise/A1", "exercise/A2", "exercise/B1", "exercise/B2", "exercise/C1", "exercise/C2")
+            val routes = listOf(
+                "exercise/A1",
+                "exercise/A2",
+                "exercise/B1",
+                "exercise/B2",
+                "exercise/C1",
+                "exercise/C2"
+            )
             levels.zip(routes).forEachIndexed { index, (level, route) ->
                 if (index % 2 == 0) {
                     // Align to start
@@ -74,6 +82,7 @@ fun HomePage(navController: NavHostController) {
         }
     }
 }
+
 @Composable
 fun CardComponent(level: String, navController: NavHostController, index: Int) {
     var visible by rememberSaveable { mutableStateOf(false) }

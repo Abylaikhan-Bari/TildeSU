@@ -24,9 +24,11 @@ class AuthenticationViewModel @Inject constructor(
             false
         }
     }
+
     suspend fun isEmailRegistered(email: String): Boolean {
         return userRepository.isEmailRegistered(email)
     }
+
     suspend fun register(email: String, password: String): Boolean {
         return try {
             val result = userRepository.registerUser(email, password)
@@ -41,6 +43,7 @@ class AuthenticationViewModel @Inject constructor(
             false
         }
     }
+
     suspend fun resetPassword(email: String): Boolean {
         return try {
             val result = userRepository.resetPassword(email)

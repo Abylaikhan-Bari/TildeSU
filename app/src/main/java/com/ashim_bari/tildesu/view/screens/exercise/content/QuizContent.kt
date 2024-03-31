@@ -47,7 +47,7 @@ import com.ashim_bari.tildesu.viewmodel.exercise.ExerciseViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuizContent(navController: NavController, level: String, type: ExerciseType ) {
+fun QuizContent(navController: NavController, level: String, type: ExerciseType) {
     val exerciseViewModel: ExerciseViewModel = hiltViewModel()
     val currentLevel by rememberSaveable { mutableStateOf(level) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -57,6 +57,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
     fun showConfirmationDialog() {
         showDialog = true
     }
+
     val exercises = exerciseViewModel.exercises.observeAsState(initial = emptyList()).value
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState().value ?: 0
     var selectedOption by rememberSaveable { mutableIntStateOf(-1) }
@@ -135,7 +136,8 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
                             onClick = {
                                 if (selectedOption >= 0) {
                                     val currentExercise = exercises[currentQuestionIndex]
-                                    val correctOptionIndex = currentExercise.correctOptionIndex ?: -1
+                                    val correctOptionIndex =
+                                        currentExercise.correctOptionIndex ?: -1
                                     val isCorrect = selectedOption == correctOptionIndex
                                     exerciseViewModel.submitQuizAnswer(selectedOption)
                                     selectedOption = -1
@@ -184,6 +186,7 @@ fun QuizContent(navController: NavController, level: String, type: ExerciseType 
         )
     }
 }
+
 @Composable
 fun OptionCard(option: String, isSelected: Boolean, onSelect: () -> Unit) {
     Card(

@@ -35,7 +35,9 @@ fun FailureScreen(navController: NavController, restartExercise: () -> Unit = {}
         Text(
             text = stringResource(id = R.string.oops_sorry),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.SentimentDissatisfied,
@@ -47,7 +49,9 @@ fun FailureScreen(navController: NavController, restartExercise: () -> Unit = {}
         Text(
             text = stringResource(id = R.string.dont_worry_try_again),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Card(
             onClick = { navController.navigate("main") },
@@ -61,11 +65,18 @@ fun FailureScreen(navController: NavController, restartExercise: () -> Unit = {}
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                stringResource(id = R.string.go_home_card), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(16.dp).align(
-                    Alignment.CenterHorizontally))
+                stringResource(id = R.string.go_home_card),
+                style = MaterialTheme.typography.labelLarge,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(
+                        Alignment.CenterHorizontally
+                    )
+            )
         }
     }
 }
+
 @Composable
 fun TrueFalseFailureScreen(navController: NavController, restartTrueFalseExercise: () -> Unit) {
     Column(
@@ -78,7 +89,9 @@ fun TrueFalseFailureScreen(navController: NavController, restartTrueFalseExercis
         Text(
             text = stringResource(id = R.string.oops_sorry),
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Icon(
             imageVector = Icons.Filled.SentimentDissatisfied,
@@ -101,7 +114,9 @@ fun TrueFalseFailureScreen(navController: NavController, restartTrueFalseExercis
             Text(
                 stringResource(id = R.string.go_home_card),
                 style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.CenterHorizontally)
             )
         }
     }

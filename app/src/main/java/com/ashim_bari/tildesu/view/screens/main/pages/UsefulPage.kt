@@ -1,4 +1,3 @@
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -57,6 +56,7 @@ fun UsefulPage(navController: NavHostController, function: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun GrammarTipCard(tip: String) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -78,8 +78,12 @@ fun GrammarTipCard(tip: String) {
             )
             AnimatedVisibility(
                 visible = expanded,
-                enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandVertically(animationSpec = tween(durationMillis = 300)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300)) + shrinkVertically(animationSpec = tween(durationMillis = 300))
+                enter = fadeIn(animationSpec = tween(durationMillis = 300)) + expandVertically(
+                    animationSpec = tween(durationMillis = 300)
+                ),
+                exit = fadeOut(animationSpec = tween(durationMillis = 300)) + shrinkVertically(
+                    animationSpec = tween(durationMillis = 300)
+                )
             ) {
                 Column {
                     // Additional content for expanded state
@@ -104,6 +108,7 @@ fun GrammarTipCard(tip: String) {
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun UsefulPagePreview() {

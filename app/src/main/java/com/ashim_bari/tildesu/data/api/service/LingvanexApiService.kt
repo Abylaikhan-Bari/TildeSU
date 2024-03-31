@@ -15,6 +15,7 @@ interface LingvanexApiService {
         @Field("to") to: String,
         @Header("Authorization") apiKey: String
     ): Response<TranslationResponse>
+
     data class TranslationResponse(
         val result: String // Adjust according to the actual API response
     )

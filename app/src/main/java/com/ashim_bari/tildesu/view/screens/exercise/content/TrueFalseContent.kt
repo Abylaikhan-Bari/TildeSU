@@ -47,7 +47,7 @@ fun TrueFalseContent(
     level: String,
     type: ExerciseType,
 
-) {
+    ) {
     val exerciseViewModel: ExerciseViewModel = hiltViewModel()
     LaunchedEffect(key1 = level) {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
@@ -59,7 +59,8 @@ fun TrueFalseContent(
     var isAnswerCorrect by rememberSaveable { mutableStateOf(false) }
     val currentQuestionIndex = exerciseViewModel.currentExercisesIndex.observeAsState(0).value
     // Observe exercise completion state
-    val progress = if (exercises.isNotEmpty()) currentQuestionIndex.toFloat() / exercises.size.toFloat() else 0f
+    val progress =
+        if (exercises.isNotEmpty()) currentQuestionIndex.toFloat() / exercises.size.toFloat() else 0f
     val lifecycleOwner = LocalLifecycleOwner.current
     val restartTrueFalseExercise: () -> Unit = {
         exerciseViewModel.loadExercisesForLevelAndType(level, ExerciseType.TRUE_FALSE)
@@ -93,7 +94,10 @@ fun TrueFalseContent(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TrueFalseFailureScreen(navController = navController, restartTrueFalseExercise = restartTrueFalseExercise)
+                TrueFalseFailureScreen(
+                    navController = navController,
+                    restartTrueFalseExercise = restartTrueFalseExercise
+                )
                 Spacer(modifier = Modifier.height(16.dp)) // Add some space between the failure screen and the content above it
             }
         }
@@ -177,6 +181,7 @@ fun TrueFalseContent(
         }
     }
 }
+
 @Composable
 fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
     Log.d("AnswerFeedbackScreen", "Correct: $correct")
@@ -188,7 +193,9 @@ fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = if (correct) stringResource(id = R.string.feedback_correct) else stringResource(id = R.string.feedback_incorrect),
+            text = if (correct) stringResource(id = R.string.feedback_correct) else stringResource(
+                id = R.string.feedback_incorrect
+            ),
             style = MaterialTheme.typography.headlineLarge,
             color = if (correct) Color.Green else Color.Red,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -198,6 +205,7 @@ fun AnswerFeedbackScreen(correct: Boolean, onContinue: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun TrueFalseQuestion(
     statement: String,
@@ -219,15 +227,26 @@ fun TrueFalseQuestion(
                 .padding(bottom = 24.dp)
         )
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TrueFalseOptionCard("True", Color(0xFF4CAF50), Modifier.weight(1f), onClick = { onAnswer(true) })
+            TrueFalseOptionCard(
+                "True",
+                Color(0xFF4CAF50),
+                Modifier.weight(1f),
+                onClick = { onAnswer(true) })
             Spacer(Modifier.width(16.dp)) // Space between buttons
-            TrueFalseOptionCard("False", Color(0xFFF44336), Modifier.weight(1f), onClick = { onAnswer(false) })
+            TrueFalseOptionCard(
+                "False",
+                Color(0xFFF44336),
+                Modifier.weight(1f),
+                onClick = { onAnswer(false) })
         }
     }
 }
+
 @Composable
 fun TrueFalseOptionCard(
     optionText: String,
@@ -243,6 +262,10 @@ fun TrueFalseOptionCard(
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor)
     ) {
-        Text(optionText, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
+        Text(
+            optionText,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

@@ -153,13 +153,14 @@ fun PuzzlesContent(
         }
     }
 }
+
 @Composable
 fun DraggableWordPuzzle(
     puzzle: Exercise,
     onPuzzleSolved: (Boolean) -> Unit,
     currentPuzzleIndex: Int,
     exerciseViewModel: ExerciseViewModel
-){
+) {
     // The words list will be re-initialized and shuffled when currentPuzzleIndex changes.
     // This ensures the puzzle is reset correctly when the current puzzle index changes.
     var words by remember(currentPuzzleIndex) { mutableStateOf(puzzle.sentenceParts!!.shuffled()) }
@@ -210,6 +211,7 @@ fun DraggableWordPuzzle(
         }
     }
 }
+
 @Composable
 fun DraggableCard(
     word: String,

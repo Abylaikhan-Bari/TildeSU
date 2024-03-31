@@ -82,23 +82,24 @@ fun RegisterPage(
     // Remember FocusRequester for the confirmPassword field to request focus programmatically
     val confirmPasswordFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val  usernameRequiredMessage= stringResource(R.string.username_required)
+    val usernameRequiredMessage = stringResource(R.string.username_required)
     val passwordRequiredMessage = stringResource(R.string.password_required)
     val passwordsNotMatch = stringResource(R.string.password_mismatch)
     LaunchedEffect(email, password, confirmPassword) {
         if (email.isNotBlank() && password.isNotBlank() && confirmPassword.isNotBlank() && password == confirmPassword) {
             authMessage = null
         } else {
-            authMessage = if (email.isNotBlank() && password.isBlank() && confirmPassword.isBlank()) {
-                passwordRequiredMessage
-            } else if (email.isBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
-                usernameRequiredMessage
-            } else if (password != confirmPassword) {
-                // Add a message for password and confirm password mismatch
-                passwordsNotMatch
-            } else {
-                null
-            }
+            authMessage =
+                if (email.isNotBlank() && password.isBlank() && confirmPassword.isBlank()) {
+                    passwordRequiredMessage
+                } else if (email.isBlank() && password.isNotBlank() && confirmPassword.isNotBlank()) {
+                    usernameRequiredMessage
+                } else if (password != confirmPassword) {
+                    // Add a message for password and confirm password mismatch
+                    passwordsNotMatch
+                } else {
+                    null
+                }
         }
     }
 // Update authMessage when the user enters valid credentials
@@ -107,7 +108,7 @@ fun RegisterPage(
             authMessage = null
         }
     }
-    Surface (
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline

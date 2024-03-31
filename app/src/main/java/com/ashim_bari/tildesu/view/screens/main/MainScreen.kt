@@ -49,6 +49,7 @@ import com.ashim_bari.tildesu.view.screens.main.pages.TranslatePage
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 private const val TAG = "MainScreen"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
@@ -60,7 +61,8 @@ fun MainScreen(navController: NavHostController) {
     val activity = LocalContext.current as? ComponentActivity
     val context = LocalContext.current
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        val vibratorManager =
+            context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
         vibratorManager.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
@@ -77,16 +79,41 @@ fun MainScreen(navController: NavHostController) {
         }
     }
     val bottomItems = listOf(
-        BottomNavItem(stringResource(id = R.string.bottom_nav_home), Icons.Filled.Home, MainScreens.Home),
-        BottomNavItem(stringResource(id = R.string.bottom_nav_dashboard), Icons.Filled.Assessment, MainScreens.Dashboard),
-        BottomNavItem(stringResource(id = R.string.bottom_nav_useful), Icons.Filled.Star, MainScreens.Useful),
-        BottomNavItem(stringResource(id = R.string.bottom_nav_translate), Icons.Filled.Translate, MainScreens.Translate),
-        BottomNavItem(stringResource(id = R.string.bottom_nav_profile), Icons.Filled.Person, MainScreens.Profile)
+        BottomNavItem(
+            stringResource(id = R.string.bottom_nav_home),
+            Icons.Filled.Home,
+            MainScreens.Home
+        ),
+        BottomNavItem(
+            stringResource(id = R.string.bottom_nav_dashboard),
+            Icons.Filled.Assessment,
+            MainScreens.Dashboard
+        ),
+        BottomNavItem(
+            stringResource(id = R.string.bottom_nav_useful),
+            Icons.Filled.Star,
+            MainScreens.Useful
+        ),
+        BottomNavItem(
+            stringResource(id = R.string.bottom_nav_translate),
+            Icons.Filled.Translate,
+            MainScreens.Translate
+        ),
+        BottomNavItem(
+            stringResource(id = R.string.bottom_nav_profile),
+            Icons.Filled.Person,
+            MainScreens.Profile
+        )
     )
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = bottomItems.first { it.screen == currentMainScreen }.title, color = Color.White) },
+                title = {
+                    Text(
+                        text = bottomItems.first { it.screen == currentMainScreen }.title,
+                        color = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
@@ -159,8 +186,13 @@ fun MainScreen(navController: NavHostController) {
     }
     Log.d(TAG, "MainScreen: Ended")
 }
+
 @Composable
-fun MainScreenContent(currentScreen: MainScreens, navController: NavHostController, modifier: Modifier = Modifier) {
+fun MainScreenContent(
+    currentScreen: MainScreens,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage()
@@ -169,11 +201,13 @@ fun MainScreenContent(currentScreen: MainScreens, navController: NavHostControll
         MainScreens.Translate -> TranslatePage(navController)
     }
 }
+
 data class BottomNavItem(
     val title: String,
     val icon: ImageVector,
     val screen: MainScreens
 )
+
 enum class MainScreens {
     Home,
     Dashboard,

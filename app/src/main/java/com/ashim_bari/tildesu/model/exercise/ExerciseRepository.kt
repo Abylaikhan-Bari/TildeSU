@@ -19,8 +19,10 @@ class ExerciseRepository @Inject constructor(
     val exercises: LiveData<List<Exercise>> = _exercises
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
     @OptIn(UnstableApi::class)
     private val db = Firebase.firestore
+
     @OptIn(UnstableApi::class)
     suspend fun getExercisesByLevelAndType(level: String, type: ExerciseType): List<Exercise> {
         val collectionName = when (type) {
@@ -48,18 +50,30 @@ class ExerciseRepository @Inject constructor(
                         val correctOrderInts = correctOrderLongs?.map { it.toInt() }
                         exercise?.copy(correctOrder = correctOrderInts)
                     }
+
                     else -> exercise
                 }.also {
-                    if (it == null) Log.d("ExerciseRepository", "Failed to convert document to Exercise object: ${documentSnapshot.id}")
+                    if (it == null) Log.d(
+                        "ExerciseRepository",
+                        "Failed to convert document to Exercise object: ${documentSnapshot.id}"
+                    )
                 }
             }.also {
-                Log.d("ExerciseRepository", "Fetched ${it.size} exercises for level $level and type ${type.name}")
+                Log.d(
+                    "ExerciseRepository",
+                    "Fetched ${it.size} exercises for level $level and type ${type.name}"
+                )
             }
         } catch (e: Exception) {
-            Log.e("ExerciseRepository", "Error fetching exercises for level $level and type ${type.name}", e)
+            Log.e(
+                "ExerciseRepository",
+                "Error fetching exercises for level $level and type ${type.name}",
+                e
+            )
             emptyList()
         }
     }
+
     @OptIn(UnstableApi::class)
     suspend fun fetchUserProgress(userId: String, levelId: String): Map<String, Any> {
         // Placeholder implementation. Adjust according to your Firestore structure.
@@ -77,9 +91,11 @@ class ExerciseRepository @Inject constructor(
             emptyMap()
         }
     }
+
     @OptIn(UnstableApi::class)
     suspend fun updateUserProgress(userId: String, levelId: String, updateData: Map<String, Any>) {
-        val progressRef = db.collection("users").document(userId).collection("progress").document(levelId)
+        val progressRef =
+            db.collection("users").document(userId).collection("progress").document(levelId)
 
         db.runTransaction { transaction ->
             val snapshot = transaction.get(progressRef)

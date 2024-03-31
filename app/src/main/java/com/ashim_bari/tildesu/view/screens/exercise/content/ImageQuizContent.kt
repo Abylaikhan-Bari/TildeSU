@@ -55,6 +55,7 @@ fun ImageQuizContent(
     fun showConfirmationDialog() {
         showDialog = true
     }
+
     val exercises by exerciseViewModel.exercises.observeAsState(initial = emptyList())
     val currentQuestionIndex by exerciseViewModel.currentExercisesIndex.observeAsState(0)
     val exerciseCompleted by exerciseViewModel.exerciseCompleted.observeAsState(false)
@@ -173,6 +174,7 @@ fun ImageQuizContent(
         }
     }
 }
+
 @Composable
 fun OptionsGrid(
     options: List<String>,
@@ -206,6 +208,7 @@ fun OptionsGrid(
         }
     }
 }
+
 @Composable
 fun ImageOptionCard(
     option: String,

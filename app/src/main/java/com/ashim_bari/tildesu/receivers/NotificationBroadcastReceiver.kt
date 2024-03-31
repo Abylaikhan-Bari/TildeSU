@@ -35,6 +35,7 @@ class NotificationBroadcastReceiver : BroadcastReceiver() {
             // Handle the SecurityException by logging it or taking other appropriate actions
         }
     }
+
     companion object {
         private const val NOTIFICATION_ID = 1
         private const val CHANNEL_ID = "exercise_reminder"

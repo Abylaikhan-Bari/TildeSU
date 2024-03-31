@@ -88,9 +88,10 @@ fun ProfilePage(navController: NavHostController) {
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     var showEditProfileDialog by rememberSaveable { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { viewModel.uploadProfileImage(it) }
-    }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let { viewModel.uploadProfileImage(it) }
+        }
     val bitmap = rememberSaveable { mutableStateOf<Bitmap?>(null) }
     val userProfile by viewModel.userProfile.observeAsState()
     LaunchedEffect(imageUri) {
@@ -129,42 +130,47 @@ fun ProfilePage(navController: NavHostController) {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 userProfile?.let { profile ->
-                        ProfilePicture(profileImageUrl) {
-                            launcher.launch("image/*")
-                        }
-                    Spacer(modifier = Modifier.height(16.dp))
-                        Row(modifier = Modifier.padding(top = 8.dp)) {
-                            Text(
-                                text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
-                        }
-                    Spacer(modifier = Modifier.height(16.dp))
-                        UserInfoCard(profile)
+                    ProfilePicture(profileImageUrl) {
+                        launcher.launch("image/*")
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        Text(
+                            text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    UserInfoCard(profile)
+                }
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
                 Spacer(modifier = Modifier.height(16.dp))
-                    ActionCard(
-                        text = stringResource(id = R.string.edit_profile_button),
-                        icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
-                        onClick = { showEditProfileDialog = true },
-                        modifier = Modifier
-                            .height(56.dp)
-                            .fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.outlineVariant
-                    )
+                ActionCard(
+                    text = stringResource(id = R.string.edit_profile_button),
+                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
+                    onClick = { showEditProfileDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.outlineVariant
+                )
                 Spacer(modifier = Modifier.height(16.dp))
-                    ActionCard(
-                        text = stringResource(id = R.string.update_password_button),
-                        icon = { Icon(Icons.Outlined.ModeEdit, contentDescription = "Update Password") },
-                        onClick = { showUpdatePasswordDialog = true },
-                        modifier = Modifier
-                            .height(56.dp)
-                            .fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                ActionCard(
+                    text = stringResource(id = R.string.update_password_button),
+                    icon = {
+                        Icon(
+                            Icons.Outlined.ModeEdit,
+                            contentDescription = "Update Password"
+                        )
+                    },
+                    onClick = { showUpdatePasswordDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                )
                 LanguageChangeDialog(
                     showDialog = showLanguageDialog,
                     onDismiss = { showLanguageDialog = false },
@@ -177,15 +183,15 @@ fun ProfilePage(navController: NavHostController) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                    ActionCard(
-                        text = stringResource(id = R.string.log_out_language_button),
-                        icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
-                        onClick = { showLogoutDialog = true },
-                        modifier = Modifier
-                            .height(56.dp)
-                            .fillMaxWidth(),
-                        backgroundColor = MaterialTheme.colorScheme.errorContainer
-                    )
+                ActionCard(
+                    text = stringResource(id = R.string.log_out_language_button),
+                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.errorContainer
+                )
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
                         viewModel = viewModel,
@@ -196,7 +202,8 @@ fun ProfilePage(navController: NavHostController) {
                         }
                     )
                 }
-                val updatePasswordSuccessfulMessage = stringResource(id = R.string.update_password_successful)
+                val updatePasswordSuccessfulMessage =
+                    stringResource(id = R.string.update_password_successful)
                 LaunchedEffect(passwordUpdatedSuccessfully) {
                     if (passwordUpdatedSuccessfully) {
                         snackbarHostState.showSnackbar(
@@ -240,6 +247,7 @@ fun ProfilePage(navController: NavHostController) {
         )
     }
 }
+
 @Composable
 fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
     var isVisible by remember { mutableStateOf(false) }
@@ -254,6 +262,7 @@ fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
         content()
     }
 }
+
 @Composable
 fun UserInfoCard(profile: UserProfile) {
     Card(
@@ -268,13 +277,23 @@ fun UserInfoCard(profile: UserProfile) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             UserInfoItem(label = stringResource(id = R.string.email), value = profile.email)
-            UserInfoItem(label = stringResource(id = R.string.city), value = profile.city ?: stringResource(R.string.not_set))
+            UserInfoItem(
+                label = stringResource(id = R.string.city),
+                value = profile.city ?: stringResource(R.string.not_set)
+            )
             UserInfoItem(label = stringResource(id = R.string.age), value = profile.age.toString())
-            UserInfoItem(label = stringResource(id = R.string.gender), value = getGenderString(profile.gender))
-            UserInfoItem(label = stringResource(id = R.string.specialty), value = profile.specialty ?: stringResource(R.string.not_set))
+            UserInfoItem(
+                label = stringResource(id = R.string.gender),
+                value = getGenderString(profile.gender)
+            )
+            UserInfoItem(
+                label = stringResource(id = R.string.specialty),
+                value = profile.specialty ?: stringResource(R.string.not_set)
+            )
         }
     }
 }
+
 @Composable
 fun getGenderString(gender: Int?): String {
     // Assuming 1 is Male, 2 is Female, and else is Not Set or Other
@@ -284,20 +303,34 @@ fun getGenderString(gender: Int?): String {
         else -> stringResource(id = R.string.not_set)
     }
 }
+
 @Composable
 fun UserInfoItem(label: String, value: String) {
     Row(modifier = Modifier.padding(vertical = 4.dp)) {
-        Text("$label: ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            "$label: ",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
+
 @Composable
 fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (UserProfile) -> Unit) {
     var name by remember { mutableStateOf(profile?.name ?: "") }
     var surname by remember { mutableStateOf(profile?.surname ?: "") }
     var city by remember { mutableStateOf(profile?.city ?: "") }
     var age by remember { mutableStateOf(profile?.age ?: "") }
-    var selectedGender by remember { mutableStateOf(profile?.gender ?: 0) } // Use 0 for not set, 1 for male, 2 for female
+    var selectedGender by remember {
+        mutableStateOf(
+            profile?.gender ?: 0
+        )
+    } // Use 0 for not set, 1 for male, 2 for female
     var specialty by remember { mutableStateOf(profile?.specialty ?: "") }
     val nameFocusRequester = remember { FocusRequester() }
     val surnameFocusRequester = remember { FocusRequester() }
@@ -339,10 +372,15 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
                     onValueChange = { age = it },
                     label = { Text(stringResource(id = R.string.age)) },
                     modifier = Modifier.focusRequester(ageFocusRequester),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number, imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
                     keyboardActions = KeyboardActions(onNext = { specialtyFocusRequester.requestFocus() })
                 )
-                GenderSelection(selectedGender = selectedGender, onGenderSelected = { selectedGender = it })
+                GenderSelection(
+                    selectedGender = selectedGender,
+                    onGenderSelected = { selectedGender = it })
                 TextField(
                     value = specialty,
                     onValueChange = { specialty = it },
@@ -379,6 +417,7 @@ fun EditProfileDialog(profile: UserProfile?, onDismiss: () -> Unit, onSave: (Use
         }
     )
 }
+
 @Composable
 fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
     Column {
@@ -391,7 +430,8 @@ fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
             Text(
                 stringResource(id = R.string.gender_male), modifier = Modifier
                     .clickable(onClick = { onGenderSelected(1) })
-                    .padding(start = 4.dp))
+                    .padding(start = 4.dp)
+            )
             Spacer(modifier = Modifier.width(8.dp))
             RadioButton(
                 selected = selectedGender == 2,
@@ -400,10 +440,12 @@ fun GenderSelection(selectedGender: Int, onGenderSelected: (Int) -> Unit) {
             Text(
                 stringResource(id = R.string.gender_female), modifier = Modifier
                     .clickable(onClick = { onGenderSelected(2) })
-                    .padding(start = 4.dp))
+                    .padding(start = 4.dp)
+            )
         }
     }
 }
+
 @Composable
 fun ActionCard(
     text: String,
@@ -446,6 +488,7 @@ fun ActionCard(
         }
     }
 }
+
 @Composable
 fun UpdatePasswordDialog(
     viewModel: MainViewModel,
@@ -468,9 +511,11 @@ fun UpdatePasswordDialog(
     val updatePasswordFailedMessage = stringResource(id = R.string.update_password_failed)
     val passwordNotMatchMessage = stringResource(id = R.string.password_not_match)
     val incorrectPasswordMessage = stringResource(id = R.string.incorrect_password)
-    val errorCurrentPasswordEmptyMessage = stringResource(id = R.string.error_current_password_empty)
+    val errorCurrentPasswordEmptyMessage =
+        stringResource(id = R.string.error_current_password_empty)
     val errorNewPasswordEmptyMessage = stringResource(id = R.string.error_new_password_empty)
-    val errorConfirmPasswordEmptyMessage = stringResource(id = R.string.error_confirm_password_empty)
+    val errorConfirmPasswordEmptyMessage =
+        stringResource(id = R.string.error_confirm_password_empty)
     LaunchedEffect(showSnackbar) {
         if (showSnackbar) {
             snackbarHostState.showSnackbar(
@@ -498,7 +543,7 @@ fun UpdatePasswordDialog(
                 OutlinedTextField(
                     value = currentPassword,
                     onValueChange = { currentPassword = it },
-                    label = { Text(stringResource(id = R.string.current_password))  },
+                    label = { Text(stringResource(id = R.string.current_password)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
@@ -509,7 +554,7 @@ fun UpdatePasswordDialog(
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text(stringResource(id = R.string.new_password))  },
+                    label = { Text(stringResource(id = R.string.new_password)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
@@ -518,7 +563,7 @@ fun UpdatePasswordDialog(
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text(stringResource(id = R.string.confirm_password))  },
+                    label = { Text(stringResource(id = R.string.confirm_password)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
@@ -575,8 +620,13 @@ fun UpdatePasswordDialog(
         }
     )
 }
+
 @Composable
-fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageSelected: (String) -> Unit) {
+fun LanguageChangeDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onLanguageSelected: (String) -> Unit
+) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -599,6 +649,7 @@ fun LanguageChangeDialog(showDialog: Boolean, onDismiss: () -> Unit, onLanguageS
         )
     }
 }
+
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
@@ -609,7 +660,9 @@ fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
         shape = CircleShape
     ) {
         Image(
-            painter = if (imageUrl != null) rememberAsyncImagePainter(model = imageUrl) else painterResource(id = R.drawable.default_profile_image),
+            painter = if (imageUrl != null) rememberAsyncImagePainter(model = imageUrl) else painterResource(
+                id = R.drawable.default_profile_image
+            ),
             contentDescription = "Profile Picture",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

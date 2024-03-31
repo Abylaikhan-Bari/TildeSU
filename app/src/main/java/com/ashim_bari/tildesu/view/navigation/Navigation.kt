@@ -32,6 +32,7 @@ class Navigation {
 
     }
 }
+
 @Composable
 fun NavigationGraph(navController: NavHostController, initialScreen: String) {
     NavHost(navController = navController, startDestination = Navigation.MAIN_ROUTE) {

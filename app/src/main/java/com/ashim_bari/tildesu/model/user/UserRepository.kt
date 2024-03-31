@@ -31,10 +31,12 @@ class UserRepository @Inject constructor(
     fun isLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
+
     suspend fun registerUser(email: String, password: String): Boolean {
         return try {
             val authResult = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val userId = authResult.user?.uid ?: throw IllegalStateException("User ID cannot be null")
+            val userId =
+                authResult.user?.uid ?: throw IllegalStateException("User ID cannot be null")
             val newUserProfile = UserProfile(email = email) // Initialize with minimum required data
             createUserProfile(userId, newUserProfile)
             // Insert into the Room database
@@ -47,6 +49,7 @@ class UserRepository @Inject constructor(
             false
         }
     }
+
     suspend fun isEmailRegistered(email: String): Boolean {
         return try {
             val result = firebaseAuth.fetchSignInMethodsForEmail(email).await()
@@ -57,14 +60,17 @@ class UserRepository @Inject constructor(
                     // Handle invalid email format
                     Log.e("Auth", "Invalid email format", e)
                 }
+
                 is FirebaseAuthInvalidUserException -> {
                     // Handle user not found
                     Log.e("Auth", "User not found", e)
                 }
+
                 is FirebaseNetworkException -> {
                     // Handle network errors
                     Log.e("Auth", "Network error", e)
                 }
+
                 else -> {
                     // Handle other errors
                     Log.e("Auth", "Unknown error", e)
@@ -73,6 +79,7 @@ class UserRepository @Inject constructor(
             false
         }
     }
+
     private suspend fun createUserProfile(userId: String, userProfile: UserProfile) {
         val userMap = userProfile.let {
             mapOf(
@@ -88,6 +95,7 @@ class UserRepository @Inject constructor(
         firestore.collection("users").document(userId).set(userMap).await()
         Log.d("UserRepository", "User profile created successfully in Firestore")
     }
+
     suspend fun updateUserProfile(userId: String, userProfile: UserProfile) {
         // Update Firebase
         firestore.collection("users").document(userId).set(userProfile, SetOptions.merge()).await()
@@ -97,6 +105,7 @@ class UserRepository @Inject constructor(
         // Log for debugging
         Log.d("UserRepository", "User profile updated successfully")
     }
+
     fun getUserProfile(onComplete: (UserProfile?) -> Unit) {
         val userId = firebaseAuth.currentUser?.uid
         if (userId == null) {
@@ -137,6 +146,7 @@ class UserRepository @Inject constructor(
             }
         }
     }
+
     suspend fun loginUser(email: String, password: String): Boolean {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
@@ -147,6 +157,7 @@ class UserRepository @Inject constructor(
             false // Return false if login fails
         }
     }
+
     suspend fun resetPassword(email: String): Boolean {
         return try {
             firebaseAuth.sendPasswordResetEmail(email).await()
@@ -157,6 +168,7 @@ class UserRepository @Inject constructor(
             false // Return false if password reset fails
         }
     }
+
     suspend fun logout(): Boolean {
         return try {
             firebaseAuth.signOut()
@@ -167,6 +179,7 @@ class UserRepository @Inject constructor(
             false // Return false if log out fails
         }
     }
+
     suspend fun updatePassword(newPassword: String, currentPassword: String? = null): Boolean {
         return try {
             firebaseAuth.currentUser?.let { user ->
@@ -188,6 +201,7 @@ class UserRepository @Inject constructor(
             false
         }
     }
+
     private val storageReference = Firebase.storage.reference
     suspend fun uploadUserImage(uri: Uri): String? {
         val userId = firebaseAuth.currentUser?.uid ?: return null
@@ -204,6 +218,7 @@ class UserRepository @Inject constructor(
             return null
         }
     }
+
     suspend fun getUserImage(): String? {
         // Get the current user ID, return null if not signed in
         val userId = firebaseAuth.currentUser?.uid ?: return null
@@ -218,9 +233,17 @@ class UserRepository @Inject constructor(
             // Log based on the specific error code
             when (e.errorCode) {
                 StorageException.ERROR_OBJECT_NOT_FOUND -> {
-                    Log.i("UserRepository", "User image does not exist at location: profileImages/$userId/profilePic.jpg")
+                    Log.i(
+                        "UserRepository",
+                        "User image does not exist at location: profileImages/$userId/profilePic.jpg"
+                    )
                 }
-                else -> Log.e("UserRepository", "User image fetch failed due to a storage exception", e)
+
+                else -> Log.e(
+                    "UserRepository",
+                    "User image fetch failed due to a storage exception",
+                    e
+                )
             }
             null // Return null for any StorageException
         } catch (e: Exception) {
@@ -229,6 +252,7 @@ class UserRepository @Inject constructor(
             null // Return null for any other exceptions
         }
     }
+
     data class UserProgress(
         val overallProgress: Float,
         val puzzleProgress: Float,
@@ -237,9 +261,11 @@ class UserRepository @Inject constructor(
         val imageQuizProgress: Float
 
     )
+
     suspend fun getUserProgress(userId: String): Map<String, UserProgress> {
         val userProgressData = mutableMapOf<String, UserProgress>()
-        val userProgressCollection = firestore.collection("users").document(userId).collection("progress")
+        val userProgressCollection =
+            firestore.collection("users").document(userId).collection("progress")
         val querySnapshot = userProgressCollection.get().await()
         for (document in querySnapshot.documents) {
             val levelId = document.id
@@ -258,10 +284,18 @@ class UserRepository @Inject constructor(
             val overallProgress = if (overallTotal > 0) overallCorrect / overallTotal else 0f
             val puzzleProgress = if (puzzleTotal > 0) puzzleCorrect / puzzleTotal else 0f
             val quizProgress = if (quizTotal > 0) quizCorrect / quizTotal else 0f
-            val trueFalseProgress = if (trueFalseTotal > 0) trueFalseCorrect / trueFalseTotal else 0f
-            val imageQuizProgress = if (imageQuizTotal > 0) imageQuizCorrect / imageQuizTotal else 0f
+            val trueFalseProgress =
+                if (trueFalseTotal > 0) trueFalseCorrect / trueFalseTotal else 0f
+            val imageQuizProgress =
+                if (imageQuizTotal > 0) imageQuizCorrect / imageQuizTotal else 0f
             // Create UserProgress instance without completedOn
-            userProgressData[levelId] = UserProgress(overallProgress, puzzleProgress, quizProgress, trueFalseProgress, imageQuizProgress)
+            userProgressData[levelId] = UserProgress(
+                overallProgress,
+                puzzleProgress,
+                quizProgress,
+                trueFalseProgress,
+                imageQuizProgress
+            )
         }
         return userProgressData
     }

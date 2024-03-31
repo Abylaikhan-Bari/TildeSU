@@ -18,6 +18,7 @@ object NetworkModule {
         .baseUrl("https://lingvanex.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
+
     @Provides
     @Singleton
     fun provideLingvanexApiService(retrofit: Retrofit): LingvanexApiService =

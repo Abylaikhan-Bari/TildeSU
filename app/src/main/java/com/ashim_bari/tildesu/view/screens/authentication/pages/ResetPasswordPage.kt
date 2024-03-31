@@ -61,7 +61,7 @@ fun ResetPasswordPage(
     var email by rememberSaveable { mutableStateOf("") }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) } // Holds the authentication message
     val keyboardController = LocalSoftwareKeyboardController.current
-    Surface (
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp), // Adjust padding to control the thickness of the outline
@@ -124,6 +124,7 @@ fun ResetPasswordPage(
                                 contentDescription = "Success",
                                 tint = BluePrimary
                             )
+
                             else -> Button(
                                 onClick = {
                                     keyboardController?.hide()

@@ -66,6 +66,7 @@ fun DictionaryCardsContent(
         }
     }
 }
+
 @Composable
 fun DictionaryCard(card: Exercise, isExpanded: Boolean, onClick: () -> Unit) {
     Card(
@@ -80,8 +81,14 @@ fun DictionaryCard(card: Exercise, isExpanded: Boolean, onClick: () -> Unit) {
 
             // Toggle visibility based on isExpanded state
             if (isExpanded) {
-                Text(text = "English: ${card.wordEnglish.orEmpty()}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Russian: ${card.wordRussian.orEmpty()}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "English: ${card.wordEnglish.orEmpty()}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = "Russian: ${card.wordRussian.orEmpty()}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }

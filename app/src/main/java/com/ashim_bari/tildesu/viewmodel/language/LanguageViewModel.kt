@@ -22,6 +22,7 @@ class LanguageViewModel @Inject constructor(
             // No need to manually update Locale here as com.ashim_bari.tildesu.model.language.LanguageManager already handles it
         }
     }
+
     private fun updateLocale(context: Context, language: String) {
         val locale = Locale(language)
         Locale.setDefault(locale)
