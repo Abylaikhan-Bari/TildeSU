@@ -29,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.outlined.ModeEdit
@@ -88,7 +87,6 @@ fun ProfilePage(navController: NavHostController) {
     val context = LocalContext.current
     val imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
-    val userEmail by viewModel.userEmail.observeAsState()
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
@@ -114,7 +112,6 @@ fun ProfilePage(navController: NavHostController) {
         viewModel.fetchUserProfile()
     }
     if (showEditProfileDialog) {
-        // The userProfile from viewModel might be null initially, handle nullability
         EditProfileDialog(
             profile = userProfile,
             onDismiss = { showEditProfileDialog = false },
@@ -148,21 +145,13 @@ fun ProfilePage(navController: NavHostController) {
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    UserInfoCard(profile)
+                    UserInfoCard(profile = profile) {
+                        showEditProfileDialog = true // Open dialog on click
+                    }
                 }
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
-                Spacer(modifier = Modifier.height(16.dp))
-                ActionCard(
-                    text = stringResource(id = R.string.edit_profile_button),
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
-                    onClick = { showEditProfileDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.outlineVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+
                 ActionCard(
                     text = stringResource(id = R.string.update_password_button),
                     icon = {
@@ -175,19 +164,8 @@ fun ProfilePage(navController: NavHostController) {
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
-//                LanguageChangeDialog(
-//                    showDialog = showLanguageDialog,
-//                    onDismiss = { showLanguageDialog = false },
-//                    onLanguageSelected = { language ->
-//                        // Handle language selection here
-//                        // For example, update the app's locale or UI elements as necessary
-//                        showLanguageDialog = false
-//                        // You might want to trigger some state change or call a function to apply the language change.
-//                    }
-//                )
-
                 Spacer(modifier = Modifier.height(16.dp))
                 ActionCard(
                     text = stringResource(id = R.string.change_language), // Make sure this resource exists
@@ -196,7 +174,7 @@ fun ProfilePage(navController: NavHostController) {
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
 
                 if (showLanguageDialog) {
@@ -256,7 +234,7 @@ fun ProfilePage(navController: NavHostController) {
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.errorContainer
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
@@ -315,26 +293,12 @@ fun ProfilePage(navController: NavHostController) {
 }
 
 @Composable
-fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
-    var isVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(showContent) {
-        isVisible = showContent
-    }
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn() + slideInVertically(),
-        exit = fadeOut()
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun UserInfoCard(profile: UserProfile) {
+fun UserInfoCard(profile: UserProfile, onEditClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onEditClick),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
