@@ -139,7 +139,7 @@ fun ProfilePage(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(modifier = Modifier.padding(top = 8.dp)) {
                         Text(
-                            text = "${profile.name ?: "Not set"} ${profile.surname ?: ""}",
+                            text = "${profile.name ?: " "} ${profile.surname ?: ""}",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.align(Alignment.CenterVertically)
                         )
