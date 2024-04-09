@@ -143,4 +143,5 @@
     <string name="no_translation_found">Перевод не найден</string>
     <string name="source_language_label">Перевести с этого языка</string>
     <string name="target_language_label">На этот язык</string>
+    <string name="change_language">Сменить язык</string>
 </resources>

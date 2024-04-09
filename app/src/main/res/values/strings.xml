@@ -134,5 +134,6 @@
     <string name="no_translation_found">No translation found</string>
     <string name="source_language_label">Source language</string>
     <string name="target_language_label">Target language</string>
+    <string name="change_language">Change language</string>
 
 </resources>
