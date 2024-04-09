@@ -29,8 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.outlined.ModeEdit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -72,21 +72,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.language.LanguageManager
 import com.ashim_bari.tildesu.model.user.UserProfile
+import com.ashim_bari.tildesu.view.MainActivity
+import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 
 @Composable
 fun ProfilePage(navController: NavHostController) {
     val viewModel: MainViewModel = hiltViewModel()
+    val languageViewModel: LanguageViewModel = hiltViewModel()
     var showUpdatePasswordDialog by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val profileImageUrl = viewModel.profileImageUrl.observeAsState().value
-    val userEmail by viewModel.userEmail.observeAsState()
     var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
     var passwordUpdatedSuccessfully by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    var tempSelectedLanguageCode by rememberSaveable { mutableStateOf<String?>(null) }
     var showEditProfileDialog by rememberSaveable { mutableStateOf(false) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -108,7 +112,6 @@ fun ProfilePage(navController: NavHostController) {
         viewModel.fetchUserProfile()
     }
     if (showEditProfileDialog) {
-        // The userProfile from viewModel might be null initially, handle nullability
         EditProfileDialog(
             profile = userProfile,
             onDismiss = { showEditProfileDialog = false },
@@ -142,21 +145,13 @@ fun ProfilePage(navController: NavHostController) {
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    UserInfoCard(profile)
+                    UserInfoCard(profile = profile) {
+                        showEditProfileDialog = true // Open dialog on click
+                    }
                 }
                 // Continuing inside the Column from above
                 Spacer(modifier = Modifier.height(16.dp))
-                Spacer(modifier = Modifier.height(16.dp))
-                ActionCard(
-                    text = stringResource(id = R.string.edit_profile_button),
-                    icon = { Icon(Icons.Filled.Edit, contentDescription = "Edit Profile") },
-                    onClick = { showEditProfileDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.outlineVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+
                 ActionCard(
                     text = stringResource(id = R.string.update_password_button),
                     icon = {
@@ -169,18 +164,67 @@ fun ProfilePage(navController: NavHostController) {
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.primaryContainer
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
-                LanguageChangeDialog(
-                    showDialog = showLanguageDialog,
-                    onDismiss = { showLanguageDialog = false },
-                    onLanguageSelected = { language ->
-                        // Handle language selection here
-                        // For example, update the app's locale or UI elements as necessary
-                        showLanguageDialog = false
-                        // You might want to trigger some state change or call a function to apply the language change.
-                    }
+                Spacer(modifier = Modifier.height(16.dp))
+                ActionCard(
+                    text = stringResource(id = R.string.change_language), // Make sure this resource exists
+                    icon = { Icon(Icons.Default.Language, contentDescription = "Change Language") },
+                    onClick = { showLanguageDialog = true },
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
+
+                if (showLanguageDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showLanguageDialog = false },
+                        title = { Text(text = stringResource(id = R.string.select_language)) },
+                        text = {
+                            Column {
+                                val languages = listOf(
+                                    stringResource(id = R.string.language_english),
+                                    stringResource(id = R.string.language_russian),
+                                    stringResource(id = R.string.language_kazakh)
+                                )
+                                val languageCodes = listOf("en", "ru", "kk")
+                                languages.zip(languageCodes).forEach { (language, code) ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                tempSelectedLanguageCode = code
+                                                showLanguageDialog = false
+                                                // Apply the language change
+                                                LanguageManager.setLocale(context, code)
+                                                languageViewModel.setLanguage(context, code)
+                                                // This line requires your MainActivity to have a restartActivity method
+                                                (context as? MainActivity)?.restartActivity()
+                                            }
+                                            .padding(vertical = 8.dp)
+                                    ) {
+                                        Text(
+                                            text = language,
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = { },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showLanguageDialog = false }
+                            ) {
+                                Text(text = stringResource(id = android.R.string.cancel))
+                            }
+                        }
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 ActionCard(
@@ -190,7 +234,7 @@ fun ProfilePage(navController: NavHostController) {
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.errorContainer
+                    backgroundColor = MaterialTheme.colorScheme.background
                 )
                 if (showUpdatePasswordDialog) {
                     UpdatePasswordDialog(
@@ -249,26 +293,12 @@ fun ProfilePage(navController: NavHostController) {
 }
 
 @Composable
-fun AnimatedCard(content: @Composable () -> Unit, showContent: Boolean = true) {
-    var isVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(showContent) {
-        isVisible = showContent
-    }
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn() + slideInVertically(),
-        exit = fadeOut()
-    ) {
-        content()
-    }
-}
-
-@Composable
-fun UserInfoCard(profile: UserProfile) {
+fun UserInfoCard(profile: UserProfile, onEditClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onEditClick),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -619,35 +649,6 @@ fun UpdatePasswordDialog(
             }
         }
     )
-}
-
-@Composable
-fun LanguageChangeDialog(
-    showDialog: Boolean,
-    onDismiss: () -> Unit,
-    onLanguageSelected: (String) -> Unit
-) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(stringResource(id = R.string.choose_language_title)) },
-            text = {
-                Column {
-                    listOf("English", "Russian", "Kazakh").forEach { language ->
-                        TextButton(onClick = { onLanguageSelected(language) }) {
-                            Text(language)
-                        }
-                    }
-                }
-            },
-            confirmButton = {},
-            dismissButton = {
-                Button(onClick = onDismiss) {
-                    Text(stringResource(id = R.string.cancel_button))
-                }
-            }
-        )
-    }
 }
 
 @Composable

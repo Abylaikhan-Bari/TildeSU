@@ -134,5 +134,6 @@
     <string name="no_translation_found">Аудармасы табылмады</string>
     <string name="source_language_label">Осы тілден аудару</string>
     <string name="target_language_label">Осы тілге аудару</string>
+    <string name="change_language">Тілді өзгерту</string>
 
 </resources>
