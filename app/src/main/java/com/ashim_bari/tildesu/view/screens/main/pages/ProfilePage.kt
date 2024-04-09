@@ -687,35 +687,6 @@ fun UpdatePasswordDialog(
     )
 }
 
-//@Composable
-//fun LanguageChangeDialog(
-//    showDialog: Boolean,
-//    onDismiss: () -> Unit,
-//    onLanguageSelected: (String) -> Unit
-//) {
-//    if (showDialog) {
-//        AlertDialog(
-//            onDismissRequest = onDismiss,
-//            title = { Text(stringResource(id = R.string.choose_language_title)) },
-//            text = {
-//                Column {
-//                    listOf("English", "Russian", "Kazakh").forEach { language ->
-//                        TextButton(onClick = { onLanguageSelected(language) }) {
-//                            Text(language)
-//                        }
-//                    }
-//                }
-//            },
-//            confirmButton = {},
-//            dismissButton = {
-//                Button(onClick = onDismiss) {
-//                    Text(stringResource(id = R.string.cancel_button))
-//                }
-//            }
-//        )
-//    }
-//}
-
 @Composable
 fun ProfilePicture(imageUrl: String?, onClick: () -> Unit) {
     Card(
