@@ -41,7 +41,7 @@ fun LessonsScreen(navController: NavHostController, level: String) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text(text = level, color = Color.White) },
+                title = { Text(text = "Lessons for $level", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -63,7 +63,6 @@ fun LessonsScreen(navController: NavHostController, level: String) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // The rest of your code goes here
             Spacer(modifier = Modifier.height(16.dp)) // Optional: You might not need this spacer
 
             // Button for navigating to the exercise selection screen

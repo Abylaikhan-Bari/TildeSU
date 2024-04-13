@@ -97,8 +97,8 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             )
         ) { backStackEntry ->
             val level = backStackEntry.arguments?.getString("level") ?: "A1"
-            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "1"
-            LevelLessons(level = level, lessonId = lessonId)
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "Lesson 1"
+            LevelLessons(navController, level, lessonId)
         }
         composable(
             route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,
