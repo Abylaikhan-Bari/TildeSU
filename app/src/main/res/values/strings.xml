@@ -135,5 +135,8 @@
     <string name="source_language_label">Source language</string>
     <string name="target_language_label">Target language</string>
     <string name="change_language">Change language</string>
-
+    <string name="lessons_for_level">Lessons for %1$s</string>
+    <string name="exercise_selection">Exercise Selection</string>
+    <string name="back">Back</string>
+    <string name="lesson">Lesson</string>
 </resources>

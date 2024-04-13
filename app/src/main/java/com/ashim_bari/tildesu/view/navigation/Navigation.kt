@@ -15,6 +15,8 @@ import com.ashim_bari.tildesu.view.screens.TrueFalseSuccessScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
+import com.ashim_bari.tildesu.view.screens.lessons.LessonsScreen
+import com.ashim_bari.tildesu.view.screens.lessons.LevelLessons
 import com.ashim_bari.tildesu.view.screens.main.MainScreen
 import com.ashim_bari.tildesu.viewmodel.authentication.AuthenticationViewModel
 
@@ -29,7 +31,8 @@ class Navigation {
         const val FAILURE = "failure"
         const val TRUE_FALSE_SUCCESS = "trueFalseSuccess"
         const val TRUE_FALSE_FAILURE = "trueFalseFailure"
-
+        const val LESSONS_ROUTE = "lessons/{level}"
+        const val LEVEL_LESSONS_ROUTE = "levelLessons/{level}/{lessonId}"
     }
 }
 
@@ -78,6 +81,24 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
                     popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }
                 }
             }
+        }
+        composable(
+            route = Navigation.LESSONS_ROUTE,
+            arguments = listOf(navArgument("level") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level") ?: "A1"
+            LessonsScreen(navController = navController, level = level)
+        }
+        composable(
+            route = Navigation.LEVEL_LESSONS_ROUTE,
+            arguments = listOf(
+                navArgument("level") { type = NavType.StringType },
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val level = backStackEntry.arguments?.getString("level") ?: "A1"
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "Lesson 1"
+            LevelLessons(navController, level, lessonId)
         }
         composable(
             route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,

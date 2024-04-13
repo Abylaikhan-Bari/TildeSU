@@ -144,4 +144,8 @@
     <string name="source_language_label">Перевести с этого языка</string>
     <string name="target_language_label">На этот язык</string>
     <string name="change_language">Сменить язык</string>
+    <string name="lessons_for_level">Уроки для уровня %1$s</string>
+    <string name="exercise_selection">Выбор упражнения</string>
+    <string name="back">Назад</string>
+    <string name="lesson">Урок</string>
 </resources>

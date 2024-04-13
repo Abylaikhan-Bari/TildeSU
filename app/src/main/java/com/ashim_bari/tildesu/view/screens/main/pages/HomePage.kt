@@ -111,7 +111,7 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
             Card(
                 onClick = {
                     // Navigate using the level as a parameter to find the correct route
-                    navController.navigate("exerciseTypeSelection/$level")
+                    navController.navigate("lessons/$level")
                 },
                 modifier = Modifier
                     .size(width = 200.dp, height = 100.dp)
