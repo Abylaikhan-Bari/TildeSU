@@ -135,5 +135,8 @@
     <string name="source_language_label">Осы тілден аудару</string>
     <string name="target_language_label">Осы тілге аудару</string>
     <string name="change_language">Тілді өзгерту</string>
-
+    <string name="lessons_for_level">%1$s үшін сабақтар</string>
+    <string name="exercise_selection">Жаттығу таңдау</string>
+    <string name="back">Артқа</string>
+    <string name="lesson">Сабақ</string>
 </resources>

@@ -25,10 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.viewmodel.lessons.LessonsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,11 +39,11 @@ fun LessonsScreen(navController: NavHostController, level: String) {
     val lessonsViewModel: LessonsViewModel = hiltViewModel()
     lessonsViewModel.fetchLessonsForLevel(level)
     val lessons = lessonsViewModel.lessons.observeAsState(initial = emptyList())
-
+    val stringResource = LocalContext.current.resources
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text(text = "Lessons for $level", color = Color.White) },
+                title = { Text(text = stringResource.getString(R.string.lessons_for_level, level), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -66,9 +68,8 @@ fun LessonsScreen(navController: NavHostController, level: String) {
             Spacer(modifier = Modifier.height(16.dp)) // Optional: You might not need this spacer
 
             // Button for navigating to the exercise selection screen
-            LessonOptionCard("Exercise Selection", onClick = {
-                navController.navigate("exerciseTypeSelection/$level")
-            })
+            ExerciseSelectionCard(navController = navController, level = level)
+
 
             // Cards for specific lessons
             lessons.value.forEach { lesson ->
@@ -79,9 +80,31 @@ fun LessonsScreen(navController: NavHostController, level: String) {
         }
     }
 }
-
+@Composable
+fun ExerciseSelectionCard(navController: NavHostController, level: String) {
+    val stringResource = LocalContext.current.resources
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable { navController.navigate("exerciseTypeSelection/$level") },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Text(
+            text = stringResource.getString(R.string.exercise_selection),
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
 @Composable
 fun LessonOptionCard(optionName: String, onClick: () -> Unit) {
+    val stringResource = LocalContext.current.resources
     Card(
         modifier = Modifier
             .fillMaxWidth()
