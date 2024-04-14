@@ -28,6 +28,7 @@ import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.navigation.NavigationGraph
 import com.ashim_bari.tildesu.view.ui.theme.TildeSUTheme
 import com.ashim_bari.tildesu.viewmodel.language.LanguageViewModel
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.Firebase
 import com.google.firebase.appcheck.appCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
         scheduleNotification()
         // Apply language change here or determine the initial screen based on some condition
         applyLanguageChange()
+        val API_KEY = "AIzaSyDRjVtjXHxR1WlDuxSvf0PD8lQ2_pH-nm4"
         val initialScreen = determineInitialScreen()
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
@@ -61,6 +63,12 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            val generativeModel = GenerativeModel(
+                // For text-only input, use the gemini-pro model
+                modelName = "gemini-pro",
+                // Access your API key as a Build Configuration variable (see "Set up your API key" above)
+                apiKey = API_KEY
+            )
         }
     }
 
