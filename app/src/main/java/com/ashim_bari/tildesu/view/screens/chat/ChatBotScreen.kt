@@ -3,7 +3,6 @@ package com.ashim_bari.tildesu.view.screens.chat
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,19 +31,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.Green
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
@@ -208,7 +205,7 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Green)
+                .background(Gray)
                 .padding(16.dp),
             text = response,
             fontSize = 17.sp,
@@ -219,20 +216,20 @@ fun ModelChatItem(response: String) {
 }
 
 @Composable
-private fun getBitmap(context: Context, uri: Uri?): Bitmap? {
-    var bitmap: Bitmap? by remember { mutableStateOf(null) }
+fun getBitmap(context: Context, uri: Uri?): Bitmap? {
+    // Make sure you have the necessary permissions before loading the bitmap
+    // This method assumes that you have permission to read the provided Uri
+    uri?.let {
+        val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
+            model = ImageRequest.Builder(context)
+                .data(it)
+                .size(Size.ORIGINAL)
+                .build()
+        ).state
 
-    // Assuming this is your way to asynchronously load a bitmap from a Uri:
-    val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(context)
-            .data(uri)
-            .size(Size.ORIGINAL)
-            .build()
-    ).state
-
-    if (imageState is AsyncImagePainter.State.Success) {
-        bitmap = (imageState.result.drawable as BitmapDrawable).bitmap
+        if (imageState is AsyncImagePainter.State.Success) {
+            return imageState.result.drawable.toBitmap()
+        }
     }
-
-    return bitmap
+    return null
 }
