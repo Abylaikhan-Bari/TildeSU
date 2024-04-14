@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -77,12 +78,12 @@ fun LessonsScreen(navController: NavHostController, level: String) {
                 }
             ) {
                 Tab(
-                    text = { Text("Lessons") },
+                    text = { Text(stringResource(id = R.string.lesson),) },
                     selected = selectedTabIndex == 0,
                     onClick = { setSelectedTabIndex(0) }
                 )
                 Tab(
-                    text = { Text("Exercise Type Selection") },
+                    text = { Text(stringResource(id = R.string.exercise_selection),) },
                     selected = selectedTabIndex == 1,
                     onClick = { setSelectedTabIndex(1) }
                 )
