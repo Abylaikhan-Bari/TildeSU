@@ -149,4 +149,5 @@
     <string name="back">Назад</string>
     <string name="lesson">Урок</string>
     <string name="chat">Чат</string>
+    <string name="type_prompt">Введите запрос</string>
 </resources>

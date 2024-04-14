@@ -42,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +56,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.view.ui.theme.Chat
 import com.ashim_bari.tildesu.viewmodel.chat.ChatViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -171,7 +171,7 @@ fun ChatBotScreen(navController: NavHostController) {
                         chatViewModel.onEvent(ChatUiEvent.UpdatePrompt(it))
                     },
                     placeholder = {
-                        Text(text = "Type a prompt")
+                        Text(text = stringResource(id = R.string.type_prompt))
                     }
                 )
 
@@ -238,7 +238,7 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Gray)
+                .background(Chat)
                 .padding(16.dp),
             text = response,
             fontSize = 17.sp,
@@ -250,8 +250,6 @@ fun ModelChatItem(response: String) {
 
 @Composable
 fun getBitmap(context: Context, uri: Uri?): Bitmap? {
-    // Make sure you have the necessary permissions before loading the bitmap
-    // This method assumes that you have permission to read the provided Uri
     uri?.let {
         val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
             model = ImageRequest.Builder(context)

@@ -140,4 +140,5 @@
     <string name="back">Артқа</string>
     <string name="lesson">Сабақ</string>
     <string name="chat">Чат</string>
+    <string name="type_prompt">Сұрау енгізіңіз</string>
 </resources>
