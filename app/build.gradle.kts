@@ -67,6 +67,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.media3:media3-common:1.2.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    // adding the dependency for the Google AI client SDK for Android
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+
     //Room database
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
