@@ -56,6 +56,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.view.ui.theme.Chat
 import com.ashim_bari.tildesu.viewmodel.chat.ChatViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -237,7 +238,7 @@ fun ModelChatItem(response: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.background)
+                .background(Chat)
                 .padding(16.dp),
             text = response,
             fontSize = 17.sp,
