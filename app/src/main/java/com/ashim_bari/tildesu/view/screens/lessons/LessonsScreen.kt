@@ -3,10 +3,8 @@ package com.ashim_bari.tildesu.view.screens.lessons
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,10 +17,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallTopAppBar
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ashim_bari.tildesu.R
+import com.ashim_bari.tildesu.model.lesson.Lesson
+import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.viewmodel.lessons.LessonsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,21 +46,18 @@ fun LessonsScreen(navController: NavHostController, level: String) {
     lessonsViewModel.fetchLessonsForLevel(level)
     val lessons = lessonsViewModel.lessons.observeAsState(initial = emptyList())
     val stringResource = LocalContext.current.resources
+    val (selectedTabIndex, setSelectedTabIndex) = remember { mutableStateOf(0) }
+
     Scaffold(
         topBar = {
             SmallTopAppBar(
                 title = { Text(text = stringResource.getString(R.string.lessons_for_level, level), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         }
     ) { paddingValues ->
@@ -65,19 +68,41 @@ fun LessonsScreen(navController: NavHostController, level: String) {
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp)) // Optional: You might not need this spacer
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary,
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]))
+                }
+            ) {
+                Tab(
+                    text = { Text("Lessons") },
+                    selected = selectedTabIndex == 0,
+                    onClick = { setSelectedTabIndex(0) }
+                )
+                Tab(
+                    text = { Text("Exercise Type Selection") },
+                    selected = selectedTabIndex == 1,
+                    onClick = { setSelectedTabIndex(1) }
+                )
+            }
 
-            // Button for navigating to the exercise selection screen
-            ExerciseSelectionCard(navController = navController, level = level)
-
-
-            // Cards for specific lessons
-            lessons.value.forEach { lesson ->
-                LessonOptionCard(lesson.title, onClick = {
-                    navController.navigate("levelLessons/$level/${lesson.id}")
-                })
+            if (selectedTabIndex == 0) {
+                LessonsContent(lessons = lessons.value, level = level, navController = navController)
+            } else if (selectedTabIndex == 1) {
+                ExerciseTypeSelectionScreen(navController = navController, level = level)
             }
         }
+    }
+}
+
+@Composable
+fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
+    lessons.forEach { lesson ->
+        LessonOptionCard(lesson.title, onClick = {
+            navController.navigate("levelLessons/$level/${lesson.id}")
+        })
     }
 }
 @Composable
