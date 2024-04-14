@@ -139,4 +139,5 @@
     <string name="exercise_selection">Exercise Selection</string>
     <string name="back">Back</string>
     <string name="lesson">Lesson</string>
+    <string name="chat">Chat</string>
 </resources>

@@ -9,14 +9,8 @@ import android.os.VibratorManager
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
@@ -28,14 +22,17 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,7 +46,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -78,7 +74,7 @@ fun MainScreen(navController: NavHostController) {
     var showExitConfirmation by rememberSaveable { mutableStateOf(false) }
     val activity = LocalContext.current as? ComponentActivity
     val context = LocalContext.current
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
@@ -132,6 +128,9 @@ fun MainScreen(navController: NavHostController) {
                 scope.launch { drawerState.close() }
             })
         },
+        // Optional: Adjust the scrim color for a better UX when the drawer is open
+        scrimColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f),
+        modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
             topBar = {
@@ -211,7 +210,10 @@ fun MainScreen(navController: NavHostController) {
                     }
                 )
             }
-            LazyColumn(contentPadding = innerPadding) {
+            LazyColumn(
+                contentPadding = innerPadding,
+                modifier = Modifier.fillMaxSize() // Fill the available space
+            ) {
                 item {
                     MainScreenContent(currentMainScreen, navController)
                 }
@@ -223,46 +225,35 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(top = 24.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .fillMaxWidth()
-    ) {
-        DrawerItem(
-            title = "Home",
-            icon = Icons.Default.Home,
+    ModalDrawerSheet {
+        Text(
+            stringResource(id = R.string.app_name),
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.headlineMedium // Adjust the text style to match the design
+        )
+        Divider()
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(id = R.string.bottom_nav_home)) },
+            selected = false,
             onClick = {
                 navController.navigate("main")
                 onDestinationClicked()
-            }
+            },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
         )
-        DrawerItem(
-            title = "Chat",
-            icon = Icons.Default.Chat,
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(id = R.string.chat)) },
+            selected = false,
             onClick = {
                 navController.navigate("chat_route")
                 onDestinationClicked()
-            }
+            },
+            icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") }
         )
+        // Add more items as needed
     }
 }
 
-
-@Composable
-fun DrawerItem(title: String, icon: ImageVector, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(imageVector = icon, contentDescription = null)
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = title)
-    }
-}
 
 @Composable
 fun MainScreenContent(
