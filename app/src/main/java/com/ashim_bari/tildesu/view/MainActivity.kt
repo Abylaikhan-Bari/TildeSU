@@ -37,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 //import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Initialize Firebase before setting the content view
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
         scheduleNotification()
         // Apply language change here or determine the initial screen based on some condition
         applyLanguageChange()
+        val API_KEY = "AIzaSyDRjVtjXHxR1WlDuxSvf0PD8lQ2_pH-nm4"
         val initialScreen = determineInitialScreen()
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
@@ -61,6 +63,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
         }
     }
 

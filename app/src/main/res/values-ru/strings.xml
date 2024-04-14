@@ -148,4 +148,5 @@
     <string name="exercise_selection">Выбор упражнения</string>
     <string name="back">Назад</string>
     <string name="lesson">Урок</string>
+    <string name="chat">Чат</string>
 </resources>
