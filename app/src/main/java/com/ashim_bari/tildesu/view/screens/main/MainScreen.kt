@@ -9,6 +9,7 @@ import android.os.VibratorManager
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -222,8 +223,12 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
-    Column(modifier = Modifier.padding(top = 24.dp)) {
-        // Your other drawer content goes here...
+    Column(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .fillMaxWidth()
+    ) {
         DrawerItem(
             title = "Home",
             icon = Icons.Default.Home,
@@ -242,6 +247,7 @@ fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
         )
     }
 }
+
 
 @Composable
 fun DrawerItem(title: String, icon: ImageVector, onClick: () -> Unit) {
