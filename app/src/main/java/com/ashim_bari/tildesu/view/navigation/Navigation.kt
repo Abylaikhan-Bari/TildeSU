@@ -13,6 +13,7 @@ import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseSuccessScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
+import com.ashim_bari.tildesu.view.screens.chat.ChatBotScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
 import com.ashim_bari.tildesu.view.screens.lessons.LessonsScreen
@@ -99,6 +100,9 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             val level = backStackEntry.arguments?.getString("level") ?: "A1"
             val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "Lesson 1"
             LevelLessons(navController, level, lessonId)
+        }
+        composable("chat_route") {
+            ChatBotScreen(navController)
         }
         composable(
             route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,
