@@ -13,9 +13,10 @@ import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseSuccessScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
-import com.ashim_bari.tildesu.view.screens.chat.ChatBotScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
+import com.ashim_bari.tildesu.view.screens.gemini.GeminiScreen
+import com.ashim_bari.tildesu.view.screens.gpt.GptScreen
 import com.ashim_bari.tildesu.view.screens.lessons.LessonsScreen
 import com.ashim_bari.tildesu.view.screens.lessons.LevelLessons
 import com.ashim_bari.tildesu.view.screens.main.MainScreen
@@ -101,8 +102,11 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
             val lessonId = backStackEntry.arguments?.getString("lessonId") ?: "Lesson 1"
             LevelLessons(navController, level, lessonId)
         }
-        composable("chat_route") {
-            ChatBotScreen(navController)
+        composable("gemini_route") {
+            GeminiScreen(navController)
+        }
+        composable("gpt_route") {
+            GptScreen(navController)
         }
         composable(
             route = Navigation.EXERCISE_TYPE_SELECTION_ROUTE,

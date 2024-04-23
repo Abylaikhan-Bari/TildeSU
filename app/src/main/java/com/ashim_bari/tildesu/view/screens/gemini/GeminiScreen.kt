@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.view.screens.chat
+package com.ashim_bari.tildesu.view.screens.gemini
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -58,7 +58,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.ui.theme.Chat
-import com.ashim_bari.tildesu.viewmodel.chat.ChatViewModel
+import com.ashim_bari.tildesu.viewmodel.gemini.GeminiViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -68,8 +68,8 @@ import kotlinx.coroutines.flow.update
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ChatBotScreen(navController: NavHostController) {
-    val chatViewModel = viewModel<ChatViewModel>()
+fun GeminiScreen(navController: NavHostController) {
+    val chatViewModel = viewModel<GeminiViewModel>()
     val chatState = chatViewModel.chatState.collectAsState().value
 
     val uriState = remember { MutableStateFlow<Uri?>(null) }
@@ -89,7 +89,7 @@ fun ChatBotScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name),
+                title = { Text(text = stringResource(id = R.string.gemini),
                     color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
@@ -169,7 +169,7 @@ fun ChatBotScreen(navController: NavHostController) {
                         .weight(1f),
                     value = chatState.prompt,
                     onValueChange = {
-                        chatViewModel.onEvent(ChatUiEvent.UpdatePrompt(it))
+                        chatViewModel.onEvent(GeminiUiEvent.UpdatePrompt(it))
                     },
                     placeholder = {
                         Text(text = stringResource(id = R.string.type_prompt))
@@ -182,7 +182,7 @@ fun ChatBotScreen(navController: NavHostController) {
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            chatViewModel.onEvent(ChatUiEvent.SendPrompt(chatState.prompt, bitmap))
+                            chatViewModel.onEvent(GeminiUiEvent.SendPrompt(chatState.prompt, bitmap))
                             uriState.update { null }
                         },
                     imageVector = Icons.Rounded.Send,

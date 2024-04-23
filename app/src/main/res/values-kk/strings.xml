@@ -139,6 +139,7 @@
     <string name="exercise_selection">Жаттығу таңдау</string>
     <string name="back">Артқа</string>
     <string name="lesson">Сабақ</string>
-    <string name="chat">Чат</string>
+    <string name="gemini">Gemini</string>
     <string name="type_prompt">Сұрау енгізіңіз</string>
+    <string name="gpt">GPT</string>
 </resources>
