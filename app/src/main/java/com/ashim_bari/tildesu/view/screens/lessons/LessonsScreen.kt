@@ -1,7 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.lessons
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,17 +15,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -39,16 +37,20 @@ import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.lesson.Lesson
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.viewmodel.lessons.LessonsViewModel
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
 @Composable
 fun LessonsScreen(navController: NavHostController, level: String) {
     val lessonsViewModel: LessonsViewModel = hiltViewModel()
     lessonsViewModel.fetchLessonsForLevel(level)
     val lessons = lessonsViewModel.lessons.observeAsState(initial = emptyList())
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()  // Coroutine scope for launching suspend functions
     val stringResource = LocalContext.current.resources
-    val (selectedTabIndex, setSelectedTabIndex) = remember { mutableStateOf(0) }
-
     Scaffold(
         topBar = {
             SmallTopAppBar(
@@ -62,37 +64,49 @@ fun LessonsScreen(navController: NavHostController, level: String) {
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TabRow(
-                selectedTabIndex = selectedTabIndex,
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            ScrollableTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                edgePadding = 0.dp,
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.primary,
                 indicator = { tabPositions ->
-                    TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]))
+                    TabRowDefaults.Indicator(
+                        Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                        height = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             ) {
                 Tab(
                     text = { Text(stringResource(id = R.string.lesson),) },
-                    selected = selectedTabIndex == 0,
-                    onClick = { setSelectedTabIndex(0) }
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(0)
+                        }
+                    }
                 )
                 Tab(
                     text = { Text(stringResource(id = R.string.exercise_selection),) },
-                    selected = selectedTabIndex == 1,
-                    onClick = { setSelectedTabIndex(1) }
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.scrollToPage(1)
+                        }
+                    }
                 )
             }
 
-            if (selectedTabIndex == 0) {
-                LessonsContent(lessons = lessons.value, level = level, navController = navController)
-            } else if (selectedTabIndex == 1) {
-                ExerciseTypeSelectionScreen(navController = navController, level = level)
+            HorizontalPager(
+                count = 2,
+                state = pagerState,
+                modifier = Modifier.weight(1f)
+            ) { page ->
+                when (page) {
+                    0 -> LessonsContent(lessons = lessons.value, level = level, navController = navController)
+                    1 -> ExerciseTypeSelectionScreen(navController = navController, level = level)
+                }
             }
         }
     }
@@ -100,34 +114,15 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    lessons.forEach { lesson ->
-        LessonOptionCard(lesson.title, onClick = {
-            navController.navigate("levelLessons/$level/${lesson.id}")
-        })
+    Column {
+        lessons.forEach { lesson ->
+            LessonOptionCard(lesson.title) {
+                navController.navigate("levelLessons/$level/${lesson.id}")
+            }
+        }
     }
 }
-@Composable
-fun ExerciseSelectionCard(navController: NavHostController, level: String) {
-    val stringResource = LocalContext.current.resources
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable { navController.navigate("exerciseTypeSelection/$level") },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Text(
-            text = stringResource.getString(R.string.exercise_selection),
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
+
 @Composable
 fun LessonOptionCard(optionName: String, onClick: () -> Unit) {
     val stringResource = LocalContext.current.resources
