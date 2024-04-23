@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
@@ -215,16 +216,18 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
             )
         }
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(16.dp),
-            text = prompt,
-            fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        SelectionContainer {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp),
+                text = prompt,
+                fontSize = 17.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
 
     }
 }
@@ -234,16 +237,18 @@ fun ModelChatItem(response: String) {
     Column(
         modifier = Modifier.padding(end = 100.dp, bottom = 16.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Chat)
-                .padding(16.dp),
-            text = response,
-            fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        SelectionContainer {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Chat)
+                    .padding(16.dp),
+                text = response,
+                fontSize = 17.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
 
     }
 }
