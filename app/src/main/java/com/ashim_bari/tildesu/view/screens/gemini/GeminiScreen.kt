@@ -1,4 +1,4 @@
-package com.ashim_bari.tildesu.view.screens.chat
+package com.ashim_bari.tildesu.view.screens.gemini
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
@@ -57,18 +58,16 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.view.ui.theme.Chat
-import com.ashim_bari.tildesu.viewmodel.chat.ChatViewModel
+import com.ashim_bari.tildesu.viewmodel.gemini.GeminiViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ChatBotScreen(navController: NavHostController) {
-    val chatViewModel = viewModel<ChatViewModel>()
+fun GeminiScreen(navController: NavHostController) {
+    val chatViewModel = viewModel<GeminiViewModel>()
     val chatState = chatViewModel.chatState.collectAsState().value
 
     val uriState = remember { MutableStateFlow<Uri?>(null) }
@@ -88,8 +87,12 @@ fun ChatBotScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name),
-                    color = Color.White) },
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.gemini),
+                        color = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -168,7 +171,7 @@ fun ChatBotScreen(navController: NavHostController) {
                         .weight(1f),
                     value = chatState.prompt,
                     onValueChange = {
-                        chatViewModel.onEvent(ChatUiEvent.UpdatePrompt(it))
+                        chatViewModel.onEvent(GeminiUiEvent.UpdatePrompt(it))
                     },
                     placeholder = {
                         Text(text = stringResource(id = R.string.type_prompt))
@@ -181,7 +184,12 @@ fun ChatBotScreen(navController: NavHostController) {
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            chatViewModel.onEvent(ChatUiEvent.SendPrompt(chatState.prompt, bitmap))
+                            chatViewModel.onEvent(
+                                GeminiUiEvent.SendPrompt(
+                                    chatState.prompt,
+                                    bitmap
+                                )
+                            )
                             uriState.update { null }
                         },
                     imageVector = Icons.Rounded.Send,
@@ -215,16 +223,18 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
             )
         }
 
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(16.dp),
-            text = prompt,
-            fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        SelectionContainer {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp),
+                text = prompt,
+                fontSize = 17.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
 
     }
 }
@@ -234,16 +244,18 @@ fun ModelChatItem(response: String) {
     Column(
         modifier = Modifier.padding(end = 100.dp, bottom = 16.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Chat)
-                .padding(16.dp),
-            text = response,
-            fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
+        SelectionContainer {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Chat)
+                    .padding(16.dp),
+                text = response,
+                fontSize = 17.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
 
     }
 }

@@ -1,24 +1,24 @@
-package com.ashim_bari.tildesu.viewmodel.chat
+package com.ashim_bari.tildesu.viewmodel.gemini
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ashim_bari.tildesu.model.chat.Chat
 import com.ashim_bari.tildesu.model.chat.ChatData
-import com.ashim_bari.tildesu.view.screens.chat.ChatUiEvent
+import com.ashim_bari.tildesu.view.screens.gemini.GeminiUiEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ChatViewModel : ViewModel() {
+class GeminiViewModel : ViewModel() {
 
-    private val _chatState = MutableStateFlow(ChatState())
+    private val _chatState = MutableStateFlow(GeminiState())
     val chatState = _chatState.asStateFlow()
 
-    fun onEvent(event: ChatUiEvent) {
+    fun onEvent(event: GeminiUiEvent) {
         when (event) {
-            is ChatUiEvent.SendPrompt -> {
+            is GeminiUiEvent.SendPrompt -> {
                 if (event.prompt.isNotEmpty()) {
                     addPrompt(event.prompt, event.bitmap)
 
@@ -30,7 +30,7 @@ class ChatViewModel : ViewModel() {
                 }
             }
 
-            is ChatUiEvent.UpdatePrompt -> {
+            is GeminiUiEvent.UpdatePrompt -> {
                 _chatState.update {
                     it.copy(prompt = event.newPrompt)
                 }

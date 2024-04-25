@@ -139,6 +139,7 @@
     <string name="exercise_selection">Exercise Selection</string>
     <string name="back">Back</string>
     <string name="lesson">Lesson</string>
-    <string name="chat">Chat</string>
+    <string name="gemini">Gemini</string>
     <string name="type_prompt">Type a prompt</string>
+    <string name="gpt">GPT</string>
 </resources>
