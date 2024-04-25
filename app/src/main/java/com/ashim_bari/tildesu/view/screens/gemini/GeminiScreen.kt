@@ -63,8 +63,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -89,8 +87,12 @@ fun GeminiScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.gemini),
-                    color = Color.White) },
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.gemini),
+                        color = Color.White
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
@@ -182,7 +184,12 @@ fun GeminiScreen(navController: NavHostController) {
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            chatViewModel.onEvent(GeminiUiEvent.SendPrompt(chatState.prompt, bitmap))
+                            chatViewModel.onEvent(
+                                GeminiUiEvent.SendPrompt(
+                                    chatState.prompt,
+                                    bitmap
+                                )
+                            )
                             uriState.update { null }
                         },
                     imageVector = Icons.Rounded.Send,

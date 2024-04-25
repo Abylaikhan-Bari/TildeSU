@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
-import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
@@ -251,16 +250,15 @@ fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
             },
             icon = { Icon(Icons.Default.Chat, contentDescription = "Gemini") }
         )
-        NavigationDrawerItem(
-            label = { Text(text = stringResource(id = R.string.gpt)) },
-            selected = false,
-            onClick = {
-                navController.navigate("gpt_route")
-                onDestinationClicked()
-            },
-            icon = { Icon(Icons.Default.Camera, contentDescription = "GPT") }
-        )
-        // Add more items as needed
+//        NavigationDrawerItem(
+//            label = { Text(text = stringResource(id = R.string.gpt)) },
+//            selected = false,
+//            onClick = {
+//                navController.navigate("gpt_route")
+//                onDestinationClicked()
+//            },
+//            icon = { Icon(Icons.Default.Camera, contentDescription = "GPT") }
+//        )
     }
 }
 

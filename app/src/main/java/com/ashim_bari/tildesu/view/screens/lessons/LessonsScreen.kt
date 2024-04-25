@@ -114,7 +114,7 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    Column {
+    Column (modifier = Modifier.fillMaxSize()){
         lessons.forEach { lesson ->
             LessonOptionCard(lesson.title) {
                 navController.navigate("levelLessons/$level/${lesson.id}")
