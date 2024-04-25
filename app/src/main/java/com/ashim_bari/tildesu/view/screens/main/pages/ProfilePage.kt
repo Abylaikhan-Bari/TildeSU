@@ -121,174 +121,185 @@ fun ProfilePage(navController: NavHostController) {
             }
         )
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(16.dp)
+    AnimatedVisibility(
+        visible = userProfile != null,
+        enter = fadeIn(),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                userProfile?.let { profile ->
-                    ProfilePicture(profileImageUrl) {
-                        launcher.launch("image/*")
-                    }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(16.dp)
+                ) {
                     Spacer(modifier = Modifier.height(16.dp))
-                    Row(modifier = Modifier.padding(top = 8.dp)) {
-                        Text(
-                            text = "${profile.name ?: " "} ${profile.surname ?: ""}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
+                    userProfile?.let { profile ->
+                        ProfilePicture(profileImageUrl) {
+                            launcher.launch("image/*")
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(modifier = Modifier.padding(top = 8.dp)) {
+                            Text(
+                                text = "${profile.name ?: " "} ${profile.surname ?: ""}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        UserInfoCard(profile = profile) {
+                            showEditProfileDialog = true // Open dialog on click
+                        }
                     }
+                    // Continuing inside the Column from above
                     Spacer(modifier = Modifier.height(16.dp))
-                    UserInfoCard(profile = profile) {
-                        showEditProfileDialog = true // Open dialog on click
-                    }
-                }
-                // Continuing inside the Column from above
-                Spacer(modifier = Modifier.height(16.dp))
 
-                ActionCard(
-                    text = stringResource(id = R.string.update_password_button),
-                    icon = {
-                        Icon(
-                            Icons.Outlined.ModeEdit,
-                            contentDescription = "Update Password"
-                        )
-                    },
-                    onClick = { showUpdatePasswordDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.background
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                ActionCard(
-                    text = stringResource(id = R.string.change_language), // Make sure this resource exists
-                    icon = { Icon(Icons.Default.Language, contentDescription = "Change Language") },
-                    onClick = { showLanguageDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.background
-                )
+                    ActionCard(
+                        text = stringResource(id = R.string.update_password_button),
+                        icon = {
+                            Icon(
+                                Icons.Outlined.ModeEdit,
+                                contentDescription = "Update Password"
+                            )
+                        },
+                        onClick = { showUpdatePasswordDialog = true },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.background
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ActionCard(
+                        text = stringResource(id = R.string.change_language), // Make sure this resource exists
+                        icon = {
+                            Icon(
+                                Icons.Default.Language,
+                                contentDescription = "Change Language"
+                            )
+                        },
+                        onClick = { showLanguageDialog = true },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.background
+                    )
 
-                if (showLanguageDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showLanguageDialog = false },
-                        title = { Text(text = stringResource(id = R.string.select_language)) },
-                        text = {
-                            Column {
-                                val languages = listOf(
-                                    stringResource(id = R.string.language_english),
-                                    stringResource(id = R.string.language_russian),
-                                    stringResource(id = R.string.language_kazakh)
-                                )
-                                val languageCodes = listOf("en", "ru", "kk")
-                                languages.zip(languageCodes).forEach { (language, code) ->
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                tempSelectedLanguageCode = code
-                                                showLanguageDialog = false
-                                                // Apply the language change
-                                                LanguageManager.setLocale(context, code)
-                                                languageViewModel.setLanguage(context, code)
-                                                // This line requires your MainActivity to have a restartActivity method
-                                                (context as? MainActivity)?.restartActivity()
-                                            }
-                                            .padding(vertical = 8.dp)
-                                    ) {
-                                        Text(
-                                            text = language,
-                                            modifier = Modifier.padding(start = 8.dp),
-                                            color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                        )
+                    if (showLanguageDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showLanguageDialog = false },
+                            title = { Text(text = stringResource(id = R.string.select_language)) },
+                            text = {
+                                Column {
+                                    val languages = listOf(
+                                        stringResource(id = R.string.language_english),
+                                        stringResource(id = R.string.language_russian),
+                                        stringResource(id = R.string.language_kazakh)
+                                    )
+                                    val languageCodes = listOf("en", "ru", "kk")
+                                    languages.zip(languageCodes).forEach { (language, code) ->
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    tempSelectedLanguageCode = code
+                                                    showLanguageDialog = false
+                                                    // Apply the language change
+                                                    LanguageManager.setLocale(context, code)
+                                                    languageViewModel.setLanguage(context, code)
+                                                    // This line requires your MainActivity to have a restartActivity method
+                                                    (context as? MainActivity)?.restartActivity()
+                                                }
+                                                .padding(vertical = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = language,
+                                                modifier = Modifier.padding(start = 8.dp),
+                                                color = if (tempSelectedLanguageCode == code) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                            )
+                                        }
                                     }
                                 }
+                            },
+                            confirmButton = { },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = { showLanguageDialog = false }
+                                ) {
+                                    Text(text = stringResource(id = android.R.string.cancel))
+                                }
                             }
-                        },
-                        confirmButton = { },
-                        dismissButton = {
-                            TextButton(
-                                onClick = { showLanguageDialog = false }
-                            ) {
-                                Text(text = stringResource(id = android.R.string.cancel))
-                            }
-                        }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                ActionCard(
-                    text = stringResource(id = R.string.log_out_language_button),
-                    icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
-                    onClick = { showLogoutDialog = true },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth(),
-                    backgroundColor = MaterialTheme.colorScheme.background
-                )
-                if (showUpdatePasswordDialog) {
-                    UpdatePasswordDialog(
-                        viewModel = viewModel,
-                        snackbarHostState = snackbarHostState, // Pass the snackbarHostState
-                        onClose = { showUpdatePasswordDialog = false },
-                        onPasswordUpdated = {
-                            passwordUpdatedSuccessfully = true
-                        }
-                    )
-                }
-                val updatePasswordSuccessfulMessage =
-                    stringResource(id = R.string.update_password_successful)
-                LaunchedEffect(passwordUpdatedSuccessfully) {
-                    if (passwordUpdatedSuccessfully) {
-                        snackbarHostState.showSnackbar(
-                            message = updatePasswordSuccessfulMessage,
-                            duration = SnackbarDuration.Short
                         )
-                        // Reset the flag to avoid showing the snackbar again unless another update occurs
-                        passwordUpdatedSuccessfully = false
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ActionCard(
+                        text = stringResource(id = R.string.log_out_language_button),
+                        icon = { Icon(Icons.Filled.ExitToApp, contentDescription = "Log Out") },
+                        onClick = { showLogoutDialog = true },
+                        modifier = Modifier
+                            .height(56.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = MaterialTheme.colorScheme.background
+                    )
+                    if (showUpdatePasswordDialog) {
+                        UpdatePasswordDialog(
+                            viewModel = viewModel,
+                            snackbarHostState = snackbarHostState, // Pass the snackbarHostState
+                            onClose = { showUpdatePasswordDialog = false },
+                            onPasswordUpdated = {
+                                passwordUpdatedSuccessfully = true
+                            }
+                        )
+                    }
+                    val updatePasswordSuccessfulMessage =
+                        stringResource(id = R.string.update_password_successful)
+                    LaunchedEffect(passwordUpdatedSuccessfully) {
+                        if (passwordUpdatedSuccessfully) {
+                            snackbarHostState.showSnackbar(
+                                message = updatePasswordSuccessfulMessage,
+                                duration = SnackbarDuration.Short
+                            )
+                            // Reset the flag to avoid showing the snackbar again unless another update occurs
+                            passwordUpdatedSuccessfully = false
+                        }
+                    }
+                    if (showLogoutDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showLogoutDialog = false },
+                            title = { Text(stringResource(id = R.string.logout_dialog_title)) },
+                            text = { Text(stringResource(id = R.string.logout_dialog_content)) },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        viewModel.logout(navController)
+                                        showLogoutDialog = false
+                                    }
+                                ) {
+                                    Text(stringResource(id = R.string.log_out_language_button))
+                                }
+                            },
+                            dismissButton = {
+                                Button(
+                                    onClick = { showLogoutDialog = false }
+                                ) {
+                                    Text(stringResource(id = R.string.cancel_button))
+                                }
+                            }
+                        )
                     }
                 }
-                if (showLogoutDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showLogoutDialog = false },
-                        title = { Text(stringResource(id = R.string.logout_dialog_title)) },
-                        text = { Text(stringResource(id = R.string.logout_dialog_content)) },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    viewModel.logout(navController)
-                                    showLogoutDialog = false
-                                }
-                            ) {
-                                Text(stringResource(id = R.string.log_out_language_button))
-                            }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showLogoutDialog = false }
-                            ) {
-                                Text(stringResource(id = R.string.cancel_button))
-                            }
-                        }
-                    )
-                }
             }
+            // Correct placement of SnackbarHost within Box layout using 'align'
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
-        // Correct placement of SnackbarHost within Box layout using 'align'
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 

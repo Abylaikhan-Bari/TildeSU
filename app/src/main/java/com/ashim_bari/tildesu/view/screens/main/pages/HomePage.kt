@@ -87,11 +87,16 @@ fun HomePage(navController: NavHostController) {
 fun CardComponent(level: String, navController: NavHostController, index: Int) {
     var visible by rememberSaveable { mutableStateOf(false) }
     var animatedOnce by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(key1 = "init") {
-        delay(100L * index)
-        visible = true
-        animatedOnce = true
+
+    // LaunchedEffect to trigger the animation once when the page is first composed
+    LaunchedEffect(animatedOnce) {
+        if (!animatedOnce) {
+            delay(100L * index)
+            visible = true
+            animatedOnce = true
+        }
     }
+
     // Determine the string resource ID based on the level
     val levelResId = when (level) {
         "A1" -> R.string.level_a1
@@ -102,41 +107,17 @@ fun CardComponent(level: String, navController: NavHostController, index: Int) {
         "C2" -> R.string.level_c2
         else -> R.string.level_a1 // Default case or error handling
     }
-    if (animatedOnce) {
-        AnimatedVisibility(
-            visible = visible,
-            enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
-            exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center),
-        ) {
-            Card(
-                onClick = {
-                    // Navigate using the level as a parameter to find the correct route
-                    navController.navigate("lessons/$level")
-                },
-                modifier = Modifier
-                    .size(width = 200.dp, height = 100.dp)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = levelResId),
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Normal),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-        }
-    } else {
+
+    // AnimatedVisibility for animating the card entrance
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
+        exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center),
+    ) {
         Card(
             onClick = {
                 // Navigate using the level as a parameter to find the correct route
-                navController.navigate("exerciseTypeSelection/$level")
+                navController.navigate("lessons/$level")
             },
             modifier = Modifier
                 .size(width = 200.dp, height = 100.dp)
