@@ -9,6 +9,7 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,8 +40,7 @@ import java.util.Locale
 @Composable
 fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
     Surface(color = MaterialTheme.colorScheme.background) {
-        Column {
-            // Adding the top app bar
+        Column (modifier = Modifier.fillMaxSize()){
 //            SmallTopAppBar(
 //                title = { Text(text = level, color = Color.White) },
 //                navigationIcon = {
@@ -55,7 +55,7 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
 //                    containerColor = MaterialTheme.colorScheme.primary
 //                )
 //            )
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                 Text(
                     stringResource(id = R.string.select_exercise_type),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
@@ -64,7 +64,6 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
                 Spacer(modifier = Modifier.height(16.dp))
                 ExerciseType.values().forEachIndexed { index, exerciseType ->
                     AnimatedExerciseTypeCard(index, exerciseType) {
-                        // Ensure your navigation route here matches the NavGraph definition
                         navController.navigate(
                             "specificExercise/$level/${
                                 exerciseType.name.lowercase(
