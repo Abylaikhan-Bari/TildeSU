@@ -8,10 +8,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -56,12 +54,12 @@ fun ExerciseTypeSelectionScreen(navController: NavController, level: String) {
 //                )
 //            )
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                Text(
-                    stringResource(id = R.string.select_exercise_type),
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+//                Text(
+//                    stringResource(id = R.string.select_exercise_type),
+//                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+//                    color = MaterialTheme.colorScheme.onBackground
+//                )
+//                Spacer(modifier = Modifier.height(16.dp))
                 ExerciseType.values().forEachIndexed { index, exerciseType ->
                     AnimatedExerciseTypeCard(index, exerciseType) {
                         navController.navigate(

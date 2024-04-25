@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -83,8 +84,11 @@ fun LessonsScreen(navController: NavHostController, level: String) {
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.primary,
                 indicator = { tabPositions ->
+                    val indicatorWidth = tabPositions[pagerState.currentPage].width
                     TabRowDefaults.Indicator(
-                        Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                        modifier = Modifier.fillMaxWidth(fraction = 1f)
+                            .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            .width(indicatorWidth),
                         height = 3.dp,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -126,7 +130,7 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         lessons.forEachIndexed { index, lesson ->
             AnimatedLessonOptionCard(index, lesson.title) {
                 navController.navigate("levelLessons/$level/${lesson.id}")
@@ -174,3 +178,4 @@ fun LessonOptionCard(optionName: String, onClick: () -> Unit) {
         )
     }
 }
+
