@@ -1,5 +1,11 @@
 package com.ashim_bari.tildesu.view.screens.lessons
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,8 +29,13 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,6 +51,7 @@ import com.ashim_bari.tildesu.viewmodel.lessons.LessonsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
@@ -114,12 +126,29 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    Column (modifier = Modifier.fillMaxSize()){
-        lessons.forEach { lesson ->
-            LessonOptionCard(lesson.title) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        lessons.forEachIndexed { index, lesson ->
+            AnimatedLessonOptionCard(index, lesson.title) {
                 navController.navigate("levelLessons/$level/${lesson.id}")
             }
         }
+    }
+}
+
+@Composable
+fun AnimatedLessonOptionCard(index: Int, optionName: String, onClick: () -> Unit) {
+    var visible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(key1 = "animation_$optionName") { // Unique key for each card
+        delay(100L * index)
+        visible = true
+    }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(300)) + expandIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)) + shrinkOut(animationSpec = tween(300))
+    ) {
+        LessonOptionCard(optionName, onClick)
     }
 }
 
