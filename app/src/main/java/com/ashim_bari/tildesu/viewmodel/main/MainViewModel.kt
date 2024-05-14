@@ -30,9 +30,12 @@ class MainViewModel @Inject constructor(
     val progressData: LiveData<Map<String, UserRepository.UserProgress>> = _progressData
     private val _userProfile = MutableLiveData<UserProfile?>()
     val userProfile: LiveData<UserProfile?> = _userProfile
-
+    private val _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
     init {
         checkUserLoggedIn()
+        loadUserProgress()
+        fetchProfileImageUrl()
     }
 
     private fun checkUserLoggedIn() {
@@ -75,9 +78,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    init {
-        loadUserProgress()
-    }
 
     fun loadUserProgress() {
         viewModelScope.launch {
@@ -87,10 +87,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    init {
-        fetchProfileImageUrl()
+    fun refreshUserProgress() {
+        _isRefreshing.value = true
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+            val progress = userRepository.getUserProgress(userId)
+            _progressData.value = progress
+            _isRefreshing.value = false
+        }
     }
-
     private fun fetchProfileImageUrl() {
         viewModelScope.launch {
             try {
