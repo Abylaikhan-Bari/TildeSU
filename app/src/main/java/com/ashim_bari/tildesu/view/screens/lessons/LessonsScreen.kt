@@ -149,7 +149,6 @@ fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostC
     }
 }
 
-
 @Composable
 fun AnimatedLessonOptionCard(index: Int, optionName: String, onClick: () -> Unit) {
     var visible by rememberSaveable { mutableStateOf(false) }
