@@ -71,9 +71,8 @@ fun GrammarTipCard(title: String, content: String) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = if (expanded) 8.dp else 0.dp),
-                maxLines = if (expanded) Int.MAX_VALUE else 1,
-                fontWeight = if (expanded) FontWeight.Bold else FontWeight.Normal
+                modifier = Modifier.padding(bottom = 8.dp),
+                fontWeight = FontWeight.Bold
             )
             AnimatedVisibility(
                 visible = expanded,
@@ -84,28 +83,10 @@ fun GrammarTipCard(title: String, content: String) {
                     animationSpec = tween(durationMillis = 300)
                 )
             ) {
-                Column {
-                    Text(
-                        text = content,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.read_less),
-                        modifier = Modifier.align(Alignment.End).padding(top = 8.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-            if (!expanded) {
                 Text(
-                    text = stringResource(id = R.string.read_more),
-                    modifier = Modifier.align(Alignment.End).padding(top = 8.dp),
+                    text = content,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
         }
