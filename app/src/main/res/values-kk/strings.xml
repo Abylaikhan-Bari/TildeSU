@@ -142,4 +142,5 @@
     <string name="gemini">Gemini</string>
     <string name="type_prompt">Сұрау енгізіңіз</string>
     <string name="gpt">GPT</string>
+    <string name="no_lessons_available">Сабақтар табылмады</string>
 </resources>

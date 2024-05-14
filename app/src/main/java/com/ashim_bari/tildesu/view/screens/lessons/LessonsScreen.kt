@@ -130,14 +130,25 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        lessons.forEachIndexed { index, lesson ->
-            AnimatedLessonOptionCard(index, lesson.title) {
-                navController.navigate("levelLessons/$level/${lesson.id}")
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+        if (lessons.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.no_lessons_available),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(16.dp)
+            )
+        } else {
+            lessons.forEachIndexed { index, lesson ->
+                AnimatedLessonOptionCard(index, lesson.title) {
+                    navController.navigate("levelLessons/$level/${lesson.id}")
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun AnimatedLessonOptionCard(index: Int, optionName: String, onClick: () -> Unit) {
