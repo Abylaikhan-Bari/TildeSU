@@ -143,4 +143,5 @@
     <string name="type_prompt">Type a prompt</string>
     <string name="gpt">GPT</string>
     <string name="no_lessons_available">No lessons available</string>
+    <string name="no_tips_available">No tips available</string>
 </resources>

@@ -143,4 +143,5 @@
     <string name="type_prompt">Сұрау енгізіңіз</string>
     <string name="gpt">GPT</string>
     <string name="no_lessons_available">Сабақтар табылмады</string>
+    <string name="no_tips_available">Пайдалы кеңестер табылмады</string>
 </resources>

@@ -152,4 +152,5 @@
     <string name="type_prompt">Введите запрос</string>
     <string name="gpt">GPT</string>
     <string name="no_lessons_available">Занятии не найдено</string>
+    <string name="no_tips_available">Полезной информации не найдено</string>
 </resources>

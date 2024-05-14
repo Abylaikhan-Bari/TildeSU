@@ -1,7 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.main
 
 import DashboardPage
-import UsefulPage
 import android.content.Context
 import android.os.Build
 import android.os.Vibrator
@@ -60,6 +59,7 @@ import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.main.pages.HomePage
 import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
 import com.ashim_bari.tildesu.view.screens.main.pages.TranslatePage
+import com.ashim_bari.tildesu.view.screens.main.pages.UsefulPage
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -282,7 +282,7 @@ fun MainScreenContent(
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage()
-        MainScreens.Useful -> UsefulPage(navController) {}
+        MainScreens.Useful -> UsefulPage(navController)
         MainScreens.Profile -> ProfilePage(navController)
         MainScreens.Translate -> TranslatePage(navController)
     }
