@@ -1,7 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.gemini
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -38,7 +37,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +62,7 @@ import com.ashim_bari.tildesu.view.ui.theme.Chat
 import com.ashim_bari.tildesu.viewmodel.gemini.GeminiViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -73,7 +74,8 @@ fun GeminiScreen(navController: NavHostController) {
     val uriState = remember { MutableStateFlow<Uri?>(null) }
     val context = LocalContext.current
 
-    // Change from GetContent to PickVisualMedia for consistency with previous code
+    val coroutineScope = rememberCoroutineScope()
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -82,7 +84,21 @@ fun GeminiScreen(navController: NavHostController) {
         }
     }
 
-    val bitmap: Bitmap? = getBitmap(context, uriState.value)
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+
+    // Ensure the bitmap updates instantly when a new image is selected
+    uriState.value?.let { uri ->
+        val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
+            model = ImageRequest.Builder(context)
+                .data(uri)
+                .size(Size.ORIGINAL)
+                .build()
+        ).state
+
+        if (imageState is AsyncImagePainter.State.Success) {
+            bitmapState.value = imageState.result.drawable.toBitmap()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -97,7 +113,6 @@ fun GeminiScreen(navController: NavHostController) {
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
-                    // This should only be shown if there is a destination to pop back to
                     if (navController.previousBackStackEntry != null) {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -120,7 +135,7 @@ fun GeminiScreen(navController: NavHostController) {
                     .padding(horizontal = 8.dp),
                 reverseLayout = true
             ) {
-                itemsIndexed(chatState.chatList) { index, chat ->
+                itemsIndexed(chatState.chatList) { _, chat ->
                     if (chat.isFromUser) {
                         UserChatItem(
                             prompt = chat.prompt, bitmap = chat.bitmap
@@ -137,9 +152,8 @@ fun GeminiScreen(navController: NavHostController) {
                     .padding(bottom = 16.dp, start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Column {
-                    bitmap?.let {
+                    bitmapState.value?.let {
                         Image(
                             modifier = Modifier
                                 .size(40.dp)
@@ -155,7 +169,6 @@ fun GeminiScreen(navController: NavHostController) {
                         modifier = Modifier
                             .size(40.dp)
                             .clickable {
-                                // Use imagePickerLauncher here
                                 imagePickerLauncher.launch("image/*")
                             },
                         imageVector = Icons.Rounded.AddPhotoAlternate,
@@ -184,24 +197,24 @@ fun GeminiScreen(navController: NavHostController) {
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            chatViewModel.onEvent(
-                                GeminiUiEvent.SendPrompt(
-                                    chatState.prompt,
-                                    bitmap
+                            coroutineScope.launch {
+                                chatViewModel.onEvent(
+                                    GeminiUiEvent.SendPrompt(
+                                        chatState.prompt,
+                                        bitmapState.value
+                                    )
                                 )
-                            )
-                            uriState.update { null }
+                                uriState.update { null }
+                                bitmapState.value = null
+                            }
                         },
                     imageVector = Icons.Rounded.Send,
                     contentDescription = "Send prompt",
                     tint = MaterialTheme.colorScheme.primary
                 )
-
             }
-
         }
     }
-
 }
 
 @Composable
@@ -209,7 +222,6 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
     Column(
         modifier = Modifier.padding(start = 100.dp, bottom = 16.dp)
     ) {
-
         bitmap?.let {
             Image(
                 modifier = Modifier
@@ -235,7 +247,6 @@ fun UserChatItem(prompt: String, bitmap: Bitmap?) {
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
-
     }
 }
 
@@ -256,23 +267,5 @@ fun ModelChatItem(response: String) {
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
-
     }
-}
-
-@Composable
-fun getBitmap(context: Context, uri: Uri?): Bitmap? {
-    uri?.let {
-        val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
-            model = ImageRequest.Builder(context)
-                .data(it)
-                .size(Size.ORIGINAL)
-                .build()
-        ).state
-
-        if (imageState is AsyncImagePainter.State.Success) {
-            return imageState.result.drawable.toBitmap()
-        }
-    }
-    return null
 }
