@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,6 +7,10 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
+val localProperties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
+val apiKey = localProperties.getProperty("apiKey", "NO_API_KEY_FOUND")
 
 android {
     namespace = "com.ashim_bari.tildesu"
@@ -21,6 +27,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -41,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
