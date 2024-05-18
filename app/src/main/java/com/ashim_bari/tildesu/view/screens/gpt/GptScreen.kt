@@ -20,7 +20,6 @@ fun GptScreen(navController: NavHostController) {
         topBar = {
             TopAppBar(
                 title = { Text("Chat with GPT") },
-                // Add more TopAppBar configurations if needed
             )
         },
         content = { padding ->
@@ -29,17 +28,8 @@ fun GptScreen(navController: NavHostController) {
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                // Your chat UI components go here, which could include:
-                // - A TextField for the user to enter their message
-                // - A LazyColumn to display the conversation
-                // - Buttons to send the message
-                // You would use gptViewModel to manage sending messages
-                // and receiving responses from the chatbot
 
-                // Example: Text field and send button, conversation list, etc.
             }
         }
     )
 }
-
-// You would also need a corresponding ViewModel to handle the logic

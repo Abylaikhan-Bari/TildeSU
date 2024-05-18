@@ -1,6 +1,7 @@
 package com.ashim_bari.tildesu.model.chat
 
 import android.graphics.Bitmap
+import com.ashim_bari.tildesu.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
@@ -8,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 object ChatData {
 
-    val api_key = "AIzaSyDRjVtjXHxR1WlDuxSvf0PD8lQ2_pH-nm4"
+    val api_key = BuildConfig.API_KEY
 
     suspend fun getResponse(prompt: String): Chat {
         val generativeModel = GenerativeModel(
@@ -69,23 +70,3 @@ object ChatData {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
