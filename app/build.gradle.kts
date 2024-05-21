@@ -10,6 +10,8 @@ plugins {
 val localProperties = Properties().apply {
     load(project.rootProject.file("local.properties").inputStream())
 }
+val firebaseApiKey = localProperties.getProperty("FIREBASE_API_KEY", "NO_API_KEY_FOUND")
+
 val apiKey = localProperties.getProperty("apiKey", "NO_API_KEY_FOUND")
 
 android {
@@ -20,13 +22,15 @@ android {
         applicationId = "com.ashim_bari.tildesu"
         minSdk = 25
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 7
+        versionName = "7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        //buildConfigField("String", "FIREBASE_API_KEY", "\"$firebaseApiKey\"")
+
         buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
@@ -144,6 +148,24 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+tasks.register("replaceApiKey") {
+    doLast {
+        val googleServicesJsonFile = file("$rootDir/app/google-services.json")
+        if (googleServicesJsonFile.exists()) {
+            val content = googleServicesJsonFile.readText()
+            val newContent = content.replace("API_KEY_PLACEHOLDER", firebaseApiKey)
+            googleServicesJsonFile.writeText(newContent)
+        }
+    }
+}
+
+tasks.whenTaskAdded {
+    if (name.contains("assemble")) {
+        dependsOn("replaceApiKey")
+    }
+}
+
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
