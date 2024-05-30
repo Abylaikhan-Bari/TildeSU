@@ -1,7 +1,7 @@
 package com.ashim_bari.tildesu.model.userChat
 
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class ChatRepository {
@@ -11,15 +11,29 @@ class ChatRepository {
 
     suspend fun sendMessage(chat: userChat) {
         try {
-            chatCollection.add(chat).await()
+            // Add the message to the user's document
+            val documentReference = chatCollection.document(chat.senderId)
+            documentReference.update("messages", com.google.firebase.firestore.FieldValue.arrayUnion(chat.toMap())).await()
         } catch (e: Exception) {
-            // Handle exception
+            // If the document doesn't exist, create it
+            try {
+                val documentReference = chatCollection.document(chat.senderId)
+                documentReference.set(mapOf("messages" to listOf(chat.toMap())), SetOptions.merge()).await()
+            } catch (innerException: Exception) {
+                // Handle exception
+            }
         }
     }
 
-    fun getChatsForUser(userId: String): com.google.firebase.firestore.CollectionReference {
-        return chatCollection
-            .whereEqualTo("senderId", userId)
-            .orderBy("timestamp") as CollectionReference
+    fun getUserChats(userId: String) = chatCollection.document(userId)
+
+    private fun userChat.toMap(): Map<String, Any> {
+        return mapOf(
+            "senderId" to senderId,
+            "senderEmail" to senderEmail,
+            "receiverId" to receiverId,
+            "message" to message,
+            "timestamp" to timestamp
+        )
     }
 }

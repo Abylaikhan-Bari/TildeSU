@@ -29,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +52,13 @@ import com.google.firebase.Timestamp
 @Composable
 fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = hiltViewModel()) {
     val chats by chatViewModel.chats.observeAsState(emptyList())
+    val currentUserId = chatViewModel.currentUserId
+    val currentUserEmail = chatViewModel.currentUserEmail
     var message by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        chatViewModel.loadChats()
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +94,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                 reverseLayout = true
             ) {
                 items(chats) { chat ->
-                    if (chat.senderId == "user1") { // Replace with actual user ID
+                    if (chat.senderId == currentUserId) {
                         UserChatItem(chat.senderEmail, chat.message)
                     } else {
                         AdminChatItem(chat.senderEmail, chat.message)
@@ -115,9 +122,9 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                     keyboardActions = KeyboardActions(onSend = {
                         chatViewModel.sendMessage(
                             userChat(
-                                senderId = "user1", // Replace with actual user ID
-                                senderEmail = "user1@example.com", // Replace with actual user email
-                                receiverId = "admin", // Replace with actual receiver ID
+                                senderId = currentUserId,
+                                senderEmail = currentUserEmail,
+                                receiverId = "admin", // Replace with actual receiver ID if needed
                                 message = message,
                                 timestamp = Timestamp.now()
                             )
@@ -134,9 +141,9 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                         .clickable {
                             chatViewModel.sendMessage(
                                 userChat(
-                                    senderId = "user1", // Replace with actual user ID
-                                    senderEmail = "user1@example.com", // Replace with actual user email
-                                    receiverId = "admin", // Replace with actual receiver ID
+                                    senderId = currentUserId,
+                                    senderEmail = currentUserEmail,
+                                    receiverId = "admin", // Replace with actual receiver ID if needed
                                     message = message,
                                     timestamp = Timestamp.now()
                                 )
