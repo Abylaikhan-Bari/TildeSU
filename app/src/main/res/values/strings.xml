@@ -132,4 +132,5 @@
     <string name="gpt">GPT</string>
     <string name="no_lessons_available">No lessons available</string>
     <string name="no_tips_available">No tips available</string>
+    <string name="chat">Chat</string>
 </resources>
