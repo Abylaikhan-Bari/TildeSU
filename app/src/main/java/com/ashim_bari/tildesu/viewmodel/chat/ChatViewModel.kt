@@ -50,7 +50,7 @@ class ChatViewModel : ViewModel() {
                             message = map["message"] as? String ?: "",
                             timestamp = map["timestamp"] as? com.google.firebase.Timestamp ?: com.google.firebase.Timestamp.now()
                         )
-                    } ?: emptyList()
+                    }?.sortedBy { it.timestamp } ?: emptyList()
                 }
             }
     }

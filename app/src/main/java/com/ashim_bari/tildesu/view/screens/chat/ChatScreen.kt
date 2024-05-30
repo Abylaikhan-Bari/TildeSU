@@ -90,8 +90,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                reverseLayout = true
+                    .padding(horizontal = 8.dp)
             ) {
                 items(chats) { chat ->
                     if (chat.senderId == currentUserId) {
@@ -167,7 +166,7 @@ fun UserChatItem(email: String, message: String) {
             .fillMaxWidth()
     ) {
         Text(
-            text = "From: $email",
+            text = email,
             fontSize = 12.sp,
             color = Color.Gray
         )
@@ -192,7 +191,7 @@ fun AdminChatItem(email: String, message: String) {
             .fillMaxWidth()
     ) {
         Text(
-            text = "From: $email",
+            text = email,
             fontSize = 12.sp,
             color = Color.Gray
         )
