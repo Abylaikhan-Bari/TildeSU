@@ -61,7 +61,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
         }
         composable(Navigation.FAILURE) {
             FailureScreen(navController = navController) {
-                // Define what happens when the restart button is clicked. For example:
                 navController.navigate("specificExercise/{level}/{type}") {
                     // Clear back stack to prevent going back to the failure screen
                     popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }
@@ -77,7 +76,6 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
         }
         composable(Navigation.TRUE_FALSE_FAILURE) {
             TrueFalseFailureScreen(navController = navController) {
-                // Define what happens when the restart button is clicked. For example:
                 navController.navigate("specificExercise/{level}/{type}") {
                     // Clear back stack to prevent going back to the failure screen
                     popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }

@@ -28,7 +28,6 @@ object ApiKeyModule {
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
-            // Return the API key stored securely; for example purposes only
             return sharedPreferences.getString(
                 "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF",
                 "a_4RyuRWsTq7K9eMMGj2vJY1PnK722FQlt2kdVAgt6poI1VUInvfgHfa5g4oT5nbmjo3rRc7M0rZAF0qGF"
