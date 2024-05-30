@@ -260,6 +260,15 @@ fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
             },
             icon = { Icon(Icons.Default.Chat, contentDescription = "Gemini") }
         )
+        NavigationDrawerItem(
+            label = { Text(text = stringResource(id = R.string.chat)) },
+            selected = false,
+            onClick = {
+                navController.navigate("chat_route")
+                onDestinationClicked()
+            },
+            icon = { Icon(Icons.Default.Chat, contentDescription = "Gemini") }
+        )
 //        NavigationDrawerItem(
 //            label = { Text(text = stringResource(id = R.string.gpt)) },
 //            selected = false,

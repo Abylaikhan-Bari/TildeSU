@@ -13,6 +13,7 @@ import com.ashim_bari.tildesu.view.screens.SuccessScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseFailureScreen
 import com.ashim_bari.tildesu.view.screens.TrueFalseSuccessScreen
 import com.ashim_bari.tildesu.view.screens.authentication.AuthenticationScreen
+import com.ashim_bari.tildesu.view.screens.chat.ChatScreen
 import com.ashim_bari.tildesu.view.screens.exercise.ExerciseTypeSelectionScreen
 import com.ashim_bari.tildesu.view.screens.exercise.SpecificExerciseScreen
 import com.ashim_bari.tildesu.view.screens.gemini.GeminiScreen
@@ -31,6 +32,7 @@ class Navigation {
         const val SPECIFIC_EXERCISE_ROUTE = "specificExercise/{level}/{type}"
         const val SUCCESS = "success"
         const val FAILURE = "failure"
+        const val CHAT = "chat_route"
         const val TRUE_FALSE_SUCCESS = "trueFalseSuccess"
         const val TRUE_FALSE_FAILURE = "trueFalseFailure"
         const val LESSONS_ROUTE = "lessons/{level}"
@@ -66,6 +68,9 @@ fun NavigationGraph(navController: NavHostController, initialScreen: String) {
                     popUpTo(Navigation.MAIN_ROUTE) { inclusive = true }
                 }
             }
+        }
+        composable(Navigation.CHAT) {
+            ChatScreen(navController = navController)
         }
         composable(
             route = "${Navigation.TRUE_FALSE_SUCCESS}/{score}",
