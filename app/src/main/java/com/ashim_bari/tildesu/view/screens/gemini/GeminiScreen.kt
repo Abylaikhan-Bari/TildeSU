@@ -86,7 +86,7 @@ fun GeminiScreen(navController: NavHostController) {
 
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
 
-    // Ensure the bitmap updates instantly when a new image is selected
+
     uriState.value?.let { uri ->
         val imageState: AsyncImagePainter.State = rememberAsyncImagePainter(
             model = ImageRequest.Builder(context)
