@@ -44,9 +44,7 @@ class MainActivity : ComponentActivity() {
         initializeFirebase()
         checkAndRequestNotificationPermission()
         scheduleNotification()
-        // Apply language change here or determine the initial screen based on some condition
         applyLanguageChange()
-        val API_KEY = "AIzaSyDRjVtjXHxR1WlDuxSvf0PD8lQ2_pH-nm4"
         val initialScreen = determineInitialScreen()
         setContent {
             val languageViewModel: LanguageViewModel = viewModel()
@@ -124,10 +122,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun determineInitialScreen(): String {
-        // Implement logic to determine which screen to show first
-        // This could be based on authentication status, user preferences, etc.
-        // For example, return Navigation.AUTHENTICATION_ROUTE or Navigation.MAIN_ROUTE
-        return Navigation.AUTHENTICATION_ROUTE // or some logic to choose the screen
+        return Navigation.AUTHENTICATION_ROUTE
     }
 
     private fun initializeFirebase() {
@@ -153,7 +148,6 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-        // Use the custom animations for a more pleasant effect
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 }
