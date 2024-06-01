@@ -133,4 +133,5 @@
     <string name="no_lessons_available">Занятии не найдено</string>
     <string name="no_tips_available">Полезной информации не найдено</string>
     <string name="chat">Чат</string>
+    <string name="write_message">Введите сообщение</string>
 </resources>

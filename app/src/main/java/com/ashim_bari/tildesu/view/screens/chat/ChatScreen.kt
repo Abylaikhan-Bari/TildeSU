@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +62,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
+import com.ashim_bari.tildesu.R
 import com.ashim_bari.tildesu.model.userChat.userChat
 import com.ashim_bari.tildesu.viewmodel.chat.ChatViewModel
 import com.google.firebase.Timestamp
@@ -116,7 +118,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
             TopAppBar(
                 title = {
                     Text(
-                        text = "Chat",
+                        text = stringResource(R.string.chat),
                         color = Color.White
                     )
                 },
@@ -189,7 +191,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                 TextField(
                     value = message,
                     onValueChange = { message = it },
-                    placeholder = { Text(text = "Type a message") },
+                    placeholder = { Text(text = stringResource(R.string.write_message)) },
                     modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(onSend = {
