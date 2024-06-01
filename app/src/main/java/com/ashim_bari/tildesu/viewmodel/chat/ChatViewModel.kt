@@ -1,5 +1,6 @@
 package com.ashim_bari.tildesu.viewmodel.chat
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,12 +32,30 @@ class ChatViewModel : ViewModel() {
         }
     }
 
+    fun sendImageMessage(bitmap: Bitmap) {
+        viewModelScope.launch {
+            try {
+                val imageUrl = chatRepository.uploadBitmap(bitmap, currentUserId)
+                val chat = userChat(
+                    senderId = currentUserId,
+                    senderEmail = currentUserEmail,
+                    receiverId = "admin",
+                    message = "", // Empty message for image-only messages
+                    imageUrl = imageUrl,
+                    timestamp = com.google.firebase.Timestamp.now()
+                )
+                sendMessage(chat)
+            } catch (e: Exception) {
+                // Handle exception
+            }
+        }
+    }
+
     fun loadChats() {
-        chatListenerRegistration?.remove() // Remove previous listener if any
+        chatListenerRegistration?.remove()
         chatListenerRegistration = chatRepository.getUserChats(currentUserId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    // Handle exception
                     return@addSnapshotListener
                 }
 
@@ -48,6 +67,7 @@ class ChatViewModel : ViewModel() {
                             senderEmail = map["senderEmail"] as? String ?: "",
                             receiverId = map["receiverId"] as? String ?: "",
                             message = map["message"] as? String ?: "",
+                            imageUrl = map["imageUrl"] as? String,
                             timestamp = map["timestamp"] as? com.google.firebase.Timestamp ?: com.google.firebase.Timestamp.now()
                         )
                     }?.sortedBy { it.timestamp } ?: emptyList()
@@ -57,6 +77,6 @@ class ChatViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        chatListenerRegistration?.remove() // Remove listener when ViewModel is cleared
+        chatListenerRegistration?.remove()
     }
 }
