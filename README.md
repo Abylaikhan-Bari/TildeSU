@@ -32,8 +32,8 @@ TildeSU is a mobile application designed to enhance the grammar skills of Kazakh
     ```
 2. Open the project in Android Studio.
 3. Configure the Firebase project:
-   - Add the `google-services.json` file to the `app` directory.
-   - Ensure Firebase authentication and Firestore are set up.
+    - Add the `google-services.json` file to the `app` directory.
+    - Ensure Firebase authentication and Firestore are set up.
 4. Build and run the app on an Android device or emulator.
 
 
@@ -48,8 +48,8 @@ TildeSU is a mobile application designed to enhance the grammar skills of Kazakh
     flutter pub get
     ```
 3. Configure the Firebase project:
-   - Add the `google-services.json` file to the `android/app` directory.
-   - Add the `GoogleService-Info.plist` file to the `ios/Runner` directory.
+    - Add the `google-services.json` file to the `android/app` directory.
+    - Add the `GoogleService-Info.plist` file to the `ios/Runner` directory.
 4. Run the app on an Android/iOS device or web:
     ```bash
     flutter run
