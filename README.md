@@ -1,93 +1,91 @@
-# TildeSU
+# TildeSU - Kazakh Language Grammar Exercises App
 
+## Overview
+TildeSU is a mobile application designed to enhance the grammar skills of Kazakh language learners. Developed as a part of a final year diploma project at Satbayev University, this app leverages interactive exercises and a user-friendly interface to provide a comprehensive learning experience. The app is built using modern technologies, ensuring high performance and a seamless user experience.
 
+![Overview](https://i.postimg.cc/8kJC3tTB/Tilde-SU-main-1.png)
 
-## Getting started
+## Features
+- **Grammar Exercises**: Engage with a variety of grammar-related exercises to improve your understanding and usage of the Kazakh language. Exercises include multiple-choice questions, true/false quizzes, image-based quizzes, sentence construction tasks, and vocabulary cards.
+- **User Progress Tracking**: Monitor your learning progress with detailed statistics and achievement milestones, tracking completed exercises, quiz scores, and overall progress.
+- **Interactive Quizzes**: Test your knowledge with quizzes that adapt to your skill level, providing a dynamic and personalized learning experience.
+- **Multimedia Learning Materials**: Learn through text, images, and interactive content to keep engagement high and cater to different learning styles.
+- **User Authentication**: Manage your learning experience with secure login and profile management functionalities, ensuring your progress and personal data are safe.
+- **Admin Panel**: A separate admin panel built using Flutter allows for efficient management of content, user data, and overall application settings.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.com/Abylaikhan-Bari/tildesu.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/Abylaikhan-Bari/tildesu/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+![Puzzles](https://i.postimg.cc/kXqk8gY6/image.jpg)
+![Quizzes](https://i.postimg.cc/FRS2bdQc/image.jpg)
+![Lessons](https://i.postimg.cc/QdnPRk81/image.jpg)
+![Login](https://i.postimg.cc/QtWr6YcF/Tilde-SU-login.jpg)
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Prerequisites
+- Ensure you have the latest version of [Android Studio](https://developer.android.com/studio) and [Flutter SDK](https://flutter.dev/docs/get-started/install) installed.
+- An Android device or emulator to run the app.
+- A Firebase project setup for authentication and Firestore.
+
+### Kotlin App
+1. Clone the repository from GitHub:
+    ```bash
+    git clone https://gitlab.com/Abylaikhan-Bari/tildesu.git
+    ```
+2. Open the project in Android Studio.
+3. Configure the Firebase project:
+    - Add the `google-services.json` file to the `app` directory.
+    - Ensure Firebase authentication and Firestore are set up.
+4. Build and run the app on an Android device or emulator.
+
+
+### Flutter Admin Panel
+1. Clone the repository from GitHub:
+    ```bash
+    git clone https://gitlab.com/Abylaikhan-Bari/tildesu-teacher.git
+    ```
+2. Navigate to the project directory and get the dependencies:
+    ```bash
+    cd TildeSU_Admin
+    flutter pub get
+    ```
+3. Configure the Firebase project:
+    - Add the `google-services.json` file to the `android/app` directory.
+    - Add the `GoogleService-Info.plist` file to the `ios/Runner` directory.
+4. Run the app on an Android/iOS device or web:
+    ```bash
+    flutter run
+    ```
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### User Guide
+1. **Registration and Login**: Download the app from the Play Store, register with your email, and log in. If you are a new user, complete the registration process by providing the necessary personal information.
+2. **Main Interface**: Navigate through the app using the intuitive menu. Access various grammar lessons and exercises from the main interface.
+3. **Lessons**: Each lesson contains detailed explanations, examples, and interactive components to help you understand and practice Kazakh grammar.
+4. **Exercises**: Complete various exercises to test your knowledge and track your progress. Use the progress journal to monitor your learning journey.
+5. **Admin Panel**: The admin panel allows administrators to manage content, track user activities, and update lessons and exercises.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+
+### Technical Specifications
+- **Kotlin**: Used for the main Android application, offering concise syntax and full interoperability with Java.
+- **Jetpack Compose**: Utilized for creating the UI components of the app, enabling a modern and reactive approach to UI development.
+- **Firebase**: Powers authentication, Firestore database, and storage for user data and application content.
+- **Flutter**: Used for developing the admin panel, allowing for cross-platform deployment with a single codebase.
+- **MVVM Architecture**: Ensures a clean separation of concerns, making the codebase modular, scalable, and easier to maintain.
+
+### Development and Testing
+- The application follows a structured development process, including system modeling, UI design, and rigorous testing.
+- **Unit Testing**: Conducted on individual components to ensure they work as intended.
+- **Integration Testing**: Ensures that different components of the application work together seamlessly.
+- **User Acceptance Testing (UAT)**: Performed to ensure the application meets the requirements and provides a satisfactory user experience.
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+We welcome contributions to enhance the app and fix any issues. Please fork the repository, make your changes, and submit a pull request. Ensure your code follows the project's coding standards and includes relevant tests.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## License & Privacy Policy
+For detailed license and privacy policy information, please refer to the [License & Privacy Policy](https://docs.google.com/document/d/1fN2QVP2al9k8MJ5cKqhKCoz3GzDBRTkpUNAVAxChUAY/edit?usp=sharing).
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Contact
+For any questions or support, please contact:
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- **Abylaikhan Bari**: [Telegram](https://t.me/Abylaikhan_Bari)
+- **Ilyas Ashim**: [Telegram](https://t.me/ilyashim)
