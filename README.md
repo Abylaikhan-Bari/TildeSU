@@ -3,7 +3,7 @@
 ## Overview
 TildeSU is a mobile application designed to enhance the grammar skills of Kazakh language learners. Developed as a part of a final year diploma project at Satbayev University, this app leverages interactive exercises and a user-friendly interface to provide a comprehensive learning experience. The app is built using modern technologies, ensuring high performance and a seamless user experience.
 
-![Overview](https://ibb.co.com/rkJtrT4)
+![Overview]([![Tilde-SU-main-1.png](https://i.postimg.cc/8kJC3tTB/Tilde-SU-main-1.png)](https://postimg.cc/Bt3sP5LX))
 
 ## Features
 - **Grammar Exercises**: Engage with a variety of grammar-related exercises to improve your understanding and usage of the Kazakh language. Exercises include multiple-choice questions, true/false quizzes, image-based quizzes, sentence construction tasks, and vocabulary cards.
