@@ -19,13 +19,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,6 +77,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
     val uriState = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -101,6 +103,12 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
 
     LaunchedEffect(Unit) {
         chatViewModel.loadChats()
+    }
+
+    LaunchedEffect(chats.size) {
+        if (chats.isNotEmpty()) {
+            listState.animateScrollToItem(chats.size - 1)
+        }
     }
 
     Scaffold(
@@ -130,11 +138,11 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
             verticalArrangement = Arrangement.Bottom
         ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                reverseLayout = true
+                    .padding(horizontal = 8.dp)
             ) {
                 items(chats) { chat ->
                     if (chat.senderId == currentUserId) {
@@ -208,7 +216,7 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Icon(
-                    imageVector = Icons.Rounded.Send,
+                    imageVector = Icons.AutoMirrored.Rounded.Send,
                     contentDescription = "Send message",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
