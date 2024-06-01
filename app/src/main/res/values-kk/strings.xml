@@ -132,4 +132,7 @@
     <string name="gpt">GPT</string>
     <string name="no_lessons_available">Сабақтар табылмады</string>
     <string name="no_tips_available">Пайдалы кеңестер табылмады</string>
+    <string name="chat">Чат</string>
+    <string name="write_message">Хабарыңызды енгізіңіз</string>
+    <string name="please_enter_message">Хабар енгізіңіз немесе сурет таңдаңыз</string>
 </resources>
