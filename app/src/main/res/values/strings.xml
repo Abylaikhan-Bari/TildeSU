@@ -134,4 +134,5 @@
     <string name="no_tips_available">No tips available</string>
     <string name="chat">Chat</string>
     <string name="write_message">Type a message</string>
+    <string name="please_enter_message">Please enter a message or select an image</string>
 </resources>

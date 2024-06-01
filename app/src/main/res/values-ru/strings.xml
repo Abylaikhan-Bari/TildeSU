@@ -134,4 +134,5 @@
     <string name="no_tips_available">Полезной информации не найдено</string>
     <string name="chat">Чат</string>
     <string name="write_message">Введите сообщение</string>
+    <string name="please_enter_message">Введите сообщение или выберите изображение</string>
 </resources>

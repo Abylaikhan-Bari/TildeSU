@@ -32,6 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -75,12 +77,13 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
     val currentUserId = chatViewModel.currentUserId
     val currentUserEmail = chatViewModel.currentUserEmail
     var message by remember { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val uriState = remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-
+    val snackbarMessage = stringResource(R.string.please_enter_message)
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -131,7 +134,8 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -196,20 +200,24 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(onSend = {
                         coroutineScope.launch {
-                            chatViewModel.sendMessage(
-                                userChat(
-                                    senderId = currentUserId,
-                                    senderEmail = currentUserEmail,
-                                    receiverId = "admin",
-                                    message = message,
-                                    timestamp = Timestamp.now()
+                            if (message.isEmpty() && bitmapState == null) {
+                                snackbarHostState.showSnackbar("Please enter a message or select an image")
+                            } else {
+                                chatViewModel.sendMessage(
+                                    userChat(
+                                        senderId = currentUserId,
+                                        senderEmail = currentUserEmail,
+                                        receiverId = "admin",
+                                        message = message,
+                                        timestamp = Timestamp.now()
+                                    )
                                 )
-                            )
-                            message = ""
-                            bitmapState?.let {
-                                chatViewModel.sendImageMessage(it)
-                                bitmapState = null
-                                uriState.value = null
+                                message = ""
+                                bitmapState?.let {
+                                    chatViewModel.sendImageMessage(it)
+                                    bitmapState = null
+                                    uriState.value = null
+                                }
                             }
                         }
                     })
@@ -225,20 +233,25 @@ fun ChatScreen(navController: NavHostController, chatViewModel: ChatViewModel = 
                         .size(40.dp)
                         .clickable {
                             coroutineScope.launch {
-                                chatViewModel.sendMessage(
-                                    userChat(
-                                        senderId = currentUserId,
-                                        senderEmail = currentUserEmail,
-                                        receiverId = "admin",
-                                        message = message,
-                                        timestamp = Timestamp.now()
+                                if (message.isEmpty() && bitmapState == null) {
+
+                                    snackbarHostState.showSnackbar(snackbarMessage)
+                                } else {
+                                    chatViewModel.sendMessage(
+                                        userChat(
+                                            senderId = currentUserId,
+                                            senderEmail = currentUserEmail,
+                                            receiverId = "admin",
+                                            message = message,
+                                            timestamp = Timestamp.now()
+                                        )
                                     )
-                                )
-                                message = ""
-                                bitmapState?.let {
-                                    chatViewModel.sendImageMessage(it)
-                                    bitmapState = null
-                                    uriState.value = null
+                                    message = ""
+                                    bitmapState?.let {
+                                        chatViewModel.sendImageMessage(it)
+                                        bitmapState = null
+                                        uriState.value = null
+                                    }
                                 }
                             }
                         }
