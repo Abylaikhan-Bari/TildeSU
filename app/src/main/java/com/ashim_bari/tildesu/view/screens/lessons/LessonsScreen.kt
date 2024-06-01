@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -80,7 +81,9 @@ fun LessonsScreen(navController: NavHostController, level: String) {
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             ScrollableTabRow(
                 selectedTabIndex = pagerState.currentPage,
                 edgePadding = 0.dp,
@@ -89,7 +92,8 @@ fun LessonsScreen(navController: NavHostController, level: String) {
                 indicator = { tabPositions ->
                     val indicatorWidth = tabPositions[pagerState.currentPage].width
                     TabRowDefaults.Indicator(
-                        modifier = Modifier.fillMaxWidth(fraction = 1f)
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = 1f)
                             .tabIndicatorOffset(tabPositions[pagerState.currentPage])
                             .width(indicatorWidth),
                         height = 3.dp,
@@ -133,19 +137,21 @@ fun LessonsScreen(navController: NavHostController, level: String) {
 
 @Composable
 fun LessonsContent(lessons: List<Lesson>, level: String, navController: NavHostController) {
-    Column(modifier = Modifier
+    LazyColumn(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)) {
         if (lessons.isEmpty()) {
-            Text(
-                text = stringResource(id = R.string.no_lessons_available),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(16.dp)
-            )
+            item {
+                Text(
+                    text = stringResource(id = R.string.no_lessons_available),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         } else {
-            lessons.forEachIndexed { index, lesson ->
-                AnimatedLessonOptionCard(index, lesson.title) {
-                    navController.navigate("levelLessons/$level/${lesson.id}")
+            items(lessons.size) { index ->
+                AnimatedLessonOptionCard(index, lessons[index].title) {
+                    navController.navigate("levelLessons/$level/${lessons[index].id}")
                 }
             }
         }
@@ -191,4 +197,3 @@ fun LessonOptionCard(optionName: String, onClick: () -> Unit) {
         )
     }
 }
-
