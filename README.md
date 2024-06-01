@@ -3,7 +3,7 @@
 ## Overview
 TildeSU is a mobile application designed to enhance the grammar skills of Kazakh language learners. Developed as a part of a final year diploma project at Satbayev University, this app leverages interactive exercises and a user-friendly interface to provide a comprehensive learning experience. The app is built using modern technologies, ensuring high performance and a seamless user experience.
 
-![Overview](https://ibb.co.com/rkJtrT4)
+![Overview](https://i.postimg.cc/8kJC3tTB/Tilde-SU-main-1.png)
 
 ## Features
 - **Grammar Exercises**: Engage with a variety of grammar-related exercises to improve your understanding and usage of the Kazakh language. Exercises include multiple-choice questions, true/false quizzes, image-based quizzes, sentence construction tasks, and vocabulary cards.
@@ -13,13 +13,10 @@ TildeSU is a mobile application designed to enhance the grammar skills of Kazakh
 - **User Authentication**: Manage your learning experience with secure login and profile management functionalities, ensuring your progress and personal data are safe.
 - **Admin Panel**: A separate admin panel built using Flutter allows for efficient management of content, user data, and overall application settings.
 
-![Dictionary Cards](https://ibb.co.com/Gs6w5Db)
-![Puzzles](https://ibb.co.com/98SNtWR)
-![True or False](https://ibb.co.com/s3115kL)
-![Quizzes](https://ibb.co.com/Gc6wy5z)
-![Lessons](https://ibb.co.com/swHvSgr)
-![Registration](https://ibb.co.com/jgZhfFr)
-![Login](https://ibb.co.com/8ss0fg9)
+![Puzzles](https://i.postimg.cc/kXqk8gY6/image.jpg)
+![Quizzes](https://i.postimg.cc/FRS2bdQc/image.jpg)
+![Lessons](https://i.postimg.cc/QdnPRk81/image.jpg)
+![Login](https://i.postimg.cc/QtWr6YcF/Tilde-SU-login.jpg)
 
 ## Installation
 
@@ -35,8 +32,8 @@ TildeSU is a mobile application designed to enhance the grammar skills of Kazakh
     ```
 2. Open the project in Android Studio.
 3. Configure the Firebase project:
-    - Add the `google-services.json` file to the `app` directory.
-    - Ensure Firebase authentication and Firestore are set up.
+   - Add the `google-services.json` file to the `app` directory.
+   - Ensure Firebase authentication and Firestore are set up.
 4. Build and run the app on an Android device or emulator.
 
 
@@ -51,8 +48,8 @@ TildeSU is a mobile application designed to enhance the grammar skills of Kazakh
     flutter pub get
     ```
 3. Configure the Firebase project:
-    - Add the `google-services.json` file to the `android/app` directory.
-    - Add the `GoogleService-Info.plist` file to the `ios/Runner` directory.
+   - Add the `google-services.json` file to the `android/app` directory.
+   - Add the `GoogleService-Info.plist` file to the `ios/Runner` directory.
 4. Run the app on an Android/iOS device or web:
     ```bash
     flutter run
