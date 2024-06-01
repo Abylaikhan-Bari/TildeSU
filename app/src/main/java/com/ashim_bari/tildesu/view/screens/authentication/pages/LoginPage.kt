@@ -17,7 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -145,7 +147,6 @@ fun LoginPage(
                         }
                     }
                 } catch (e: Exception) {
-                    // Here you can handle specific exceptions if needed, for example:
                     when (e) {
                         is FirebaseNetworkException -> {
                             authMessage = "Check your internet connection and try again."

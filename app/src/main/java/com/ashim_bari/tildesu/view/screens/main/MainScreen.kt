@@ -1,7 +1,6 @@
 package com.ashim_bari.tildesu.view.screens.main
 
 import DashboardPage
-import UsefulPage
 import android.content.Context
 import android.os.Build
 import android.os.Vibrator
@@ -14,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.AlertDialog
@@ -59,6 +60,7 @@ import com.ashim_bari.tildesu.view.navigation.Navigation
 import com.ashim_bari.tildesu.view.screens.main.pages.HomePage
 import com.ashim_bari.tildesu.view.screens.main.pages.ProfilePage
 import com.ashim_bari.tildesu.view.screens.main.pages.TranslatePage
+import com.ashim_bari.tildesu.view.screens.main.pages.UsefulPage
 import com.ashim_bari.tildesu.viewmodel.main.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -144,6 +146,15 @@ fun MainScreen(navController: NavHostController) {
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        }
+                    },
+                    actions = {
+                        if (currentMainScreen == MainScreens.Dashboard) {
+                            IconButton(onClick = {
+                                mainViewModel.refreshUserProgress()
+                            }) {
+                                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -242,6 +253,15 @@ fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
         )
         NavigationDrawerItem(
+            label = { Text(text = stringResource(id = R.string.gemini)) },
+            selected = false,
+            onClick = {
+                navController.navigate("gemini_route")
+                onDestinationClicked()
+            },
+            icon = { Icon(Icons.Default.Assistant, contentDescription = "Gemini") }
+        )
+        NavigationDrawerItem(
             label = { Text(text = stringResource(id = R.string.chat)) },
             selected = false,
             onClick = {
@@ -250,7 +270,15 @@ fun Drawer(navController: NavHostController, onDestinationClicked: () -> Unit) {
             },
             icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") }
         )
-        // Add more items as needed
+//        NavigationDrawerItem(
+//            label = { Text(text = stringResource(id = R.string.gpt)) },
+//            selected = false,
+//            onClick = {
+//                navController.navigate("gpt_route")
+//                onDestinationClicked()
+//            },
+//            icon = { Icon(Icons.Default.Camera, contentDescription = "GPT") }
+//        )
     }
 }
 
@@ -264,7 +292,7 @@ fun MainScreenContent(
     when (currentScreen) {
         MainScreens.Home -> HomePage(navController)
         MainScreens.Dashboard -> DashboardPage()
-        MainScreens.Useful -> UsefulPage(navController) {}
+        MainScreens.Useful -> UsefulPage(navController)
         MainScreens.Profile -> ProfilePage(navController)
         MainScreens.Translate -> TranslatePage(navController)
     }

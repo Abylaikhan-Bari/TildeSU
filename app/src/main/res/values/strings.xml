@@ -72,18 +72,6 @@
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="password_mismatch">Passwords do not match</string>
     <string name="useful_tips">Useful Grammar Tips</string>
-    <string name="grammar_tip_1"><b>Word Order:</b> Kazakh generally follows a Subject-Object-Verb (SOV) word order. However, like in many languages, word order can be flexible based on emphasis or context.</string>
-    <string name="grammar_tip_2"><b>Cases: Kazakh</b> is an agglutinative language, meaning that suffixes and prefixes are added to the root words to indicate grammatical relationships. Kazakh has six cases: nominative, genitive, dative, accusative, locative, and ablative. Each case indicates different relationships between nouns and other parts of the sentence.</string>
-    <string name="grammar_tip_3"><b>Conjugation:</b> Verbs in Kazakh change their forms based on tense, aspect, mood, person, and number. Regular verbs follow predictable patterns, but there are irregular verbs as well.</string>
-    <string name="grammar_tip_4"><b>Pluralization:</b> Nouns in Kazakh are pluralized by adding suffixes to the end of the word. The suffixes can vary depending on the noun\'s stem and its grammatical characteristics.</string>
-    <string name="grammar_tip_5"><b>Possession:</b> Possession is often indicated using possessive suffixes attached to the possessed noun. These suffixes agree with the possessor in terms of person, number, and case.</string>
-    <string name="grammar_tip_6"><b>Verb Aspect:</b> Kazakh verbs often convey aspectual information, indicating whether an action is completed or ongoing. There are two primary aspects: perfective (completed action) and imperfective (ongoing or habitual action).</string>
-    <string name="grammar_tip_7"><b>Honorifics:</b> Like many languages, Kazakh has formal and informal registers. The choice of vocabulary and verb forms may vary based on the level of formality and respect toward the listener or subject.</string>
-    <string name="grammar_tip_8"><b>Word Stress:</b> In Kazakh, stress usually falls on the last syllable of the word. However, there are exceptions, especially in loanwords from other languages.</string>
-    <string name="grammar_tip_9"><b>Vowel Harmony:</b> Kazakh exhibits vowel harmony, meaning that vowels within a word must harmonize or agree in terms of front/back and roundedness features. This affects suffixes and verb conjugations.</string>
-    <string name="grammar_tip_10"><b>Sentence Structure:</b> Kazakh sentences often use postpositions instead of prepositions. Additionally, subordinate clauses typically precede main clauses.</string>
-
-
     <string name="city">City</string>
     <string name="age">Age</string>
     <string name="gender">Gender</string>
@@ -139,6 +127,12 @@
     <string name="exercise_selection">Exercise Selection</string>
     <string name="back">Back</string>
     <string name="lesson">Lesson</string>
-    <string name="chat">Chat</string>
+    <string name="gemini">Gemini</string>
     <string name="type_prompt">Type a prompt</string>
+    <string name="gpt">GPT</string>
+    <string name="no_lessons_available">No lessons available</string>
+    <string name="no_tips_available">No tips available</string>
+    <string name="chat">Chat</string>
+    <string name="write_message">Type a message</string>
+    <string name="please_enter_message">Please enter a message or select an image</string>
 </resources>
