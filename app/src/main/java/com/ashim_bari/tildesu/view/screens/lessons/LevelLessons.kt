@@ -1,12 +1,12 @@
 package com.ashim_bari.tildesu.view.screens.lessons
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -91,26 +91,28 @@ fun LevelLessons(navController: NavHostController, level: String, lessonId: Stri
 @Composable
 fun LevelLessonContent(lesson: Lesson, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextCard(
-            text = lesson.title,
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextCard(
-            text = lesson.description,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextCard(
-            text = lesson.content,
-            style = MaterialTheme.typography.bodySmall
-        )
+        item {
+            TextCard(
+                text = lesson.title,
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextCard(
+                text = lesson.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextCard(
+                text = lesson.content,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
