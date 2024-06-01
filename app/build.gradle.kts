@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,6 +7,12 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
+val localProperties = Properties().apply {
+    load(project.rootProject.file("local.properties").inputStream())
+}
+val firebaseApiKey = localProperties.getProperty("FIREBASE_API_KEY", "NO_API_KEY_FOUND")
+
+val apiKey = localProperties.getProperty("apiKey", "NO_API_KEY_FOUND")
 
 android {
     namespace = "com.ashim_bari.tildesu"
@@ -14,13 +22,16 @@ android {
         applicationId = "com.ashim_bari.tildesu"
         minSdk = 25
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 7
+        versionName = "7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        //buildConfigField("String", "FIREBASE_API_KEY", "\"$firebaseApiKey\"")
+
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -41,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -102,6 +114,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("androidx.wear.compose:compose-material:1.3.0")
+    implementation("com.google.accompanist:accompanist-pager:0.35.0-alpha")
 
     // Firebase dependencies
     implementation("com.google.firebase:firebase-auth:22.3.1")
@@ -118,6 +131,14 @@ dependencies {
 
     // Testing libraries
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("org.mockito:mockito-inline:4.5.1")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("org.robolectric:robolectric:4.7.3")
+    testImplementation("androidx.test:core:1.4.0")
+    testImplementation("org.mockito:mockito-core:4.4.0")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
@@ -127,6 +148,24 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+tasks.register("replaceApiKey") {
+    doLast {
+        val googleServicesJsonFile = file("$rootDir/app/google-services.json")
+        if (googleServicesJsonFile.exists()) {
+            val content = googleServicesJsonFile.readText()
+            val newContent = content.replace("API_KEY_PLACEHOLDER", firebaseApiKey)
+            googleServicesJsonFile.writeText(newContent)
+        }
+    }
+}
+
+tasks.whenTaskAdded {
+    if (name.contains("assemble")) {
+        dependsOn("replaceApiKey")
+    }
+}
+
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
